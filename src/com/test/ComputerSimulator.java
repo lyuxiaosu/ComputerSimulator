@@ -87,7 +87,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 	}
 
 	/**
-	 * Create the application.
+	 * Create the application. test submit
 	 */
 	public ComputerSimulator() {
 		initialize();
