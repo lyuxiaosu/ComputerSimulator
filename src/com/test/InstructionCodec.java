@@ -45,6 +45,16 @@ public class InstructionCodec {
 			int ix = Integer.parseInt(parts[1].trim());
 			int address = Integer.parseInt(parts[2].trim());
 			
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) {
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
 			
@@ -58,6 +68,16 @@ public class InstructionCodec {
 			int r = Integer.parseInt(parts[0].trim());
 			int ix = Integer.parseInt(parts[1].trim());
 			int address = Integer.parseInt(parts[2].trim());
+			
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) {
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
 			
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
@@ -73,6 +93,16 @@ public class InstructionCodec {
 			int ix = Integer.parseInt(parts[1].trim());
 			int address = Integer.parseInt(parts[2].trim());
 			
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) {
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
 		} else if (part1.equals("LDX")) {
@@ -84,7 +114,11 @@ public class InstructionCodec {
 			int opcode = 33;
 			int ix = Integer.parseInt(parts[0].trim());
 			int address = Integer.parseInt(parts[1].trim());
-			
+						
+			if (ix > 3 || ix < 0) {
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
 			BitSet bitset = GetBitSet(opcode, 0, ix, address);
 			return bitset;
 		} else if (part1.equals("STX")) {
@@ -96,7 +130,12 @@ public class InstructionCodec {
 			int opcode = 34;
 			int ix = Integer.parseInt(parts[0].trim());
 			int address = Integer.parseInt(parts[1].trim());
-			
+						
+			if (ix > 3 || ix < 0) {
+				this.subject.updateMFR(5);
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
 			BitSet bitset = GetBitSet(opcode, 0, ix, address);
 			return bitset;
 		} else if (part1.equals("TRAP")) {
@@ -144,6 +183,10 @@ public class InstructionCodec {
 			int[] parameters = new int[2];
 			parameters[0] = opcode;
 			parameters[1] = fault_code;
+			return parameters;
+		} else if (opcode == 0) { // HLT instruction
+			int[] parameters = new int[1];
+			parameters[0] = opcode;
 			return parameters;
 		}
 		

@@ -90,6 +90,7 @@ public class CentralProcessor {
 			r3.SetValue(value);
 		} else {
 			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + index + ". The range of GPR is 0-3\n");
+			this.SetMFR(6);
 			return -2;
 		}
 		
@@ -97,18 +98,19 @@ public class CentralProcessor {
 		return 0;
 	}
 
-	public int GetGPR(int index) {
+	public Integer GetGPR(int index) {
 		if (index == 0) {
-			return r0.GetValueWithInt();
+			return new Integer(r0.GetValueWithInt());
 		} else if (index == 1) {
-			return r1.GetValueWithInt();
+			return new Integer(r1.GetValueWithInt());
 		} else if (index == 2) {
-			return r2.GetValueWithInt();
+			return new Integer(r2.GetValueWithInt());
 		} else if (index == 3){
-			return r3.GetValueWithInt();
+			return new Integer(r3.GetValueWithInt());
 		} else {
 			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + index + ". The range of GPR is 0-3\n");
-			return -2;
+			this.SetMFR(6);
+			return null;
 		}
 	}
 	
@@ -148,18 +150,19 @@ public class CentralProcessor {
 		return IXContent;
 	}
 	
-	public int GetIX(int index) {
+	public Integer GetIX(int index) {
 		if (index == 0) {
-			return 0; // no indexing
+			return new Integer(0); // no indexing
 		} else if (index == 1) {
-			return x1.GetValueWithInt();
+			return new Integer(x1.GetValueWithInt());
 		} else if (index == 2) {
-			return x2.GetValueWithInt();
+			return new Integer(x2.GetValueWithInt());
 		} else if (index == 3) {
-			return x3.GetValueWithInt();
+			return new Integer(x3.GetValueWithInt());
 		} else {
 			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + index + ". The range of IX is 0-3\n");
-			return -2;
+			this.SetMFR(5);
+			return null;
 		}
 	}
 	
@@ -174,6 +177,7 @@ public class CentralProcessor {
 			x3.SetValue(value);
 		} else {
 			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + index + ". The range of IX is 0-3\n");
+			this.SetMFR(5);
 			return -2;
 		}
 		

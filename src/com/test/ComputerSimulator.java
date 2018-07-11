@@ -626,64 +626,64 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 				txtrConsole.append("invalid input number " + tfLoadPC.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnR0Load) {
-			int r0_ori = cpu.GetGPR(0);
+			Integer r0_ori = cpu.GetGPR(0);
 			try {
 				int r0_update = Integer.parseInt(tfR0.getText());
-				txtrConsole.append("update R0 from " + r0_ori + " to " + r0_update + "\n");
+				txtrConsole.append("update R0 from " + r0_ori.intValue() + " to " + r0_update + "\n");
 				this.cpu.SetGPR(0, r0_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR0.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnR1Load) {
-			int r1_ori = cpu.GetGPR(1);
+			Integer r1_ori = cpu.GetGPR(1);
 			try {
 				int r1_update = Integer.parseInt(tfR1.getText());
-				txtrConsole.append("update R1 from " + r1_ori + " to " + r1_update + "\n");
+				txtrConsole.append("update R1 from " + r1_ori.intValue() + " to " + r1_update + "\n");
 				this.cpu.SetGPR(1, r1_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR1.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnR2Load) {
-			int r2_ori = cpu.GetGPR(2);
+			Integer r2_ori = cpu.GetGPR(2);
 			try {
 				int r2_update = Integer.parseInt(tfR2.getText());
-				txtrConsole.append("update R2 from " + r2_ori + " to " + r2_update + "\n");
+				txtrConsole.append("update R2 from " + r2_ori.intValue() + " to " + r2_update + "\n");
 				this.cpu.SetGPR(2, r2_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR2.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnR3Load) {
-			int r3_ori = cpu.GetGPR(3);
+			Integer r3_ori = cpu.GetGPR(3);
 			try {
 				int r3_update = Integer.parseInt(tfR3.getText());
-				txtrConsole.append("update R2 from " + r3_ori + " to " + r3_update + "\n");
+				txtrConsole.append("update R2 from " + r3_ori.intValue() + " to " + r3_update + "\n");
 				this.cpu.SetGPR(3, r3_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR3.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnX1Load) {
-			int x1_ori = cpu.GetIX(1);
+			Integer x1_ori = cpu.GetIX(1).intValue();
 			try {
 				int x1_update = Integer.parseInt(tfX1.getText());
-				txtrConsole.append("update X1 from " + x1_ori + " to " + x1_update + "\n");
+				txtrConsole.append("update X1 from " + x1_ori.intValue() + " to " + x1_update + "\n");
 				this.cpu.SetIX(1, x1_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX1.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnX2Load) {
-			int x2_ori = cpu.GetIX(2);
+			Integer x2_ori = cpu.GetIX(2).intValue();
 			try {
 				int x2_update = Integer.parseInt(tfX2.getText());		
-				txtrConsole.append("update X2 from " + x2_ori + " to " + x2_update + "\n");
+				txtrConsole.append("update X2 from " + x2_ori.intValue() + " to " + x2_update + "\n");
 				this.cpu.SetIX(2, x2_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX2.getText()+ "\n");
 			}
 		} else if (e.getSource() == btnX3Load) {
-			int x3_ori = cpu.GetIX(3);
+			Integer x3_ori = cpu.GetIX(3).intValue();
 			try {
 				int x3_update = Integer.parseInt(tfX3.getText());
-				txtrConsole.append("update X3 from " + x3_ori + " to " + x3_update + "\n");
+				txtrConsole.append("update X3 from " + x3_ori.intValue() + " to " + x3_update + "\n");
 				this.cpu.SetIX(3, x3_update);
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX3.getText()+ "\n");

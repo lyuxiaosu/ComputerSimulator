@@ -58,6 +58,8 @@ public class SingalController extends AbstrctProcessor {
 			} else if (opcode == 63) {
 				int fault_code = array.get(1);
 				return HandleMFT(fault_code);
+			} else if (opcode == 0) {
+				return HandleHLT();
 			} else {
 				this.subject.updateUserConsole("Unkown instruction. Opcode:" + opcode + "\n");
 				return new Integer(-2);
@@ -91,17 +93,14 @@ public class SingalController extends AbstrctProcessor {
 		cpu.SetPC(instruction_address.intValue());
 		return 0;
 	}
-	
+	private int HandleHLT() {
+		//
+		return 0;
+	}
 	private int HandleLDR(int r, int ix, int i, int address) {
 		// Load Register From Memory, r = 0..3
 		// r <- c(EA)
 		// r <- c(c(EA)), if I bit set
-
-		if (ix < 0 || ix >= 4) {
-			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + ix + ". The range of IX is 0-3\n");
-			this.subject.updateMFR(5);
-			return -2;
-		}
 		
 		if (r < 0 || r >= 4) {
 			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + r + ". The range of GPR is 0-3\n");
@@ -109,11 +108,15 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 		
-		int ix_content = cpu.GetIX(ix);
+		Integer ix_content = cpu.GetIX(ix);
+		if (ix_content == null) {
+			return -2;
+		}
+		
 		int addr = 0;
 		
 		if (i == 1) {				
-			Integer memory_content = memory.GetValueWithInt(address + ix_content);
+			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue());
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -132,7 +135,7 @@ public class SingalController extends AbstrctProcessor {
 			}
 
 			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue() + ix_content;
+			addr = memory_content.intValue() + ix_content.intValue();
 		}
 		
 		int result = cpu.SetGPR(r, addr);
@@ -147,23 +150,17 @@ public class SingalController extends AbstrctProcessor {
 	
 	private int HandleSTR(int r, int ix, int i, int address) {
 		// Store Register To Memory, r = 0..3
-		// Memory(EA) <- c(r)
-
-		if (ix < 0 || ix >= 4) {
-			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + ix + ". The range of IX is 0-3\n");
+		// Memory(EA) <- c(r)	
+		
+		Integer ix_content = cpu.GetIX(ix);		
+		if (ix_content == null) {
 			return -2;
 		}
 		
-		if (r < 0 || r >= 4) {
-			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + r + ". The range of GPR is 0-3\n");
-			return -2;
-		}
-		
-		int ix_content = cpu.GetIX(ix);			
 		int addr = 0;
 		
 		if (i == 1) {				
-			addr = ix_content + address;
+			addr = ix_content.intValue() + address;
 		} else {
 			Integer memory_content = memory.GetValueWithInt(address);
 			if (memory_content == null) {
@@ -174,10 +171,15 @@ public class SingalController extends AbstrctProcessor {
 			}
 
 			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue() + ix_content;
+			addr = memory_content.intValue() + ix_content.intValue();
 		}
 		
-		int GPR_content = cpu.GetGPR(r);
+		Integer GPR_content = cpu.GetGPR(r);
+		
+		if (GPR_content == null) {
+			return -2;
+		}
+		
 		int result = memory.Set(addr, GPR_content);
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STR " + r + ", " + ix + ", " + address + "\n");
@@ -191,21 +193,15 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleLDA(int r, int ix, int i, int address) {
 		// Load Register with Address, r = 0..3
 		// r <- EA
-
-		if (ix < 0 || ix >= 4) {
-			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + ix + ". The range of IX is 0-3\n");
+				
+		Integer ix_content = cpu.GetIX(ix);
+		if (ix_content == null) {
 			return -2;
 		}
 		
-		if (r < 0 || r >= 4) {
-			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + r + ". The range of GPR is 0-3\n");
-			return -2;
-		}
-		
-		int ix_content = cpu.GetIX(ix);
 		int addr = 0;
 		if (i == 1) {				
-			Integer memory_content = memory.GetValueWithInt(address + ix_content);
+			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue());
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
@@ -225,7 +221,7 @@ public class SingalController extends AbstrctProcessor {
 			}
 
 			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue() + ix_content;
+			addr = memory_content.intValue() + ix_content.intValue();
 		}
 		
 		int result = cpu.SetGPR(r, addr);
@@ -242,12 +238,7 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleLDX(int ix, int i, int address) {
 		//Load Index Register from Memory, x = 1..3. 
 		//Xx <- c(EA)
-		
-		if (ix < 0 || ix >= 4) {
-			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + ix + ". The range of IX is 0-3\n");
-			return -2;
-		}
-				
+						
 		Integer memory_content = memory.GetValueWithInt(address);
 		if (memory_content == null) { 
 			return -2;
@@ -266,13 +257,13 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleSTX(int ix, int i, int address) {
 		//Store Index Register to Memory. X = 1..3
 		//Memory(EA) <- c(Xx)
-		if (ix < 0 || ix >= 4) {
-			this.subject.updateUserConsole("Access IX fail. Invalid IX index:" + ix + ". The range of IX is 0-3\n");
+		
+		Integer ix_content = cpu.GetIX(ix);
+		if (ix_content == null) {
 			return -2;
 		}
 		
-		int ix_content = cpu.GetIX(ix);
-		int result = memory.Set(address, ix_content);
+		int result = memory.Set(address, ix_content.intValue());
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STX " + ix + ", " + address + "\n");
 		} else {
