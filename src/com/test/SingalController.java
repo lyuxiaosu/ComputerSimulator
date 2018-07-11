@@ -116,7 +116,7 @@ public class SingalController extends AbstrctProcessor {
 			Integer memory_content = memory.GetValueWithInt(address + ix_content);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
-						"Failed to excute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
+						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
@@ -126,7 +126,7 @@ public class SingalController extends AbstrctProcessor {
 			Integer memory_content = memory.GetValueWithInt(address);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
-						"Failed to excute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
+						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
@@ -139,7 +139,7 @@ public class SingalController extends AbstrctProcessor {
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 		} else {
-			this.subject.updateUserConsole("Failed to excute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 		}
 		
 		return result;
@@ -168,7 +168,7 @@ public class SingalController extends AbstrctProcessor {
 			Integer memory_content = memory.GetValueWithInt(address);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
-						"Failed to excute instruction: STR " + r + ", " + ix + ", " + address + "\n");
+						"Failed to execute instruction: STR " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
@@ -182,7 +182,7 @@ public class SingalController extends AbstrctProcessor {
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STR " + r + ", " + ix + ", " + address + "\n");
 		} else {
-			this.subject.updateUserConsole("Failed to excute instruction: STR " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("Failed to execute instruction: STR " + r + ", " + ix + ", " + address + "\n");
 		}
 		
 		return result;
@@ -208,7 +208,7 @@ public class SingalController extends AbstrctProcessor {
 			Integer memory_content = memory.GetValueWithInt(address + ix_content);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
-						"Failed to excute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
+						"Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
@@ -219,7 +219,7 @@ public class SingalController extends AbstrctProcessor {
 			Integer memory_content = memory.GetValueWithInt(address);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
-						"Failed to excute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
+						"Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
@@ -233,7 +233,7 @@ public class SingalController extends AbstrctProcessor {
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDA " + r + ", " + ix + ", " + address + "\n");
 		} else {
-			this.subject.updateUserConsole("Failed to excute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
 		}
 		
 		return result;
@@ -257,7 +257,7 @@ public class SingalController extends AbstrctProcessor {
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDX " + ix + ", " + address + "\n");
 		} else {
-			this.subject.updateUserConsole("Failed to excute instruction: LDA " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("Failed to execute instruction: LDA " + ix + ", " + address + "\n");
 		}
 		
 		return result;
@@ -276,7 +276,7 @@ public class SingalController extends AbstrctProcessor {
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STX " + ix + ", " + address + "\n");
 		} else {
-			this.subject.updateUserConsole("Failed to excute instruction: STX " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("Failed to execute instruction: STX " + ix + ", " + address + "\n");
 		}
 		
 		return result;

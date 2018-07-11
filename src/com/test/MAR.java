@@ -16,6 +16,10 @@ public class MAR extends AbstrctProcessor{
 			return null;
 		}
 		int i = (Integer) data;
+		
+		if (i == -1 || i == -2 || i == -3) {
+			return i;
+		}
 		SetValue(i);
 		return new Integer(i);
 	}

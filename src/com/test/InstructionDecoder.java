@@ -15,9 +15,11 @@ public class InstructionDecoder extends AbstrctProcessor {
 		}
 		
 		int i = (Integer) data;
+		if (i == -1 || i == -2 || i == -3) {
+			return -i;
+		}
 		int[] instruction = decoder.Decode(i);
 		
-		//System.out.println("instruction is " + instruction[0] + " " + instruction[1] + " " + instruction[2] + " " + instruction[3]);
 		
 		ArrayList<Integer> list = new ArrayList<Integer>(instruction.length);
 		for (int j = 0; j < instruction.length; j++)

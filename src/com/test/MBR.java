@@ -18,9 +18,15 @@ public class MBR extends AbstrctProcessor {
 			return null;
 		}
 		int i = (Integer) data;
+		if (i == -1 || i == -2 || i == -3) {
+			return i;
+		}
+		
 		Integer content = memory.GetValueWithInt(i);
 		if (content != null) {
 			SetValue(content.intValue());
+		} else {
+			return new Integer(-3);
 		}
 		return content;
 	}

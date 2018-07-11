@@ -17,6 +17,10 @@ public class IR extends AbstrctProcessor {
 		}
 		
 		int i = (Integer) data;
+		if (i == -1 || i == -2 || i == -3) {
+			return i;
+		}
+		
 		SetValue(i);
 		String message = "Fetch instruction " + GetBinaryString() + " sucess\n";
 		this.subject.updateUserConsole(message);

@@ -13,10 +13,7 @@ public class PC extends AbstrctProcessor {
 	@Override
 	protected Object doProcess(Object data) {
 		this.subject.updatePhase("Fetching Instruction");
-		if (data == null) {
-			return null;
-		}
-		
+	
 		if (value == 12) { // Because boot program only in address 8 and 9. If the PC at 10, it means the boot program finished.
 			value = 8;
 			SetValue(8);
@@ -26,13 +23,12 @@ public class PC extends AbstrctProcessor {
 		Integer obj = new Integer(value);	
 		value++;
 		
-		System.out.println(value);
 		if (value >= 2048) {
-			// The first address of your program at octal address = octal 10 + length of boot program + octal 10.
+			// The first address of your program at octal address = octal 10 + length of boot program + octal 10 = 18.
 			value = 8 + 2 + 8;
 		}
+		
 		SetValue(value);
-		System.out.println(this.GetValueWithInt());
 		return obj;
 	}
 }

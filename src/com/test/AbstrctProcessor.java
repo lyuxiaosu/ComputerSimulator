@@ -23,7 +23,9 @@ public class AbstrctProcessor implements IProcessor {
 			if (i == -1 || i == -2 || i == -3) {
 				return i;
 			}
-		} 
+		} else if (result == null) {
+			return 0;
+		}
 
 		if (this.next != null) {
 			return this.next.Process(result);

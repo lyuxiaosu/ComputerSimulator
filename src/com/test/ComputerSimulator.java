@@ -599,7 +599,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 									// to load a new program and run it.
 					txtrConsole.append("Finish executing boot program, CPU is idle\n");
 				} else if (result == -2) {
-					txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
+					txtrConsole.append("Failed to execute instructions, something is wrong###\n");
 				} else if (result == -3) {
 					txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
 				}
@@ -734,21 +734,16 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 				isRunning = false;
 			} else if (result == -2) {
 				txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
-				isRunning = false;
 			} else if (result == -3) {
+				cpu.Execute();// to let CPU execute the machine fault instruction since there is invalid memory access error.
 				txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
-				try {
-					process.sleep(1000); // to slow down since there is no instructions
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				isRunning = false;
 			} else if (result == 0) {
 				isRunning = true;
 				txtrConsole.append("Sucessfully execuate instructions\n");
 			} else {
 				isRunning = true;
-				txtrConsole.append("No resturn code to define, abnormal\n");
+				txtrConsole.append("No resturn code to be defined, abnormal\n");
 			}
 		}
 	}

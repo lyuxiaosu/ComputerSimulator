@@ -34,7 +34,7 @@ public class Memory {
 		} 
 		
 		if (memory[index] == null) {
-			this.subject.updateUserConsole("Access an unallocated memory address:" + index +  " !!!!\n");
+			this.subject.updateUserConsole("Access an unallocated memory address:" + index +  " ###\n");
 			this.subject.updateMFR(4);
 			return null;
 		}
