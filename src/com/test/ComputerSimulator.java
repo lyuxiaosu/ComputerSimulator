@@ -598,10 +598,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 									// that it prompts the user to either run the currently loaded program again or
 									// to load a new program and run it.
 					txtrConsole.append("Finish executing boot program, CPU is idle\n");
+					this.updatePhase("CPU is idel");
 				} else if (result == -2) {
 					txtrConsole.append("Failed to execute instructions, something is wrong###\n");
 				} else if (result == -3) {
 					txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
+					this.updatePhase("CPU is idel");
 				}
 			} else if (isRunning) {
 				txtrConsole.append("The computer is in running, cannot execute instruction with single step\n");
@@ -731,12 +733,14 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 								// that it prompts the user to either run the currently loaded program again or
 								// to load a new program and run it.
 				txtrConsole.append("Finish executing boot program, CPU is idle\n");
+				this.updatePhase("CPU is idel");
 				isRunning = false;
 			} else if (result == -2) {
 				txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
 			} else if (result == -3) {
 				cpu.Execute();// to let CPU execute the machine fault instruction since there is invalid memory access error.
 				txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
+				this.updatePhase("CPU is idel");
 				isRunning = false;
 			} else if (result == 0) {
 				isRunning = true;
