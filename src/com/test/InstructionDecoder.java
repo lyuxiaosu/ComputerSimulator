@@ -26,4 +26,8 @@ public class InstructionDecoder extends AbstrctProcessor {
 		
 		return list;
 	}
+	
+	public void SetIndirectAddress(boolean indirectAddress) {
+		decoder.SetIndirectAddress(indirectAddress);
+	}
 }

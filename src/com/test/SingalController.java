@@ -27,26 +27,31 @@ public class SingalController extends AbstrctProcessor {
 				// load register from memory
 				int r = array.get(1).intValue();
 				int ix = array.get(2).intValue();
-				int address = array.get(3).intValue();
-				return HandleLDR(r, ix, address);			
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleLDR(r, ix, i, address);			
 			} else if (opcode == 2) { // STR
 				int r = array.get(1).intValue();
 				int ix = array.get(2).intValue();
-				int address = array.get(3).intValue();
-				return HandleSTR(r, ix, address);
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleSTR(r, ix, i, address);
 			} else if (opcode == 3) { // LDA
 				int r = array.get(1).intValue();
 				int ix = array.get(2).intValue();
-				int address = array.get(3).intValue();
-				return HandleLDA(r, ix, address);
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleLDA(r, ix, i, address);
 			} else if (opcode == 33) {// LDX	
 				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
 				int address = array.get(3).intValue();
-				return HandleLDX(ix, address);
+				return HandleLDX(ix, i, address);
 			} else if (opcode == 34) {// STX
 				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
 				int address = array.get(3).intValue();
-				return HandleSTX(ix, address);
+				return HandleSTX(ix, i, address);
 			} else if (opcode == 30) {// TRAP 
 				int trapcode = array.get(1);
 				return HandleTRAP(trapcode);
@@ -87,7 +92,7 @@ public class SingalController extends AbstrctProcessor {
 		return 0;
 	}
 	
-	private int HandleLDR(int r, int ix, int address) {
+	private int HandleLDR(int r, int ix, int i, int address) {
 		// Load Register From Memory, r = 0..3
 		// r <- c(EA)
 		// r <- c(c(EA)), if I bit set
@@ -105,17 +110,32 @@ public class SingalController extends AbstrctProcessor {
 		}
 		
 		int ix_content = cpu.GetIX(ix);
-		int addr = ix_content + address;
-				
-		Integer memory_content = memory.GetValueWithInt(addr);
-		if (memory_content == null) { 
-			this.subject.updateUserConsole("Failed to excute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
-			this.subject.updateMFR(4);
-			return -2;
+		int addr = 0;
+		
+		if (i == 1) {				
+			Integer memory_content = memory.GetValueWithInt(address + ix_content);
+			if (memory_content == null) {
+				this.subject.updateUserConsole(
+						"Failed to excute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
+				this.subject.updateMFR(4);
+				return -2;
+			}
+			addr = memory_content.intValue();
+			System.out.println("address is " + addr + " memory content is " + memory_content);
+		} else {
+			Integer memory_content = memory.GetValueWithInt(address);
+			if (memory_content == null) {
+				this.subject.updateUserConsole(
+						"Failed to excute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
+				this.subject.updateMFR(4);
+				return -2;
+			}
+
+			System.out.println("address is " + addr + " memory content is " + memory_content);
+			addr = memory_content.intValue() + ix_content;
 		}
 		
-		System.out.println("address is " + addr + " memory content is " + memory_content);
-		int result = cpu.SetGPR(r, memory_content.intValue());
+		int result = cpu.SetGPR(r, addr);
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 		} else {
@@ -125,7 +145,7 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
-	private int HandleSTR(int r, int ix, int address) {
+	private int HandleSTR(int r, int ix, int i, int address) {
 		// Store Register To Memory, r = 0..3
 		// Memory(EA) <- c(r)
 
@@ -140,17 +160,21 @@ public class SingalController extends AbstrctProcessor {
 		}
 		
 		int ix_content = cpu.GetIX(ix);			
-		int addr = ix_content + address;
-		if (addr <= 5) {
-			this.subject.updateUserConsole("Illegal Memory Address to Reserved Locations, Error !!!!\n");
-			cpu.SetMFR(0);
-			return -2;
-		}
+		int addr = 0;
 		
-		if (addr >= 2048) {
-			this.subject.updateUserConsole("Out of memory (0-2047) Error !!!!\n");
-			cpu.SetMFR(3);
-			return -2;
+		if (i == 1) {				
+			addr = ix_content + address;
+		} else {
+			Integer memory_content = memory.GetValueWithInt(address);
+			if (memory_content == null) {
+				this.subject.updateUserConsole(
+						"Failed to excute instruction: STR " + r + ", " + ix + ", " + address + "\n");
+				this.subject.updateMFR(4);
+				return -2;
+			}
+
+			System.out.println("address is " + addr + " memory content is " + memory_content);
+			addr = memory_content.intValue() + ix_content;
 		}
 		
 		int GPR_content = cpu.GetGPR(r);
@@ -164,7 +188,7 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
-	private int HandleLDA(int r, int ix, int address) {
+	private int HandleLDA(int r, int ix, int i, int address) {
 		// Load Register with Address, r = 0..3
 		// r <- EA
 
@@ -179,7 +203,31 @@ public class SingalController extends AbstrctProcessor {
 		}
 		
 		int ix_content = cpu.GetIX(ix);
-		int addr = ix_content + address;
+		int addr = 0;
+		if (i == 1) {				
+			Integer memory_content = memory.GetValueWithInt(address + ix_content);
+			if (memory_content == null) {
+				this.subject.updateUserConsole(
+						"Failed to excute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
+				this.subject.updateMFR(4);
+				return -2;
+			}
+
+			System.out.println("address is " + addr + " memory content is " + memory_content);
+			addr = memory_content.intValue();
+		} else {
+			Integer memory_content = memory.GetValueWithInt(address);
+			if (memory_content == null) {
+				this.subject.updateUserConsole(
+						"Failed to excute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
+				this.subject.updateMFR(4);
+				return -2;
+			}
+
+			System.out.println("address is " + addr + " memory content is " + memory_content);
+			addr = memory_content.intValue() + ix_content;
+		}
+		
 		int result = cpu.SetGPR(r, addr);
 		
 		if (result == 0) {
@@ -191,7 +239,7 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
-	private int HandleLDX(int ix, int address) {
+	private int HandleLDX(int ix, int i, int address) {
 		//Load Index Register from Memory, x = 1..3. 
 		//Xx <- c(EA)
 		
@@ -215,7 +263,7 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
-	private int HandleSTX(int ix, int address) {
+	private int HandleSTX(int ix, int i, int address) {
 		//Store Index Register to Memory. X = 1..3
 		//Memory(EA) <- c(Xx)
 		if (ix < 0 || ix >= 4) {

@@ -12,8 +12,10 @@ import java.util.*;
  */
 public class InstructionCodec {
 	private IUpdate subject;
+	private boolean indirectAddressing; 
 	public InstructionCodec(IUpdate subject) {
 		this.subject = subject;
+		this.indirectAddressing = false; //no indirect addressing
 	}
 	
 	public BitSet Encode(String instruction) {
@@ -125,6 +127,8 @@ public class InstructionCodec {
 		String dstr = sb.reverse().toString();
 		
 		int address = Integer.parseInt(dstr.substring(0, 5), 2);
+		int indirectAddressing = Integer.parseInt(dstr.substring(5, 6), 2);
+		System.out.println("!!!! indirectAddressing is " + indirectAddressing);
 		int ix = Integer.parseInt(dstr.substring(6, 8), 2);
 		int r = Integer.parseInt(dstr.substring(8, 10), 2);
 		int opcode = Integer.parseInt(dstr.substring(10), 2);
@@ -143,11 +147,12 @@ public class InstructionCodec {
 			return parameters;
 		}
 		
-		int[] parameters = new int[4];
+		int[] parameters = new int[5];
 		parameters[0] = opcode;
 		parameters[1] = r;
 		parameters[2] = ix;
-		parameters[3] = address;
+		parameters[3] = indirectAddressing;
+		parameters[4] = address;
 		return parameters;
 	}
 	
@@ -169,8 +174,11 @@ public class InstructionCodec {
 			}
 		}
 
-		// we always set it to 1, which means indirect addressing
-		//bitset.set(5);
+		// set indirect addressing
+		if (this.indirectAddressing) {
+			System.out.println("set indirect address is " + this.indirectAddressing);
+		}
+		bitset.set(5, this.indirectAddressing);
 		// set IX
 		String binary_ix = Integer.toBinaryString(ix);
 		StringBuilder sb_ix = new StringBuilder();
@@ -249,5 +257,13 @@ public class InstructionCodec {
 		}
 		
 		return bitset;
+	}
+	public void SetIndirectAddress(boolean indirectAddress) {
+		if (indirectAddress) {
+			System.out.println("indirect address is true");
+		} else {
+			System.out.println("indirect address is false");
+		}
+		this.indirectAddressing = indirectAddress;
 	}
 }

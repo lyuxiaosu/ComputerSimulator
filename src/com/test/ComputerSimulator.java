@@ -29,6 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.Box;
 import javax.swing.JTextField;
 import javax.swing.JInternalFrame;
+import javax.swing.JRadioButton;
+import java.awt.Component;
 
 public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 
@@ -70,6 +72,37 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 	private JTable jtRegister;
 	private JTable jtIndexRegister;
 	private JLabel lblPhase;
+	private JRadioButton rdbtnIndirect;
+	private JTextField tfLoadPC;
+	private JButton btnLoadToPC;
+	private JTextField tfR0;
+	private JTextField tfR1;
+	private JTextField tfR2;
+	private JTextField tfR3;
+	private JLabel lblloadPC;
+	private JButton btnR0Load;
+	private JButton btnR1Load;
+	private JButton btnR2Load;
+	private JButton btnR3Load;
+	private JLabel lblX1;
+	private JTextField tfX1;
+	private JButton btnX1Load;
+	private JLabel lblX2;
+	private JTextField tfX2;
+	private JButton btnX2Load;
+	private JLabel lblX3;
+	private JTextField tfX3;
+	private JButton btnX3Load;
+	private JLabel lblInstruction;
+	private JTextField tfInstruction;
+	private JTextField tfInstructionAddress;
+	private JLabel lblData;
+	private JTextField tfData;
+	private JLabel lblDataAddress;
+	private JButton btnDataLoad;
+	private JTextField tfDataAddress;
+	private JButton btnInstructionLoad;
+
 	/**
 	 * Launch the application.
 	 */
@@ -138,19 +171,19 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		jtMemory.setFont(new Font("宋体", Font.PLAIN, 18));
 		jtMemory.setBounds(900, 45, 72, 18);
 		spMemory = new JScrollPane(jtMemory);
-		spMemory.setSize(381, 874);
-		spMemory.setLocation(787, 66);
+		spMemory.setSize(381, 759);
+		spMemory.setLocation(787, 181);
 		frmComputerSimulator.getContentPane().add(spMemory);
 
 		lblMemory = new JLabel("Memory");
 		lblMemory.setFont(new Font("宋体", Font.BOLD, 20));
-		lblMemory.setBounds(935, 45, 72, 18);
+		lblMemory.setBounds(937, 150, 72, 18);
 		frmComputerSimulator.getContentPane().add(lblMemory);
 		// GPR
 		jtRegister = new JTable();
 		jtRegister.setFont(new Font("宋体", Font.PLAIN, 20));
 		spRegister = new JScrollPane(jtRegister);
-		spRegister.setBounds(14, 307, 242, 89);
+		spRegister.setBounds(14, 307, 238, 89);
 		frmComputerSimulator.getContentPane().add(spRegister);
 
 		lblGPR = new JLabel("GPR");
@@ -162,12 +195,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		jtIndexRegister = new JTable();
 		jtIndexRegister.setFont(new Font("宋体", Font.PLAIN, 20));
 		spIndexRegister = new JScrollPane(jtIndexRegister);
-		spIndexRegister.setBounds(14, 441, 242, 73);
+		spIndexRegister.setBounds(14, 464, 238, 73);
 		frmComputerSimulator.getContentPane().add(spIndexRegister);
 
 		lblIndexRegister = new JLabel("IX");
 		lblIndexRegister.setFont(new Font("宋体", Font.BOLD, 20));
-		lblIndexRegister.setBounds(14, 420, 72, 18);
+		lblIndexRegister.setBounds(14, 428, 72, 18);
 		frmComputerSimulator.getContentPane().add(lblIndexRegister);
 
 		// add button "Single Step"
@@ -206,11 +239,11 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		frmComputerSimulator.getContentPane().add(lblPC);
 
 		tfPC = new JTextField();
+		tfPC.setEditable(false);
 		tfPC.setFont(new Font("宋体", Font.PLAIN, 20));
-		tfPC.setBounds(67, 73, 185, 24);
+		tfPC.setBounds(67, 75, 185, 24);
 		frmComputerSimulator.getContentPane().add(tfPC);
 		tfPC.setColumns(10);
-		
 
 		// Instruction register
 		lblIR = new JLabel("IR");
@@ -285,13 +318,238 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		txtrConsole.setLineWrap(true);
 		txtrConsole.setFont(new Font("Monospaced", Font.PLAIN, 18));
 		spConsole.setViewportView(txtrConsole);
-		
+
+		// add Phase lable
 		lblPhase = new JLabel("Powered On");
 		lblPhase.setFont(new Font("宋体", Font.PLAIN, 20));
 		lblPhase.setForeground(Color.BLUE);
 		lblPhase.setBounds(145, 601, 218, 18);
 		frmComputerSimulator.getContentPane().add(lblPhase);
 
+		// add indirect address radio
+		rdbtnIndirect = new JRadioButton("Indirect addressing");
+		rdbtnIndirect.setFont(new Font("宋体", Font.BOLD, 20));
+		rdbtnIndirect.setBounds(45, 424, 242, 27);
+		frmComputerSimulator.getContentPane().add(rdbtnIndirect);
+		rdbtnIndirect.addActionListener(this);
+		cpu.SetIndirectAddress(rdbtnIndirect.isSelected());
+		memory.SetIndirectAddress(rdbtnIndirect.isSelected());
+
+		// add PC load textfiled
+		tfLoadPC = new JTextField();
+		tfLoadPC.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfLoadPC.setBounds(304, 73, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfLoadPC);
+		tfLoadPC.setColumns(10);
+
+		// add PC load button
+		btnLoadToPC = new JButton("PC Load");
+		btnLoadToPC.setFont(new Font("宋体", Font.BOLD, 20));
+		btnLoadToPC.setBounds(396, 72, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadToPC);
+
+		// add R0 label
+		JLabel lblR0 = new JLabel("R0");
+		lblR0.setFont(new Font("宋体", Font.BOLD, 20));
+		lblR0.setBounds(279, 300, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblR0);
+		// add R1 label
+		JLabel lblR1 = new JLabel("R1");
+		lblR1.setFont(new Font("宋体", Font.BOLD, 20));
+		lblR1.setBounds(279, 331, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblR1);
+		// add R2 label
+		JLabel lblR2 = new JLabel("R2");
+		lblR2.setFont(new Font("宋体", Font.BOLD, 20));
+		lblR2.setBounds(279, 362, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblR2);
+		// add R3 label
+		JLabel lblR3 = new JLabel("R3");
+		lblR3.setFont(new Font("宋体", Font.BOLD, 20));
+		lblR3.setBounds(279, 393, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblR3);
+
+		// add text field for load R0
+		tfR0 = new JTextField();
+		tfR0.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfR0.setBounds(304, 297, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfR0);
+		tfR0.setColumns(10);
+		// add text field for load R1
+		tfR1 = new JTextField();
+		tfR1.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfR1.setBounds(304, 330, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfR1);
+		tfR1.setColumns(10);
+		// add text field for load R2
+		tfR2 = new JTextField();
+		tfR2.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfR2.setBounds(304, 361, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfR2);
+		tfR2.setColumns(10);
+
+		// add text field for load R3
+		tfR3 = new JTextField();
+		tfR3.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfR3.setBounds(304, 393, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfR3);
+		tfR3.setColumns(10);
+
+		// add button for load PC
+		lblloadPC = new JLabel("PC");
+		lblloadPC.setFont(new Font("宋体", Font.BOLD, 20));
+		lblloadPC.setBounds(279, 76, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblloadPC);
+		btnLoadToPC.addActionListener(this);
+
+		// add button for load R0
+		btnR0Load = new JButton("R0 Load");
+		btnR0Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnR0Load.setBounds(396, 295, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnR0Load);
+		btnR0Load.addActionListener(this);
+		// add button for load R1
+		btnR1Load = new JButton("R1 Load");
+		btnR1Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnR1Load.setBounds(396, 329, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnR1Load);
+		btnR1Load.addActionListener(this);
+		// add button for load R2
+		btnR2Load = new JButton("R2 Load");
+		btnR2Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnR2Load.setBounds(396, 360, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnR2Load);
+		btnR2Load.addActionListener(this);
+		// add button for load R3
+		btnR3Load = new JButton("R3 Load");
+		btnR3Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnR3Load.setBounds(396, 391, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnR3Load);
+		btnR3Load.addActionListener(this);
+
+		// add label for X1
+		lblX1 = new JLabel("X1");
+		lblX1.setFont(new Font("宋体", Font.BOLD, 20));
+		lblX1.setBounds(279, 463, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblX1);
+		// add label for X2
+		lblX2 = new JLabel("X2");
+		lblX2.setFont(new Font("宋体", Font.BOLD, 20));
+		lblX2.setBounds(279, 492, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblX2);
+		// add label for X3
+		lblX3 = new JLabel("X3");
+		lblX3.setFont(new Font("宋体", Font.BOLD, 20));
+		lblX3.setBounds(279, 519, 23, 18);
+		frmComputerSimulator.getContentPane().add(lblX3);
+
+		// add text field for X1
+		tfX1 = new JTextField();
+		tfX1.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfX1.setBounds(304, 462, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfX1);
+		tfX1.setColumns(10);
+		
+		// add text field for X2
+		tfX2 = new JTextField();
+		tfX2.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfX2.setBounds(304, 491, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfX2);
+		tfX2.setColumns(10);
+
+		// add text filed for X3
+		tfX3 = new JTextField();
+		tfX3.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfX3.setBounds(304, 518, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfX3);
+		tfX3.setColumns(10);
+		
+		// add button for X1 load
+		btnX1Load = new JButton("X1 Load");
+		btnX1Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnX1Load.setBounds(396, 460, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnX1Load);
+		btnX1Load.addActionListener(this);
+		
+		// add button for X2 load
+		btnX2Load = new JButton("X2 Load");
+		btnX2Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnX2Load.setBounds(396, 490, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnX2Load);
+		btnX2Load.addActionListener(this);
+		
+		// add button for X3 load
+		btnX3Load = new JButton("X3 Load");
+		btnX3Load.setFont(new Font("宋体", Font.BOLD, 20));
+		btnX3Load.setBounds(396, 517, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnX3Load);
+		btnX3Load.addActionListener(this);
+		
+		// add label for adding instruction
+		lblInstruction = new JLabel("Instruction");
+		lblInstruction.setFont(new Font("宋体", Font.BOLD, 20));
+		lblInstruction.setBounds(531, 45, 126, 18);
+		frmComputerSimulator.getContentPane().add(lblInstruction);
+		
+		// add text field for instruction
+		tfInstruction = new JTextField();
+		tfInstruction.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfInstruction.setBounds(657, 42, 255, 24);
+		frmComputerSimulator.getContentPane().add(tfInstruction);
+		tfInstruction.setColumns(10);
+		
+		// add label for instruction's address
+		JLabel lblInstructionAddress = new JLabel("Address");
+		lblInstructionAddress.setFont(new Font("宋体", Font.BOLD, 20));
+		lblInstructionAddress.setBounds(913, 45, 79, 18);
+		frmComputerSimulator.getContentPane().add(lblInstructionAddress);
+		
+		//add text field for instruction's address 
+		tfInstructionAddress = new JTextField();
+		tfInstructionAddress.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfInstructionAddress.setBounds(993, 42, 86, 24);
+		frmComputerSimulator.getContentPane().add(tfInstructionAddress);
+		tfInstructionAddress.setColumns(10);
+		
+		// add button for loading instruction
+		btnInstructionLoad = new JButton("Load");
+		btnInstructionLoad.setFont(new Font("宋体", Font.BOLD, 20));	
+		btnInstructionLoad.setBounds(1082, 41, 86, 27);
+		frmComputerSimulator.getContentPane().add(btnInstructionLoad);
+		btnInstructionLoad.addActionListener(this);
+		
+		// add label for adding data
+		lblData = new JLabel("Data");
+		lblData.setFont(new Font("宋体", Font.BOLD, 20));
+		lblData.setBounds(531, 96, 72, 18);
+		frmComputerSimulator.getContentPane().add(lblData);
+		
+		// add text field for data
+		tfData = new JTextField();
+		tfData.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfData.setBounds(657, 95, 255, 24);
+		frmComputerSimulator.getContentPane().add(tfData);
+		tfData.setColumns(10);
+		
+		// add label for data's address
+		lblDataAddress = new JLabel("Address");
+		lblDataAddress.setFont(new Font("宋体", Font.BOLD, 20));
+		lblDataAddress.setBounds(913, 98, 79, 18);
+		frmComputerSimulator.getContentPane().add(lblDataAddress);
+		
+		// add button for loading data
+		btnDataLoad = new JButton("Load");
+		btnDataLoad.setFont(new Font("宋体", Font.BOLD, 20));
+		btnDataLoad.setBounds(1082, 94, 86, 27);
+		frmComputerSimulator.getContentPane().add(btnDataLoad);
+		btnDataLoad.addActionListener(this);
+		
+		//add text field for data's address
+		tfDataAddress = new JTextField();
+		tfDataAddress.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfDataAddress.setBounds(993, 95, 86, 24);
+		frmComputerSimulator.getContentPane().add(tfDataAddress);
+		tfDataAddress.setColumns(10);		
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -319,7 +577,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 				Display();
 			} else {
 				txtrConsole.append("Failed to load the boostrap program to memory.Shutdown!!!\n");
-				updatePhase("Failed to load bootstrap");  
+				updatePhase("Failed to load bootstrap");
 				status = false;
 				cpu.updateStatus(status);
 				cpu.ShutDown();
@@ -346,6 +604,107 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		} else if (e.getSource() == btnHalt) {
 			if (isRunning || status) {
 				StopMachine();
+			}
+		} else if (e.getSource() == rdbtnIndirect) {
+			this.updateUserConsole("Indirect Addressing\n");
+			this.cpu.SetIndirectAddress(rdbtnIndirect.isSelected());
+			this.memory.SetIndirectAddress(rdbtnIndirect.isSelected());
+		} else if (e.getSource() == btnLoadToPC) {
+			String pc_ori = cpu.GetPC();
+			try {
+				int pc_update = Integer.parseInt(tfLoadPC.getText());
+				txtrConsole.append("update PC from " + pc_ori + " to " + pc_update + "\n");
+				cpu.SetPC(pc_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfLoadPC.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnR0Load) {
+			int r0_ori = cpu.GetGPR(0);
+			try {
+				int r0_update = Integer.parseInt(tfR0.getText());
+				txtrConsole.append("update R0 from " + r0_ori + " to " + r0_update + "\n");
+				this.cpu.SetGPR(0, r0_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfR0.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnR1Load) {
+			int r1_ori = cpu.GetGPR(1);
+			try {
+				int r1_update = Integer.parseInt(tfR1.getText());
+				txtrConsole.append("update R1 from " + r1_ori + " to " + r1_update + "\n");
+				this.cpu.SetGPR(1, r1_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfR1.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnR2Load) {
+			int r2_ori = cpu.GetGPR(2);
+			try {
+				int r2_update = Integer.parseInt(tfR2.getText());
+				txtrConsole.append("update R2 from " + r2_ori + " to " + r2_update + "\n");
+				this.cpu.SetGPR(2, r2_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfR2.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnR3Load) {
+			int r3_ori = cpu.GetGPR(3);
+			try {
+				int r3_update = Integer.parseInt(tfR3.getText());
+				txtrConsole.append("update R2 from " + r3_ori + " to " + r3_update + "\n");
+				this.cpu.SetGPR(3, r3_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfR3.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnX1Load) {
+			int x1_ori = cpu.GetIX(1);
+			try {
+				int x1_update = Integer.parseInt(tfX1.getText());
+				txtrConsole.append("update X1 from " + x1_ori + " to " + x1_update + "\n");
+				this.cpu.SetIX(1, x1_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfX1.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnX2Load) {
+			int x2_ori = cpu.GetIX(2);
+			try {
+				int x2_update = Integer.parseInt(tfX2.getText());		
+				txtrConsole.append("update X2 from " + x2_ori + " to " + x2_update + "\n");
+				this.cpu.SetIX(2, x2_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfX2.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnX3Load) {
+			int x3_ori = cpu.GetIX(3);
+			try {
+				int x3_update = Integer.parseInt(tfX3.getText());
+				txtrConsole.append("update X3 from " + x3_ori + " to " + x3_update + "\n");
+				this.cpu.SetIX(3, x3_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfX3.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnInstructionLoad) {
+			try {
+				int address = Integer.parseInt(tfInstructionAddress.getText());		
+				boolean result = memory.LoadContent(address, tfInstruction.getText());
+				if (result == true) {
+					txtrConsole.append("Loading instruction " + tfInstruction.getText() + " to Memory " + address + " sucess\n");
+				}
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input address " + tfInstructionAddress.getText()+ "\n");
+			}
+		} else if (e.getSource() == btnDataLoad) {
+			try {
+				int address = Integer.parseInt(tfDataAddress.getText());
+				try {
+					int data = Integer.parseInt(tfData.getText());
+					boolean result = memory.LoadData(address, data);
+					if (result == true) {
+						txtrConsole.append("Loading data " + tfData.getText() + " to Memory " + address + " sucess\n");
+					} 
+				} catch (NumberFormatException exception) {
+					txtrConsole.append("invalid input data " + tfData.getText()+ "\n");
+				}
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input address " + tfDataAddress.getText()+ "\n");
 			}
 		}
 	}
@@ -420,7 +779,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 				if (memoryTableModel != null) {
 					memoryTableModel.setDataVector(memory.GetContent(), memoryColumn);
 				}
-			}		
+			}
 		} else if (obj instanceof PC) {
 			if (tfPC != null) {
 				tfPC.setText(cpu.GetPC());
@@ -470,11 +829,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 	public void updateMFR(int value) {
 		cpu.SetMFR(value);
 	}
-	
+
 	@Override
 	public void updatePhase(String message) {
 		lblPhase.setText(message);
 	}
+
 	void Display() {
 		// Display memory content
 		String memoryColumn[] = { "Address", "Value" };

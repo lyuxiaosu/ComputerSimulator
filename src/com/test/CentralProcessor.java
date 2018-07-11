@@ -1,5 +1,7 @@
 package com.test;
 
+import java.util.BitSet;
+
 public class CentralProcessor {
 	private Memory memory;
 	private PC pc;
@@ -224,4 +226,8 @@ public class CentralProcessor {
 	public String GetMSR() {
 		return msr.GetBinaryString();
 	}
+	public void SetIndirectAddress(boolean indirectAddress) {
+		this.instruction_decoder.SetIndirectAddress(indirectAddress);
+	}
+	
 }

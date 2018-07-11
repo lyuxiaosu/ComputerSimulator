@@ -34,7 +34,7 @@ public class Memory {
 		} 
 		
 		if (memory[index] == null) {
-			this.subject.updateUserConsole("Access an unallocated memory address !!!!\n");
+			this.subject.updateUserConsole("Access an unallocated memory address:" + index +  " !!!!\n");
 			this.subject.updateMFR(4);
 			return null;
 		}
@@ -53,11 +53,6 @@ public class Memory {
 			this.subject.updateUserConsole("Illegal Memory Address to Reserved Locations, Error !!!!\n");
 			this.subject.updateMFR(0);
 			return -2;
-		}
-		
-		if (memory[index] == null) {
-			BitSet bt = new BitSet(16);
-			memory[index] = bt; 
 		}
 		
 		memory[index] = content;
@@ -107,7 +102,7 @@ public class Memory {
 		}
 		
 		if (memory[index] == null) {
-			this.subject.updateUserConsole("Access an unallocated memory address !!!!\n");
+			this.subject.updateUserConsole("Access an unallocated memory address:" + index + " !!!!\n");
 			this.subject.updateMFR(4);
 			return null;
 		}
@@ -160,11 +155,6 @@ public class Memory {
 			return false;
 		}
 		
-		if (memory[index] == null) {
-			BitSet bt = new BitSet(16);
-			memory[index] = bt; 
-		}
-		
 		memory[index] = instruction;
 		updateContent();
 		this.subject.updateData(this);
@@ -188,19 +178,24 @@ public class Memory {
 		BitSet instruction = codec.Encode(Content);
 		if (instruction == null) {
 			this.subject.updateMFR(7);
-			this.subject.updateUserConsole("Encoding instruction error!!!\n");
+			this.subject.updateUserConsole("Encoding instruction error. Invalid instruction!!!\n");
 			return false;
 		}
-		
-		if (memory[index] == null) {
-			BitSet bt = new BitSet(16);
-			memory[index] = bt; 
-		}
-		
+				
 		memory[index] = instruction;
 		updateContent();
 		this.subject.updateData(this);
 		return true;
+	}
+	
+	public boolean LoadData(int index, int data) {
+		this.subject.updatePhase("Loading");
+		int result = this.Set(index, data);
+		if (result == 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public String[][] GetContent() {
@@ -231,5 +226,9 @@ public class Memory {
             s.append( bs.get( i ) == true ? 1: 0 );
         }
         return s.toString();
+	}
+	
+	public void SetIndirectAddress(boolean indirectAddress) {
+		this.codec.SetIndirectAddress(indirectAddress);
 	}
 }
