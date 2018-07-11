@@ -102,6 +102,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 	private JButton btnDataLoad;
 	private JTextField tfDataAddress;
 	private JButton btnInstructionLoad;
+	private JButton btnCleanConsole;
 
 	/**
 	 * Launch the application.
@@ -550,6 +551,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		tfDataAddress.setBounds(993, 95, 86, 24);
 		frmComputerSimulator.getContentPane().add(tfDataAddress);
 		tfDataAddress.setColumns(10);		
+		
+		btnCleanConsole = new JButton("Clear");
+		btnCleanConsole.setFont(new Font("ËÎÌו", Font.BOLD, 20));
+		btnCleanConsole.setBounds(498, 599, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnCleanConsole);
+		btnCleanConsole.addActionListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -706,6 +713,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input address " + tfDataAddress.getText()+ "\n");
 			}
+		} else if (e.getSource() == btnCleanConsole) {
+			txtrConsole.setText("");;
 		}
 	}
 
