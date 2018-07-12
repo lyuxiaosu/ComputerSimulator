@@ -28,7 +28,7 @@ public class Memory {
 
 	public BitSet Get(int index) {
 		if (index >= 2048) {
-			this.subject.updateUserConsole("Out of memory, Error !!!!\n");
+			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			this.subject.updateMFR(3);;
 			return null;
 		} 
@@ -44,7 +44,7 @@ public class Memory {
 
 	public int Set(int index, BitSet content) {
 		if (index >= 2048) {
-			this.subject.updateUserConsole("Out of memory, Error !!!!\n");
+			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			this.subject.updateMFR(3);
 			return -2;
 		}
@@ -65,7 +65,7 @@ public class Memory {
 	public int Set(int index, long value) {
 		if (index >= 2048) {
 			this.subject.updateMFR(3);
-			this.subject.updateUserConsole("Out of memory, Error !!!!\n");
+			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			return -2;
 		}
 		
@@ -97,7 +97,7 @@ public class Memory {
 	public Integer GetValueWithInt(int index) {
 		if (index >= 2048) {
 			this.subject.updateMFR(3);
-			this.subject.updateUserConsole("Out of memory, Error !!!!\n");
+			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			return null;
 		}
 		
@@ -165,7 +165,7 @@ public class Memory {
 		this.subject.updatePhase("Loading");
 		if (index >= 2048) {
 			this.subject.updateMFR(3);
-			this.subject.updateUserConsole("Out of memory, Error !!!!\n");
+			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			return false;
 		}
 		

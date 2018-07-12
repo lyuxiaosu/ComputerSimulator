@@ -71,7 +71,7 @@ public class SingalController extends AbstrctProcessor {
 	}
 	
 	private int HandleTRAP(int trapcode) {
-		this.subject.updateUserConsole("Excute trap instruction sucess, trap code:" + trapcode);
+		this.subject.updateUserConsole("Excute trap instruction: " + "TRAP" + trapcode +  " sucess\n");
 		//Get memory content from 2
 		Integer instruction_address = memory.GetValueWithInt(2);
 		if (instruction_address == null) { 
@@ -82,7 +82,7 @@ public class SingalController extends AbstrctProcessor {
 	}
 	
 	private int HandleMFT(int faultCode) {
-		this.subject.updateUserConsole("Excute machine fault instruction sucess, fault code:" + faultCode + "\n");
+		this.subject.updateUserConsole("Excute machine fault instruction: " + "MFT " + faultCode + " sucess\n");
 		//Get memory content from 4
 		Integer instruction_address = memory.GetValueWithInt(4);
 		if (instruction_address == null) { 
@@ -101,44 +101,48 @@ public class SingalController extends AbstrctProcessor {
 		// Load Register From Memory, r = 0..3
 		// r <- c(EA)
 		// r <- c(c(EA)), if I bit set
-		
-		if (r < 0 || r >= 4) {
-			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + r + ". The range of GPR is 0-3\n");
-			this.subject.updateMFR(6);
+				
+		int ea = this.CalculateEA(ix, i, address);
+		if (ea == -2) {
+			this.subject.updateUserConsole(
+					"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 			return -2;
 		}
 		
-		Integer ix_content = cpu.GetIX(ix);
-		if (ix_content == null) {
-			return -2;
-		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		int addr = 0;
-		
-		if (i == 1) {				
-			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue());
+		int value = 0;
+		if (i == 0) {				
+			Integer memory_content = memory.GetValueWithInt(ea);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
-			addr = memory_content.intValue();
-			System.out.println("address is " + addr + " memory content is " + memory_content);
+			value = memory_content.intValue();
+			System.out.println("address is " + ea + " memory content is " + value);
 		} else {
-			Integer memory_content = memory.GetValueWithInt(address);
+			Integer memory_content = memory.GetValueWithInt(ea);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 				this.subject.updateMFR(4);
 				return -2;
 			}
-
-			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue() + ix_content.intValue();
+			
+			memory_content = memory.GetValueWithInt(memory_content.intValue());
+			if (memory_content == null) {
+				this.subject.updateUserConsole(
+						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
+				this.subject.updateMFR(4);
+				return -2;
+			}		
+			value = memory_content.intValue();			
+			
 		}
 		
-		int result = cpu.SetGPR(r, addr);
+		int result = cpu.SetGPR(r, value);
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 		} else {
@@ -152,35 +156,20 @@ public class SingalController extends AbstrctProcessor {
 		// Store Register To Memory, r = 0..3
 		// Memory(EA) <- c(r)	
 		
-		Integer ix_content = cpu.GetIX(ix);		
-		if (ix_content == null) {
+		int ea = this.CalculateEA(ix, i, address);
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: STR " + r + ", " + ix + ", " + address + "\n");
 			return -2;
 		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		int addr = 0;
-		
-		if (i == 1) {				
-			addr = ix_content.intValue() + address;
-		} else {
-			Integer memory_content = memory.GetValueWithInt(address);
-			if (memory_content == null) {
-				this.subject.updateUserConsole(
-						"Failed to execute instruction: STR " + r + ", " + ix + ", " + address + "\n");
-				this.subject.updateMFR(4);
-				return -2;
-			}
-
-			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue() + ix_content.intValue();
-		}
-		
-		Integer GPR_content = cpu.GetGPR(r);
-		
+		Integer GPR_content = cpu.GetGPR(r);		
 		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: STR " + r + ", " + ix + ", " + address + "\n");
 			return -2;
 		}
 		
-		int result = memory.Set(addr, GPR_content);
+		int result = memory.Set(ea, GPR_content);
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STR " + r + ", " + ix + ", " + address + "\n");
 		} else {
@@ -193,38 +182,15 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleLDA(int r, int ix, int i, int address) {
 		// Load Register with Address, r = 0..3
 		// r <- EA
-				
-		Integer ix_content = cpu.GetIX(ix);
-		if (ix_content == null) {
+		
+		int ea = this.CalculateEA(ix, i, address);	
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
 			return -2;
-		}
+		}			
+		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		int addr = 0;
-		if (i == 1) {				
-			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue());
-			if (memory_content == null) {
-				this.subject.updateUserConsole(
-						"Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
-				this.subject.updateMFR(4);
-				return -2;
-			}
-
-			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue();
-		} else {
-			Integer memory_content = memory.GetValueWithInt(address);
-			if (memory_content == null) {
-				this.subject.updateUserConsole(
-						"Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
-				this.subject.updateMFR(4);
-				return -2;
-			}
-
-			System.out.println("address is " + addr + " memory content is " + memory_content);
-			addr = memory_content.intValue() + ix_content.intValue();
-		}
-		
-		int result = cpu.SetGPR(r, addr);
+		int result = cpu.SetGPR(r, ea);
 		
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDA " + r + ", " + ix + ", " + address + "\n");
@@ -238,12 +204,22 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleLDX(int ix, int i, int address) {
 		//Load Index Register from Memory, x = 1..3. 
 		//Xx <- c(EA)
-						
-		Integer memory_content = memory.GetValueWithInt(address);
-		if (memory_content == null) { 
+		
+		int ea = this.CalculateEA(0, i, address);
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: LDA " + ix + ", " + address + "\n");
 			return -2;
 		}
-	
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		
+		Integer memory_content = memory.GetValueWithInt(ea);		
+		if (memory_content == null) {
+			this.subject.updateUserConsole(
+					"Failed to execute instruction: LDX " + ix + ", " + address + "\n");
+			this.subject.updateMFR(4);
+			return -2;
+		}	
+		
 		int result = cpu.SetIX(ix, memory_content.intValue());
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDX " + ix + ", " + address + "\n");
@@ -258,12 +234,20 @@ public class SingalController extends AbstrctProcessor {
 		//Store Index Register to Memory. X = 1..3
 		//Memory(EA) <- c(Xx)
 		
-		Integer ix_content = cpu.GetIX(ix);
-		if (ix_content == null) {
+		int ea = this.CalculateEA(0, i, address);
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: STX " + ix + ", " + address + "\n");
 			return -2;
 		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		int result = memory.Set(address, ix_content.intValue());
+		Integer ix_content = cpu.GetIX(ix);
+		if (ix_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: STX " + ix + ", " + address + "\n");
+			return -2;
+		}
+
+		int result = memory.Set(ea, ix_content.intValue());
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STX " + ix + ", " + address + "\n");
 		} else {
@@ -273,4 +257,21 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
+	private int CalculateEA(int ix, int i, int address) {
+		Integer ix_content = cpu.GetIX(ix);
+		if (ix_content == null) {
+			return -2;
+		}
+				
+		if (i == 0) { // no indirect addressing
+			return (address + ix_content.intValue());
+		} else { // indirect address
+			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue());
+			if (memory_content == null) {
+				return -2;
+			} 
+			return memory_content.intValue();
+		}
+	}	
+
 }
