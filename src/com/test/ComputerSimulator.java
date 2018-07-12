@@ -137,7 +137,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		process = null;
 		memory = new Memory(this);
 		cpu = new CentralProcessor(this, this, memory);
-		loader = new RomLoader(cpu, memory);
+		loader = new RomLoader(this, cpu, memory);
 
 		frmComputerSimulator = new JFrame();
 		frmComputerSimulator.setTitle("Computer Simulator");
@@ -324,7 +324,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		lblPhase = new JLabel("Powered On");
 		lblPhase.setFont(new Font("ËÎÌו", Font.PLAIN, 20));
 		lblPhase.setForeground(Color.BLUE);
-		lblPhase.setBounds(145, 601, 218, 18);
+		lblPhase.setBounds(145, 601, 314, 18);
 		frmComputerSimulator.getContentPane().add(lblPhase);
 
 		// add indirect address radio
@@ -587,7 +587,6 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				updatePhase("Failed to load bootstrap");
 				status = false;
 				cpu.updateStatus(status);
-				cpu.ShutDown();
 			}
 		} else if (e.getSource() == btnSingleStep) {
 			if (status == true && !isRunning) {
