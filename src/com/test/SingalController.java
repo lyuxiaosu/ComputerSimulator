@@ -63,7 +63,8 @@ public class SingalController extends AbstrctProcessor {
 			} else if (opcode == 0) {
 				return HandleHLT();
 			} else {
-				this.subject.updateUserConsole("Unkown instruction. Opcode:" + opcode + "\n");
+				this.subject.updateUserConsole("Illegal Operation Code:" + opcode + "\n");
+				this.subject.updateMFR(2);
 				return new Integer(-2);
 			}
 		} else {

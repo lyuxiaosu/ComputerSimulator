@@ -147,7 +147,7 @@ public class InstructionCodec {
 			int opcode = 63;
 			BitSet bitset = GetBitSet(opcode, fault_code);
 			return bitset;
-		}
+		} 
 		
 		return null;
 	}
