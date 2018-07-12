@@ -3,17 +3,14 @@ package com.test;
 import java.util.*;
 public class RomLoader {
 	
-	private static final String[] rom_program = new String[] {
-			"LDR 3, 1, 8", //Load register 3 with the contents of the memory location 10, NO indexing
-			"STR 2, 0, 19" //Store register 2 to memory location 9, NO indexing
+	private static final String[] rom_program = new String[] {			
+			"LDR 2, 1, 1", //Load register 2 with the contents of the memory location 8, with index register 1
+			"STR 2, 0, 19", //Store register 2 to memory location 19, NO indexing	
+			"LDX 3, 19", // Load index register 1 from the content of memory location 8
+			"LDA 2, 1, 17", //Load register 2 with memory address 17, with index register 1
+			"STX 1, 25", // store index register 1 to address 25, with index register 1
 	};
 	
-	/*private static final String[] rom_program = new String[] {
-			"LDA 2, 3, 17", //Load register 3 with the contents of the memory location 10, NO indexing
-			"LDX 1, 8", //Store register 2 to memory location 9, NO indexing
-			"STX 1, 25",
-			"TRAP 15"
-	};*/
 	private CentralProcessor cpu;
 	private Memory memory;
 	public RomLoader(CentralProcessor cpu, Memory memory) {

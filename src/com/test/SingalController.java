@@ -5,10 +5,12 @@ import java.util.ArrayList;
 public class SingalController extends AbstrctProcessor {
 	private Memory memory;
 	private CentralProcessor cpu;
-	public SingalController (CentralProcessor cpu, Memory memory, IUpdate subject) {
+	private IStop simulator;
+	public SingalController (CentralProcessor cpu, Memory memory, IUpdate subject, IStop simulator) {
 		this.cpu = cpu;
 		this.memory = memory;
 		this.subject = subject;
+		this.simulator = simulator;
 	}
 	
 	@Override
@@ -45,12 +47,12 @@ public class SingalController extends AbstrctProcessor {
 			} else if (opcode == 33) {// LDX	
 				int ix = array.get(2).intValue();
 				int i = array.get(3).intValue();
-				int address = array.get(3).intValue();
+				int address = array.get(4).intValue();
 				return HandleLDX(ix, i, address);
 			} else if (opcode == 34) {// STX
 				int ix = array.get(2).intValue();
 				int i = array.get(3).intValue();
-				int address = array.get(3).intValue();
+				int address = array.get(4).intValue();
 				return HandleSTX(ix, i, address);
 			} else if (opcode == 30) {// TRAP 
 				int trapcode = array.get(1);
@@ -71,7 +73,7 @@ public class SingalController extends AbstrctProcessor {
 	}
 	
 	private int HandleTRAP(int trapcode) {
-		this.subject.updateUserConsole("Excute trap instruction: " + "TRAP" + trapcode +  " sucess\n");
+		this.subject.updateUserConsole("Excute trap instruction: " + "TRAP " + trapcode +  " sucess\n");
 		//Get memory content from 2
 		Integer instruction_address = memory.GetValueWithInt(2);
 		if (instruction_address == null) { 
@@ -95,6 +97,7 @@ public class SingalController extends AbstrctProcessor {
 	}
 	private int HandleHLT() {
 		//
+		this.simulator.stop();
 		return 0;
 	}
 	private int HandleLDR(int r, int ix, int i, int address) {

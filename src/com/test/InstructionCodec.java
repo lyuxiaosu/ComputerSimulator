@@ -28,8 +28,7 @@ public class InstructionCodec {
 				System.out.println("invalid instruction " + part1);
 				return null;
 			} else {
-				//TODO process HLT instruction
-				return null;
+				return this.GetBitSet(0);
 			}
 		}
 		
@@ -301,6 +300,25 @@ public class InstructionCodec {
 		
 		return bitset;
 	}
+	public BitSet GetBitSet(int opcode) {
+		BitSet bitset = new BitSet(16);
+		String binary_opcode = Integer.toBinaryString(opcode);
+		StringBuilder sb_opcode = new StringBuilder();
+		// if binary string is less than 6 bit, padding 0 
+		while (sb_opcode.length() + binary_opcode.length() < 6) {
+			sb_opcode.append('0');
+		}
+		sb_opcode.append(binary_opcode);
+		binary_opcode = sb_opcode.toString();
+		for (int i = 0; i < binary_opcode.length(); i++) {
+			if (binary_opcode.charAt(i) == '1') {
+				bitset.set(i + 10);
+			}
+		}
+		
+		return bitset;
+	}
+	
 	public void SetIndirectAddress(boolean indirectAddress) {
 		if (indirectAddress) {
 			System.out.println("indirect address is true");

@@ -18,10 +18,12 @@ public class CentralProcessor {
 	private String[][] GPRContent; // pairs of general purpose register and its value
 	private String[][] IXContent; // pairs of index register and its value
 	private IUpdate subject;
+	private IStop simulator;
 
-	public CentralProcessor(IUpdate subject, Memory memory) {
+	public CentralProcessor(IUpdate subject, IStop simulator, Memory memory) {
 		this.subject = subject;
 		this.memory = memory;
+		this.simulator = simulator;
 		init();
 	}
 
@@ -37,7 +39,7 @@ public class CentralProcessor {
 		x2 = new IndexRegister(subject);
 		x3 = new IndexRegister(subject);
 		instruction_decoder = new InstructionDecoder(subject);
-		signal_controller = new SingalController(this, memory, subject);
+		signal_controller = new SingalController(this, memory, subject, simulator);
 		r0 = new GPR(subject);
 		r1 = new GPR(subject);
 		r2 = new GPR(subject);

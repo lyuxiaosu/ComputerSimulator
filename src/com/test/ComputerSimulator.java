@@ -32,7 +32,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JRadioButton;
 import java.awt.Component;
 
-public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
+public class ComputerSimulator implements Runnable, ActionListener, IUpdate, IStop {
 
 	private JFrame frmComputerSimulator;
 	private JButton btnIPL;
@@ -136,7 +136,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		isRunning = false;
 		process = null;
 		memory = new Memory(this);
-		cpu = new CentralProcessor(this, memory);
+		cpu = new CentralProcessor(this, this, memory);
 		loader = new RomLoader(cpu, memory);
 
 		frmComputerSimulator = new JFrame();
@@ -910,5 +910,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 
 		// Display MSR
 		tfMSR.setText(cpu.GetMSR());
+	}
+	public void stop() {
+		StopMachine();
 	}
 }

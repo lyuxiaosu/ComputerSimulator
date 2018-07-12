@@ -14,7 +14,7 @@ public class PC extends AbstrctProcessor {
 	protected Object doProcess(Object data) {
 		this.subject.updatePhase("Fetching Instruction");
 	
-		if (value == 12) { // Because boot program only in address 8 and 9. If the PC at 10, it means the boot program finished.
+		if (value == 13) { // Because boot program only in address 8 and 9. If the PC at 10, it means the boot program finished.
 			value = 8;
 			SetValue(8);
 			return new Integer(-1);
@@ -25,7 +25,7 @@ public class PC extends AbstrctProcessor {
 		
 		if (value >= 2048) {
 			// The first address of your program at octal address = octal 10 + length of boot program + octal 10 = 18.
-			value = 8 + 2 + 8;
+			value = 8 + 13 + 8;
 		}
 		
 		SetValue(value);
