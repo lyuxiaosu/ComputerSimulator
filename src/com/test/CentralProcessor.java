@@ -234,4 +234,19 @@ public class CentralProcessor {
 		this.instruction_decoder.SetIndirectAddress(indirectAddress);
 	}
 	
+	public void SetMSR(int status) {
+		msr.SetValue(status);		
+	}
+	
+	public void SetMAR(int value) {
+		mar.SetValue(0);
+	}
+	
+	public void SetMBR(int value) {
+		mbr.SetValue(0);
+	}
+	
+	public void SetIR(int value) {
+		ir.SetValue(0);
+	}
 }

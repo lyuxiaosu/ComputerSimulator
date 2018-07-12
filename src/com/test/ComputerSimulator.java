@@ -761,22 +761,51 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 	}
 
 	void StopMachine() {
-		txtrConsole.append("Computer is shutdowning\n");
 		isRunning = false;
-		status = false;
-		ResetMemory();
+		status = false;		
 		ResetRegisters();
-		txtrConsole.append("Computer shutdowned\n");
+		ResetTextFields();
+		ResetMemory();
+		this.updatePhase("Powered off");
+		txtrConsole.setText("Computer is powered off\n");
 	}
 
 	void ResetMemory() {
-
+		this.memory.Reset();
 	}
 
 	void ResetRegisters() {
-
+		cpu.SetGPR(0, 0);
+		cpu.SetGPR(1, 0);
+		cpu.SetGPR(2, 0);
+		cpu.SetGPR(3, 0);
+		cpu.SetIX(1, 0);
+		cpu.SetIX(2, 0);
+		cpu.SetIX(3, 0);
+		cpu.SetMFR(0);
+		cpu.SetPC(0);
+		cpu.SetMSR(0);
+		cpu.SetMBR(0);
+		cpu.SetMAR(0);
+		cpu.SetIR(0);
 	}
 
+	void ResetTextFields() {
+		tfR0.setText("");
+		tfR1.setText("");
+		tfR2.setText("");
+		tfR3.setText("");
+
+		tfX1.setText("");
+		tfX2.setText("");
+		tfX3.setText("");
+		tfLoadPC.setText("");
+		tfInstruction.setText("");
+		tfData.setText("");
+		tfInstructionAddress.setText("");
+		tfDataAddress.setText("");
+		txtrConsole.setText("");
+	}
 	@Override
 	public void updateData(Object obj) {
 		// TODO Auto-generated method stub
@@ -824,6 +853,10 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate {
 		} else if (obj instanceof MFR) {
 			if (tfMFR != null) {
 				tfMFR.setText(cpu.GetMFR());
+			}
+		} else if (obj instanceof MSR) {
+			if (tfMSR != null) {
+				tfMSR.setText(cpu.GetMSR());
 			}
 		}
 	}

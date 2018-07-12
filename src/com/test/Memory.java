@@ -231,4 +231,9 @@ public class Memory {
 	public void SetIndirectAddress(boolean indirectAddress) {
 		this.codec.SetIndirectAddress(indirectAddress);
 	}
+	
+	public void Reset() {
+		init();
+		this.subject.updateData(this);
+	}
 }
