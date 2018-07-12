@@ -127,6 +127,7 @@ public class SingalController extends AbstrctProcessor {
 			value = memory_content.intValue();
 			System.out.println("address is " + ea + " memory content is " + value);
 		} else {
+			System.out.println("indirect address\n");
 			Integer memory_content = memory.GetValueWithInt(ea);
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
@@ -135,6 +136,7 @@ public class SingalController extends AbstrctProcessor {
 				return -2;
 			}
 			
+			this.subject.updateUserConsole("c(EA) = " + memory_content.intValue() + "\n");
 			memory_content = memory.GetValueWithInt(memory_content.intValue());
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
@@ -142,7 +144,8 @@ public class SingalController extends AbstrctProcessor {
 				this.subject.updateMFR(4);
 				return -2;
 			}		
-			value = memory_content.intValue();			
+			value = memory_content.intValue();	
+			this.subject.updateUserConsole("c(c(EA)) = " + memory_content.intValue() + "\n");
 			
 		}
 		
