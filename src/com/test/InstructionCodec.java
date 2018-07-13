@@ -54,6 +54,11 @@ public class InstructionCodec {
 				return null;
 			}
 			
+			if (address > 15 || address < 0) {
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-15]\n");
+				return null;
+			}
+			
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
 			
@@ -75,6 +80,11 @@ public class InstructionCodec {
 			
 			if (ix > 3 || ix < 0) {
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) {
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
 			
@@ -102,6 +112,11 @@ public class InstructionCodec {
 				return null;
 			}
 			
+			if (address > 31 || address < 0) {
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
 		} else if (part1.equals("LDX")) {
@@ -118,6 +133,12 @@ public class InstructionCodec {
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
+			
+			if (address > 31 || address < 0) {
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
 			BitSet bitset = GetBitSet(opcode, 0, ix, address);
 			return bitset;
 		} else if (part1.equals("STX")) {
@@ -135,6 +156,12 @@ public class InstructionCodec {
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
+			
+			if (address > 31 || address < 0) {
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
 			BitSet bitset = GetBitSet(opcode, 0, ix, address);
 			return bitset;
 		} else if (part1.equals("TRAP")) {
