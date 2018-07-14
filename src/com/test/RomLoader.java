@@ -61,8 +61,15 @@ public class RomLoader {
 		}
 
 		for (int i = 0; i < len; i++) {
-			// result = memory.LoadContent(8 + i, rom_program[i]);
-			result = memory.LoadContent(8 + i, rom_program_list.get(i));
+			cpu.SetMAR(8 + i);
+			BitSet instruction = cpu.Encode(rom_program_list.get(i));
+			if (instruction == null) {
+				this.subject.updateMFR(7);
+				this.subject.updateUserConsole("Encoding instruction error. Invalid instruction!!!\n");
+				return false;
+			}
+			cpu.SetMBR(InstructionCodec.GetValueWithInt(instruction));
+			result = memory.Set(8 + i, instruction);
 			if (result == false) {
 				return false;
 			}

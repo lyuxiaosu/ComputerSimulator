@@ -38,31 +38,35 @@ public class Memory {
 			this.subject.updateMFR(4);
 			return null;
 		}
-		
+		this.subject.updateMAR(index);
+		int int_content = InstructionCodec.GetValueWithInt(memory[index]);
+		this.subject.updateMBR(int_content);
 		return memory[index];
 	}
 
-	public int Set(int index, BitSet content) {
+	public boolean Set(int index, BitSet content) {
 		if (index >= 2048) {
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			this.subject.updateMFR(3);
-			return -2;
+			return false;
 		}
 		
 		if (index <= 5) {
 			this.subject.updateUserConsole("Illegal Memory Address to Reserved Locations, Error !!!!\n");
 			this.subject.updateMFR(0);
-			return -2;
+			return false;
 		}
 		
 		memory[index] = content;
+		this.subject.updateMAR(index);
+		this.subject.updateMBR(InstructionCodec.GetValueWithInt(memory[index]));
 		updateContent();
 		this.subject.updateData(this);
 		
-		return 0;
+		return true;
 	}
 
-	public int Set(int index, long value) {
+	public int Set(int index, int value) {
 		if (index >= 2048) {
 			this.subject.updateMFR(3);
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
@@ -79,6 +83,9 @@ public class Memory {
 			BitSet bt = new BitSet(16);
 			memory[index] = bt; 
 		}
+		
+		this.subject.updateMAR(index);
+		this.subject.updateMBR(value);
 		
 		memory[index].clear();
 		int ix = 0;
@@ -108,10 +115,12 @@ public class Memory {
 		}
 		
 		BitSet bitset = memory[index];
+		this.subject.updateMAR(index);
 		int bitInteger = 0;
 	    for(int i = 0 ; i < 16; i++)
 	        if(bitset.get(i))
 	            bitInteger |= (1 << i);
+	    this.subject.updateMBR(bitInteger);
 	    return new Integer(bitInteger);
 	}
 	
@@ -191,6 +200,8 @@ public class Memory {
 	public boolean LoadData(int index, int data) {
 		this.subject.updatePhase("Loading");
 		int result = this.Set(index, data);
+		this.subject.updateMAR(index);
+		this.subject.updateMBR(data);
 		if (result == 0) {
 			return true;
 		} else {
@@ -219,8 +230,8 @@ public class Memory {
 	}
 	
 	private String getBinaryString(BitSet bs) {
+		
 		StringBuilder s = new StringBuilder();
-
         for( int i = 0; i < 16;  i++ )
         {
             s.append( bs.get( i ) == true ? 1: 0 );

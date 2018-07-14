@@ -2,6 +2,7 @@ package com.test;
 
 import java.awt.EventQueue;
 import java.lang.Thread;
+import java.util.BitSet;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -450,7 +451,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfX1.setBounds(304, 462, 79, 24);
 		frmComputerSimulator.getContentPane().add(tfX1);
 		tfX1.setColumns(10);
-		
+
 		// add text field for X2
 		tfX2 = new JTextField();
 		tfX2.setFont(new Font("宋体", Font.PLAIN, 20));
@@ -464,94 +465,94 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfX3.setBounds(304, 518, 79, 24);
 		frmComputerSimulator.getContentPane().add(tfX3);
 		tfX3.setColumns(10);
-		
+
 		// add button for X1 load
 		btnX1Load = new JButton("X1 Load");
 		btnX1Load.setFont(new Font("宋体", Font.BOLD, 20));
 		btnX1Load.setBounds(396, 460, 113, 27);
 		frmComputerSimulator.getContentPane().add(btnX1Load);
 		btnX1Load.addActionListener(this);
-		
+
 		// add button for X2 load
 		btnX2Load = new JButton("X2 Load");
 		btnX2Load.setFont(new Font("宋体", Font.BOLD, 20));
 		btnX2Load.setBounds(396, 490, 113, 27);
 		frmComputerSimulator.getContentPane().add(btnX2Load);
 		btnX2Load.addActionListener(this);
-		
+
 		// add button for X3 load
 		btnX3Load = new JButton("X3 Load");
 		btnX3Load.setFont(new Font("宋体", Font.BOLD, 20));
 		btnX3Load.setBounds(396, 517, 113, 27);
 		frmComputerSimulator.getContentPane().add(btnX3Load);
 		btnX3Load.addActionListener(this);
-		
+
 		// add label for adding instruction
 		lblInstruction = new JLabel("Instruction");
 		lblInstruction.setFont(new Font("宋体", Font.BOLD, 20));
 		lblInstruction.setBounds(531, 45, 126, 18);
 		frmComputerSimulator.getContentPane().add(lblInstruction);
-		
+
 		// add text field for instruction
 		tfInstruction = new JTextField();
 		tfInstruction.setFont(new Font("宋体", Font.PLAIN, 20));
 		tfInstruction.setBounds(657, 42, 255, 24);
 		frmComputerSimulator.getContentPane().add(tfInstruction);
 		tfInstruction.setColumns(10);
-		
+
 		// add label for instruction's address
 		JLabel lblInstructionAddress = new JLabel("Address");
 		lblInstructionAddress.setFont(new Font("宋体", Font.BOLD, 20));
 		lblInstructionAddress.setBounds(913, 45, 79, 18);
 		frmComputerSimulator.getContentPane().add(lblInstructionAddress);
-		
-		//add text field for instruction's address 
+
+		// add text field for instruction's address
 		tfInstructionAddress = new JTextField();
 		tfInstructionAddress.setFont(new Font("宋体", Font.PLAIN, 20));
 		tfInstructionAddress.setBounds(993, 42, 86, 24);
 		frmComputerSimulator.getContentPane().add(tfInstructionAddress);
 		tfInstructionAddress.setColumns(10);
-		
+
 		// add button for loading instruction
 		btnInstructionLoad = new JButton("Load");
-		btnInstructionLoad.setFont(new Font("宋体", Font.BOLD, 20));	
+		btnInstructionLoad.setFont(new Font("宋体", Font.BOLD, 20));
 		btnInstructionLoad.setBounds(1082, 41, 86, 27);
 		frmComputerSimulator.getContentPane().add(btnInstructionLoad);
 		btnInstructionLoad.addActionListener(this);
-		
+
 		// add label for adding data
 		lblData = new JLabel("Data");
 		lblData.setFont(new Font("宋体", Font.BOLD, 20));
 		lblData.setBounds(531, 96, 72, 18);
 		frmComputerSimulator.getContentPane().add(lblData);
-		
+
 		// add text field for data
 		tfData = new JTextField();
 		tfData.setFont(new Font("宋体", Font.PLAIN, 20));
 		tfData.setBounds(657, 95, 255, 24);
 		frmComputerSimulator.getContentPane().add(tfData);
 		tfData.setColumns(10);
-		
+
 		// add label for data's address
 		lblDataAddress = new JLabel("Address");
 		lblDataAddress.setFont(new Font("宋体", Font.BOLD, 20));
 		lblDataAddress.setBounds(913, 98, 79, 18);
 		frmComputerSimulator.getContentPane().add(lblDataAddress);
-		
+
 		// add button for loading data
 		btnDataLoad = new JButton("Load");
 		btnDataLoad.setFont(new Font("宋体", Font.BOLD, 20));
 		btnDataLoad.setBounds(1082, 94, 86, 27);
 		frmComputerSimulator.getContentPane().add(btnDataLoad);
 		btnDataLoad.addActionListener(this);
-		
-		//add text field for data's address
+
+		// add text field for data's address
 		tfDataAddress = new JTextField();
 		tfDataAddress.setFont(new Font("宋体", Font.PLAIN, 20));
 		tfDataAddress.setBounds(993, 95, 86, 24);
 		frmComputerSimulator.getContentPane().add(tfDataAddress);
-		tfDataAddress.setColumns(10);		
-		
+		tfDataAddress.setColumns(10);
+
 		btnCleanConsole = new JButton("Clear");
 		btnCleanConsole.setFont(new Font("宋体", Font.BOLD, 20));
 		btnCleanConsole.setBounds(498, 599, 113, 27);
@@ -614,7 +615,11 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				StopMachine();
 			}
 		} else if (e.getSource() == rdbtnIndirect) {
-			this.updateUserConsole("Indirect Addressing\n");
+			if (rdbtnIndirect.isSelected()) {
+				this.updateUserConsole("Indirect Addressing\n");
+			} else {
+				this.updateUserConsole("No indirect Addressing\n");
+			}
 			this.cpu.SetIndirectAddress(rdbtnIndirect.isSelected());
 			this.memory.SetIndirectAddress(rdbtnIndirect.isSelected());
 		} else if (e.getSource() == btnLoadToPC) {
@@ -624,7 +629,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update PC from " + pc_ori + " to " + pc_update + "\n");
 				cpu.SetPC(pc_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfLoadPC.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfLoadPC.getText() + "\n");
 			}
 		} else if (e.getSource() == btnR0Load) {
 			Integer r0_ori = cpu.GetGPR(0);
@@ -633,7 +638,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update R0 from " + r0_ori.intValue() + " to " + r0_update + "\n");
 				this.cpu.SetGPR(0, r0_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfR0.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfR0.getText() + "\n");
 			}
 		} else if (e.getSource() == btnR1Load) {
 			Integer r1_ori = cpu.GetGPR(1);
@@ -642,7 +647,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update R1 from " + r1_ori.intValue() + " to " + r1_update + "\n");
 				this.cpu.SetGPR(1, r1_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfR1.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfR1.getText() + "\n");
 			}
 		} else if (e.getSource() == btnR2Load) {
 			Integer r2_ori = cpu.GetGPR(2);
@@ -651,7 +656,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update R2 from " + r2_ori.intValue() + " to " + r2_update + "\n");
 				this.cpu.SetGPR(2, r2_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfR2.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfR2.getText() + "\n");
 			}
 		} else if (e.getSource() == btnR3Load) {
 			Integer r3_ori = cpu.GetGPR(3);
@@ -660,7 +665,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update R2 from " + r3_ori.intValue() + " to " + r3_update + "\n");
 				this.cpu.SetGPR(3, r3_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfR3.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfR3.getText() + "\n");
 			}
 		} else if (e.getSource() == btnX1Load) {
 			Integer x1_ori = cpu.GetIX(1).intValue();
@@ -669,16 +674,16 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update X1 from " + x1_ori.intValue() + " to " + x1_update + "\n");
 				this.cpu.SetIX(1, x1_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfX1.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfX1.getText() + "\n");
 			}
 		} else if (e.getSource() == btnX2Load) {
 			Integer x2_ori = cpu.GetIX(2).intValue();
 			try {
-				int x2_update = Integer.parseInt(tfX2.getText());		
+				int x2_update = Integer.parseInt(tfX2.getText());
 				txtrConsole.append("update X2 from " + x2_ori.intValue() + " to " + x2_update + "\n");
 				this.cpu.SetIX(2, x2_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfX2.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfX2.getText() + "\n");
 			}
 		} else if (e.getSource() == btnX3Load) {
 			Integer x3_ori = cpu.GetIX(3).intValue();
@@ -687,35 +692,47 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("update X3 from " + x3_ori.intValue() + " to " + x3_update + "\n");
 				this.cpu.SetIX(3, x3_update);
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input number " + tfX3.getText()+ "\n");
+				txtrConsole.append("invalid input number " + tfX3.getText() + "\n");
 			}
 		} else if (e.getSource() == btnInstructionLoad) {
 			try {
-				int address = Integer.parseInt(tfInstructionAddress.getText());		
-				boolean result = memory.LoadContent(address, tfInstruction.getText());
+				int address = Integer.parseInt(tfInstructionAddress.getText());
+				cpu.SetMAR(address);
+				BitSet instruction = cpu.Encode(tfInstruction.getText());
+				if (instruction == null) {
+					this.updateMFR(7);
+					this.updateUserConsole("Encoding instruction error. Invalid instruction!!!\n");
+					return;
+				}
+				cpu.SetMBR(InstructionCodec.GetValueWithInt(instruction));
+				boolean result = memory.Set(address, instruction);
 				if (result == true) {
-					txtrConsole.append("Loading instruction " + tfInstruction.getText() + " to Memory " + address + " sucess\n");
+					txtrConsole.append(
+							"Loading instruction " + tfInstruction.getText() + " to Memory " + address + " sucess\n");
 				}
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input address " + tfInstructionAddress.getText()+ "\n");
+				txtrConsole.append("invalid input address " + tfInstructionAddress.getText() + "\n");
 			}
 		} else if (e.getSource() == btnDataLoad) {
 			try {
 				int address = Integer.parseInt(tfDataAddress.getText());
+				cpu.SetMAR(address);
 				try {
 					int data = Integer.parseInt(tfData.getText());
+					cpu.SetMBR(data);
 					boolean result = memory.LoadData(address, data);
 					if (result == true) {
 						txtrConsole.append("Loading data " + tfData.getText() + " to Memory " + address + " sucess\n");
-					} 
+					}
 				} catch (NumberFormatException exception) {
-					txtrConsole.append("invalid input data " + tfData.getText()+ "\n");
+					txtrConsole.append("invalid input data " + tfData.getText() + "\n");
 				}
 			} catch (NumberFormatException exception) {
-				txtrConsole.append("invalid input address " + tfDataAddress.getText()+ "\n");
+				txtrConsole.append("invalid input address " + tfDataAddress.getText() + "\n");
 			}
 		} else if (e.getSource() == btnCleanConsole) {
-			txtrConsole.setText("");;
+			txtrConsole.setText("");
+			;
 		}
 	}
 
@@ -737,7 +754,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} else if (result == -2) {
 				txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
 			} else if (result == -3) {
-				cpu.Execute();// to let CPU execute the machine fault instruction since there is invalid memory access error.
+				cpu.Execute();// to let CPU execute the machine fault instruction since there is invalid
+								// memory access error.
 				txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
 				this.updatePhase("CPU is idel");
 				isRunning = false;
@@ -761,7 +779,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 
 	void StopMachine() {
 		isRunning = false;
-		status = false;		
+		status = false;
 		ResetRegisters();
 		ResetTextFields();
 		ResetMemory();
@@ -805,6 +823,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfDataAddress.setText("");
 		txtrConsole.setText("");
 	}
+
 	@Override
 	public void updateData(Object obj) {
 		// TODO Auto-generated method stub
@@ -874,7 +893,17 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	public void updatePhase(String message) {
 		lblPhase.setText(message);
 	}
+	
+	@Override
+	public void updateMBR(int buffer_content) {
+		cpu.SetMBR(buffer_content);
+	}
 
+	@Override
+	public void updateMAR(int value) {
+		cpu.SetMAR(value);
+	}
+	
 	void Display() {
 		// Display memory content
 		String memoryColumn[] = { "Address", "Value" };
@@ -910,6 +939,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// Display MSR
 		tfMSR.setText(cpu.GetMSR());
 	}
+
 	public void stop() {
 		StopMachine();
 	}

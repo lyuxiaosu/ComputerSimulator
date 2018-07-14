@@ -354,4 +354,12 @@ public class InstructionCodec {
 		}
 		this.indirectAddressing = indirectAddress;
 	}
+	
+	public static int GetValueWithInt(BitSet bitset) {	
+		int bitInteger = 0;
+	    for(int i = 0 ; i < 16; i++)
+	        if(bitset.get(i))
+	            bitInteger |= (1 << i);
+	    return bitInteger;
+	}
 }

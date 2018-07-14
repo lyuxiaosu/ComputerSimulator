@@ -13,6 +13,7 @@ public class CentralProcessor {
 	private MSR msr;
 	private IndexRegister x1, x2, x3;
 	private InstructionDecoder instruction_decoder;
+	private InstructionEncoder instruction_encoder;
 	private SingalController signal_controller;
 	private GPR r0, r1, r2, r3;
 	private String[][] GPRContent; // pairs of general purpose register and its value
@@ -39,6 +40,7 @@ public class CentralProcessor {
 		x2 = new IndexRegister(subject);
 		x3 = new IndexRegister(subject);
 		instruction_decoder = new InstructionDecoder(subject);
+		instruction_encoder = new InstructionEncoder(subject);
 		signal_controller = new SingalController(this, memory, subject, simulator);
 		r0 = new GPR(subject);
 		r1 = new GPR(subject);
@@ -241,14 +243,18 @@ public class CentralProcessor {
 	}
 	
 	public void SetMAR(int value) {
-		mar.SetValue(0);
+		mar.SetValue(value);
 	}
 	
 	public void SetMBR(int value) {
-		mbr.SetValue(0);
+		mbr.SetValue(value);
 	}
 	
 	public void SetIR(int value) {
-		ir.SetValue(0);
+		ir.SetValue(value);
+	}
+	
+	public BitSet Encode(String instruction) {
+		return instruction_encoder.Encode(instruction);
 	}
 }

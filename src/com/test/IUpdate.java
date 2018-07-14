@@ -5,4 +5,6 @@ public interface IUpdate {
 	void updateUserConsole(String message);
 	void updateMFR(int value);
 	void updatePhase(String message);
+	void updateMBR(int buffer_content);
+	void updateMAR(int value);
 }
