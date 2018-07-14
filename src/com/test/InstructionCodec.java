@@ -54,8 +54,8 @@ public class InstructionCodec {
 				return null;
 			}
 			
-			if (address > 15 || address < 0) {
-				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-15]\n");
+			if (address > 31 || address < 0) {
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
 			
