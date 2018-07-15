@@ -273,6 +273,7 @@ public class CentralProcessor {
 	 */
 	public void SetIndirectAddress(boolean indirectAddress) {
 		this.instruction_decoder.SetIndirectAddress(indirectAddress);
+		this.instruction_encoder.SetIndirectAddress(indirectAddress);
 	}
 	/**
 	 * Set machine status to MSR

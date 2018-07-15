@@ -13,4 +13,8 @@ public class InstructionEncoder {
 	BitSet Encode(String instruction) {
 		return encoder.Encode(instruction);
 	}
+	
+	public void SetIndirectAddress(boolean indirectAddress) {
+		encoder.SetIndirectAddress(indirectAddress);
+	}
 }
