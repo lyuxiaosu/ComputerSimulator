@@ -561,7 +561,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnRun) {
+		if (e.getSource() == btnRun) {// Respond to clicking the Run button
 			if (status == false) {
 				txtrConsole.append("The computer hasn't started yet\n");
 				return;
@@ -575,7 +575,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} else {
 				resumeExecution();
 			}
-		} else if (e.getSource() == btnIPL) {
+		} else if (e.getSource() == btnIPL) { // Respond to clicking the IPL button
 			boolean result = loader.LoadProgram();
 			if (result == true) {
 				txtrConsole.append("Success to load the boostrap program to memory !!!\n");
@@ -589,12 +589,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				status = false;
 				cpu.updateStatus(status);
 			}
-		} else if (e.getSource() == btnSingleStep) {
+		} else if (e.getSource() == btnSingleStep) { // Respond to clicking the Single Step button
 			if (status == true && !isRunning) {
 				txtrConsole.append("Single step\n");
 				int result = cpu.Execute();
 				if (result == -1) { // complete boostrap program
-					cpu.SetPC(8); // when finish executing boostrap program, Returning to the boot program means
+					cpu.SetPC(8);   // when finish executing boostrap program, Returning to the boot program means
 									// that it prompts the user to either run the currently loaded program again or
 									// to load a new program and run it.
 					txtrConsole.append("Finish executing boot program, CPU is idle\n");
@@ -610,11 +610,11 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} else {
 				txtrConsole.append("The computer hasn't started yet\n");
 			}
-		} else if (e.getSource() == btnHalt) {
+		} else if (e.getSource() == btnHalt) { // Respond to clicking the Halt button
 			if (isRunning || status) {
 				StopMachine();
 			}
-		} else if (e.getSource() == rdbtnIndirect) {
+		} else if (e.getSource() == rdbtnIndirect) { // Respond to clicking the Indirect addressing radio button
 			if (rdbtnIndirect.isSelected()) {
 				this.updateUserConsole("Indirect Addressing\n");
 			} else {
@@ -622,7 +622,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			}
 			this.cpu.SetIndirectAddress(rdbtnIndirect.isSelected());
 			this.memory.SetIndirectAddress(rdbtnIndirect.isSelected());
-		} else if (e.getSource() == btnLoadToPC) {
+		} else if (e.getSource() == btnLoadToPC) { // Respond to clicking the Load button to load data into PC
 			String pc_ori = cpu.GetPC();
 			try {
 				int pc_update = Integer.parseInt(tfLoadPC.getText());
@@ -631,7 +631,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfLoadPC.getText() + "\n");
 			}
-		} else if (e.getSource() == btnR0Load) {
+		} else if (e.getSource() == btnR0Load) { // Respond to clicking the Load button to load data into R0
 			Integer r0_ori = cpu.GetGPR(0);
 			try {
 				int r0_update = Integer.parseInt(tfR0.getText());
@@ -640,7 +640,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR0.getText() + "\n");
 			}
-		} else if (e.getSource() == btnR1Load) {
+		} else if (e.getSource() == btnR1Load) { // Respond to clicking the Load button to load data into R1
 			Integer r1_ori = cpu.GetGPR(1);
 			try {
 				int r1_update = Integer.parseInt(tfR1.getText());
@@ -649,7 +649,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR1.getText() + "\n");
 			}
-		} else if (e.getSource() == btnR2Load) {
+		} else if (e.getSource() == btnR2Load) { // Respond to clicking the Load button to load data into R1
 			Integer r2_ori = cpu.GetGPR(2);
 			try {
 				int r2_update = Integer.parseInt(tfR2.getText());
@@ -658,7 +658,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR2.getText() + "\n");
 			}
-		} else if (e.getSource() == btnR3Load) {
+		} else if (e.getSource() == btnR3Load) { // Respond to clicking the Load button to load data into R3
 			Integer r3_ori = cpu.GetGPR(3);
 			try {
 				int r3_update = Integer.parseInt(tfR3.getText());
@@ -667,7 +667,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfR3.getText() + "\n");
 			}
-		} else if (e.getSource() == btnX1Load) {
+		} else if (e.getSource() == btnX1Load) { // Respond to clicking the Load button to load data into X1
 			Integer x1_ori = cpu.GetIX(1).intValue();
 			try {
 				int x1_update = Integer.parseInt(tfX1.getText());
@@ -676,7 +676,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX1.getText() + "\n");
 			}
-		} else if (e.getSource() == btnX2Load) {
+		} else if (e.getSource() == btnX2Load) { // Respond to clicking the Load button to load data into X2
 			Integer x2_ori = cpu.GetIX(2).intValue();
 			try {
 				int x2_update = Integer.parseInt(tfX2.getText());
@@ -685,7 +685,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX2.getText() + "\n");
 			}
-		} else if (e.getSource() == btnX3Load) {
+		} else if (e.getSource() == btnX3Load) { // Respond to clicking the Load button to load data into X3
 			Integer x3_ori = cpu.GetIX(3).intValue();
 			try {
 				int x3_update = Integer.parseInt(tfX3.getText());
@@ -694,7 +694,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX3.getText() + "\n");
 			}
-		} else if (e.getSource() == btnInstructionLoad) {
+		} else if (e.getSource() == btnInstructionLoad) { // Respond to clicking the Load button to load instruction into specified memory location
 			try {
 				int address = Integer.parseInt(tfInstructionAddress.getText());
 				cpu.SetMAR(address);
@@ -713,7 +713,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input address " + tfInstructionAddress.getText() + "\n");
 			}
-		} else if (e.getSource() == btnDataLoad) {
+		} else if (e.getSource() == btnDataLoad) { // Respond to clicking the Load button to load data into specified memory location
 			try {
 				int address = Integer.parseInt(tfDataAddress.getText());
 				cpu.SetMAR(address);
@@ -730,9 +730,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input address " + tfDataAddress.getText() + "\n");
 			}
-		} else if (e.getSource() == btnCleanConsole) {
+		} else if (e.getSource() == btnCleanConsole) { // Respond to clicking Clear botton to clean all content in the console
 			txtrConsole.setText("");
-			;
 		}
 	}
 
@@ -745,7 +744,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 
 			int result = cpu.Execute();
 			if (result == -1) { // complete boostrap program
-				cpu.SetPC(8); // when finish executing boostrap program, Returning to the boot program means
+				cpu.SetPC(8);   // when finish executing boostrap program, Returning to the boot program means
 								// that it prompts the user to either run the currently loaded program again or
 								// to load a new program and run it.
 				txtrConsole.append("Finish executing boot program, CPU is idle\n");
@@ -754,7 +753,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} else if (result == -2) {
 				txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
 			} else if (result == -3) {
-				cpu.Execute();// to let CPU execute the machine fault instruction since there is invalid
+				cpu.Execute();  // to let CPU execute the machine fault instruction since there is invalid
 								// memory access error.
 				txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
 				this.updatePhase("CPU is idel");
@@ -768,7 +767,9 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			}
 		}
 	}
-
+	/**
+	 * Restart the process thread 
+	 */
 	void resumeExecution() {
 		txtrConsole.append("Resume. Running\n");
 		isRunning = true;
@@ -776,21 +777,27 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			process.start();
 		}
 	}
-
+	/**
+	 * Stop the machine
+	 */
 	void StopMachine() {
 		isRunning = false;
 		status = false;
-		ResetRegisters();
-		ResetTextFields();
-		ResetMemory();
+		ResetRegisters(); //Reset all registers to 0
+		ResetTextFields(); // Reset all displayed text fields to empty
+		ResetMemory(); // Reset memory space to null
 		this.updatePhase("Powered off");
 		txtrConsole.setText("Computer is powered off\n");
 	}
-
+	/**
+	 * Reset memory space to null
+	 */
 	void ResetMemory() {
 		this.memory.Reset();
 	}
-
+	/**
+	 * Reset all registers to 0
+	 */
 	void ResetRegisters() {
 		cpu.SetGPR(0, 0);
 		cpu.SetGPR(1, 0);
@@ -806,7 +813,9 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		cpu.SetMAR(0);
 		cpu.SetIR(0);
 	}
-
+	/**
+	 * Reset all text fields to empty
+	 */
 	void ResetTextFields() {
 		tfR0.setText("");
 		tfR1.setText("");
@@ -939,7 +948,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// Display MSR
 		tfMSR.setText(cpu.GetMSR());
 	}
-
+	
+	@Override
 	public void stop() {
 		StopMachine();
 	}

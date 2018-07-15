@@ -2,6 +2,9 @@ package com.test;
 
 import java.util.BitSet;
 
+/* An instruction will be transfered and processed in a chain path. All chain nodes will implement IProcessor interface and hold
+ * one member variable of next IProcessor 
+ */
 public class AbstrctProcessor implements IProcessor {
 
 	protected IProcessor next;
@@ -24,10 +27,12 @@ public class AbstrctProcessor implements IProcessor {
 				return i;
 			}
 		} else if (result == null) {
+			// NO next node, return
 			return 0;
 		}
 
 		if (this.next != null) {
+			// If next node is not null, transfer this instruction to the next node and let it to process it
 			return this.next.Process(result);
 		}
 		return 0;

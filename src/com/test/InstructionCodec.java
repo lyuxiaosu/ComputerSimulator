@@ -23,7 +23,7 @@ public class InstructionCodec {
 		this.subject.updatePhase("Encoding Instruction");
 		String[] segments = instruction.split(" ");
 		String part1 = segments[0];
-		if (segments.length == 1) {
+		if (segments.length == 1) { // For now, only HLT has no operand. If it is not HLT, it must be a invalid instruction
 			if (!part1.equals("HLT")) {
 				System.out.println("invalid instruction " + part1);
 				return null;
@@ -36,25 +36,25 @@ public class InstructionCodec {
 		if (part1.equals("LDR")) {
 			String sub = instruction.substring(3);
 			String[] parts = sub.split(",");
-			if (parts.length != 3) {
+			if (parts.length != 3) { // LDR has 3 operands, if there is less than 3, must be invalid instruction
 				return null;
 			} 			
 			int opcode = 1;
-			int r = Integer.parseInt(parts[0].trim());
-			int ix = Integer.parseInt(parts[1].trim());
-			int address = Integer.parseInt(parts[2].trim());
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int ix = Integer.parseInt(parts[1].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[2].trim()); //Get operand address
 			
-			if (r > 3 || r < 0) {
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
 				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
 				return null;
 			}
 			
-			if (ix > 3 || ix < 0) {
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
 			
-			if (address > 31 || address < 0) {
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
 				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
@@ -62,57 +62,57 @@ public class InstructionCodec {
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
 			
-		} else if (part1.equals("STR")) {
+		} else if (part1.equals("STR")) { 
 			String sub = instruction.substring(3);
 			String[] parts = sub.split(",");
-			if (parts.length != 3) {
+			if (parts.length != 3) { //STR has 3 operands, if there is less than 3, must be invalid instruction
 				return null;
 			} 			
 			int opcode = 2;
-			int r = Integer.parseInt(parts[0].trim());
-			int ix = Integer.parseInt(parts[1].trim());
-			int address = Integer.parseInt(parts[2].trim());
+			int r = Integer.parseInt(parts[0].trim()); //Get operand r
+			int ix = Integer.parseInt(parts[1].trim()); //Get operand ix
+			int address = Integer.parseInt(parts[2].trim());//Get operand address
 			
-			if (r > 3 || r < 0) {
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
 				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
 				return null;
 			}
 			
-			if (ix > 3 || ix < 0) {
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
 			
-			if (address > 31 || address < 0) {
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
 				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
 			
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
-		} else if (part1.equals("LDA")) {
+		} else if (part1.equals("LDA")) { 
 			String sub = instruction.substring(3);
 			String[] parts = sub.split(",");
-			if (parts.length != 3) {
+			if (parts.length != 3) { // LDA has 3 operands, if there is less than 3, must be invalid instruction
 				System.out.println("LDA parts is not 3, is " + parts.length);
 				return null;
 			} 			
 			int opcode = 3;
-			int r = Integer.parseInt(parts[0].trim());
-			int ix = Integer.parseInt(parts[1].trim());
-			int address = Integer.parseInt(parts[2].trim());
+			int r = Integer.parseInt(parts[0].trim()); // r index is invalid, should be [0-3]
+			int ix = Integer.parseInt(parts[1].trim());// ix index is invalid, should be [1-3]
+			int address = Integer.parseInt(parts[2].trim());// address is invalid, should be [0-31]
 			
-			if (r > 3 || r < 0) {
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
 				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
 				return null;
 			}
 			
-			if (ix > 3 || ix < 0) {
+			if (ix > 3 || ix < 0) {// ix index is invalid, should be [1-3]
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
 			
-			if (address > 31 || address < 0) {
+			if (address > 31 || address < 0) {// address is invalid, should be [0-31]
 				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
@@ -122,19 +122,19 @@ public class InstructionCodec {
 		} else if (part1.equals("LDX")) {
 			String sub = instruction.substring(3);
 			String[] parts = sub.split(",");
-			if (parts.length != 2) {
+			if (parts.length != 2) { // LDX has 2 operands, if there is less than 2, must be invalid instruction
 				return null;
 			} 			
 			int opcode = 33;
 			int ix = Integer.parseInt(parts[0].trim());
 			int address = Integer.parseInt(parts[1].trim());
 						
-			if (ix > 3 || ix < 0) {
+			if (ix > 3 || ix < 0) {// ix index is invalid, should be [1-3]
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
 			
-			if (address > 31 || address < 0) {
+			if (address > 31 || address < 0) {// address is invalid, should be [0-31]
 				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
@@ -144,32 +144,32 @@ public class InstructionCodec {
 		} else if (part1.equals("STX")) {
 			String sub = instruction.substring(3);
 			String[] parts = sub.split(",");
-			if (parts.length != 2) {
+			if (parts.length != 2) {// STX has 2 operands, if there is less than 2, must be invalid instruction
 				return null;
 			} 			
 			int opcode = 34;
 			int ix = Integer.parseInt(parts[0].trim());
 			int address = Integer.parseInt(parts[1].trim());
 						
-			if (ix > 3 || ix < 0) {
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
 				this.subject.updateMFR(5);
 				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
 				return null;
 			}
 			
-			if (address > 31 || address < 0) {
+			if (address > 31 || address < 0) {// address is invalid, should be [0-31]
 				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
 				return null;
 			}
 			
 			BitSet bitset = GetBitSet(opcode, 0, ix, address);
 			return bitset;
-		} else if (part1.equals("TRAP")) {
+		} else if (part1.equals("TRAP")) { // TRAP instruction
 			int trap_code = Integer.parseInt(part2.trim());			
 			int opcode = 30;
 			BitSet bitset = GetBitSet(opcode, trap_code);
 			return bitset;
-		} else if (part1.equals("MFT")) {
+		} else if (part1.equals("MFT")) { // self-defined machine fault instruction. It opcode is 63, with one fault code operand
 			int fault_code = Integer.parseInt(part2.trim());
 			int opcode = 63;
 			BitSet bitset = GetBitSet(opcode, fault_code);
@@ -189,14 +189,14 @@ public class InstructionCodec {
 			sb.append('0');
 		}
 		sb.append(bs);
-		String dstr = sb.reverse().toString();
+		String dstr = sb.reverse().toString(); //reverse the string so we can get the right sequence value
 		
-		int address = Integer.parseInt(dstr.substring(0, 5), 2);
-		int indirectAddressing = Integer.parseInt(dstr.substring(5, 6), 2);
-		System.out.println("!!!! indirectAddressing is " + indirectAddressing);
-		int ix = Integer.parseInt(dstr.substring(6, 8), 2);
-		int r = Integer.parseInt(dstr.substring(8, 10), 2);
-		int opcode = Integer.parseInt(dstr.substring(10), 2);
+		int address = Integer.parseInt(dstr.substring(0, 5), 2); //Get first five bits as the address operand
+		int indirectAddressing = Integer.parseInt(dstr.substring(5, 6), 2);// Get next 1 bits as the indirect addressing flag
+		System.out.println("!!!! indirectAddressing is " + indirectAddressing); 
+		int ix = Integer.parseInt(dstr.substring(6, 8), 2); // Get next 2 bits as the ix operand
+		int r = Integer.parseInt(dstr.substring(8, 10), 2); //Get next 2 bits as the r operand
+		int opcode = Integer.parseInt(dstr.substring(10), 2); // Get last 6 bits as the opcode 
 		
 		if (opcode == 30) {//this is a trap instruction, re-decode it			
 			int trapcode = Integer.parseInt(dstr.substring(0, 4), 2);
@@ -204,7 +204,7 @@ public class InstructionCodec {
 			parameters[0] = opcode;
 			parameters[1] = trapcode;
 			return parameters;
-		} else if (opcode == 63) {// this is a machine fault instruciton
+		} else if (opcode == 63) {// this is a machine fault instruction
 			int fault_code = Integer.parseInt(dstr.substring(0, 4), 2);
 			int[] parameters = new int[2];
 			parameters[0] = opcode;
@@ -225,7 +225,15 @@ public class InstructionCodec {
 		return parameters;
 	}
 	
-	public BitSet GetBitSet(int opcode, int r, int ix, int address) {
+	/**
+	 * Encode a instruction with 3 operands into binary code. Return the result as the BitSet object
+	 * @param opcode 
+	 * @param r
+	 * @param ix
+	 * @param address
+	 * @return
+	 */
+	public BitSet GetBitSet(int opcode, int r, int ix, int address) { 
 		BitSet bitset = new BitSet(16);
 		String binary_addr = Integer.toBinaryString(address);
 		
@@ -294,6 +302,12 @@ public class InstructionCodec {
 		}
 		return bitset;
 	}
+	/**
+	 * Encode a instruction with 1 operands into binary code. Return the result as the BitSet object 
+	 * @param opcode
+	 * @param trapCode
+	 * @return
+	 */
 	public BitSet GetBitSet(int opcode, int trapCode) {
 		BitSet bitset = new BitSet(16);
 		String binary_trapcode = Integer.toBinaryString(trapCode);
@@ -327,6 +341,11 @@ public class InstructionCodec {
 		
 		return bitset;
 	}
+	/**
+	 * Encode a instruction with no operands into binary code. Return the result as the BitSet object
+	 * @param opcode
+	 * @return
+	 */
 	public BitSet GetBitSet(int opcode) {
 		BitSet bitset = new BitSet(16);
 		String binary_opcode = Integer.toBinaryString(opcode);
@@ -354,7 +373,11 @@ public class InstructionCodec {
 		}
 		this.indirectAddressing = indirectAddress;
 	}
-	
+	/**
+	 * Get the BitSet's value with Integer format
+	 * @param bitset
+	 * @return
+	 */
 	public static int GetValueWithInt(BitSet bitset) {	
 		int bitInteger = 0;
 	    for(int i = 0 ; i < 16; i++)

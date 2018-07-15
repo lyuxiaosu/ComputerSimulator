@@ -80,7 +80,8 @@ public class SingalController extends AbstrctProcessor {
 		if (instruction_address == null) { 
 			return -2;
 		}
-		cpu.SetPC(instruction_address.intValue());
+		cpu.SetPC(instruction_address.intValue()); // After executing the TRAP instruction, recover the PC to the value of memory location 2
+												   // Because location 2 records the next program's address
 		return 0;
 	}
 	
@@ -93,11 +94,11 @@ public class SingalController extends AbstrctProcessor {
 		}
 		
 		System.out.println("instruction_address is " + instruction_address.intValue());
-		cpu.SetPC(instruction_address.intValue());
+		cpu.SetPC(instruction_address.intValue()); // After executing the MFT instruction, recover the PC to the value of memory location 4
+		   										   // Because location 4 records the next program's address
 		return 0;
 	}
 	private int HandleHLT() {
-		//
 		this.simulator.stop();
 		return 0;
 	}
@@ -105,8 +106,8 @@ public class SingalController extends AbstrctProcessor {
 		// Load Register From Memory, r = 0..3
 		// r <- c(EA)
 		// r <- c(c(EA)), if I bit set
-				
-		int ea = this.CalculateEA(ix, i, address);
+		
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
 		if (ea == -2) {
 			this.subject.updateUserConsole(
 					"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -116,8 +117,8 @@ public class SingalController extends AbstrctProcessor {
 		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
 		int value = 0;
-		if (i == 0) {				
-			Integer memory_content = memory.GetValueWithInt(ea);
+		if (i == 0) {// in direct addressing mode			
+			Integer memory_content = memory.GetValueWithInt(ea); // fetch the content from the effective address
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -126,9 +127,9 @@ public class SingalController extends AbstrctProcessor {
 			}
 			value = memory_content.intValue();
 			System.out.println("address is " + ea + " memory content is " + value);
-		} else {
+		} else { // in indirect addressing mode
 			System.out.println("indirect address\n");
-			Integer memory_content = memory.GetValueWithInt(ea);
+			Integer memory_content = memory.GetValueWithInt(ea); // fetch the content from the effective address
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -137,7 +138,7 @@ public class SingalController extends AbstrctProcessor {
 			}
 			
 			this.subject.updateUserConsole("c(EA) = " + memory_content.intValue() + "\n");
-			memory_content = memory.GetValueWithInt(memory_content.intValue());
+			memory_content = memory.GetValueWithInt(memory_content.intValue()); // fetch the content from the content of the effective address
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -149,7 +150,7 @@ public class SingalController extends AbstrctProcessor {
 			
 		}
 		
-		int result = cpu.SetGPR(r, value);
+		int result = cpu.SetGPR(r, value); 
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDR " + r + ", " + ix + ", " + address + "\n");
 		} else {
@@ -163,7 +164,7 @@ public class SingalController extends AbstrctProcessor {
 		// Store Register To Memory, r = 0..3
 		// Memory(EA) <- c(r)	
 		
-		int ea = this.CalculateEA(ix, i, address);
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
 		if (ea == -2) {
 			this.subject.updateUserConsole("Failed to execute instruction: STR " + r + ", " + ix + ", " + address + "\n");
 			return -2;
@@ -176,7 +177,7 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 		
-		int result = memory.Set(ea, GPR_content);
+		int result = memory.Set(ea, GPR_content); // set GPR's content to M[ea]
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STR " + r + ", " + ix + ", " + address + "\n");
 		} else {
@@ -190,14 +191,14 @@ public class SingalController extends AbstrctProcessor {
 		// Load Register with Address, r = 0..3
 		// r <- EA
 		
-		int ea = this.CalculateEA(ix, i, address);	
+		int ea = this.CalculateEA(ix, i, address);	// Calculate the effective address
 		if (ea == -2) {
 			this.subject.updateUserConsole("Failed to execute instruction: LDA " + r + ", " + ix + ", " + address + "\n");
 			return -2;
 		}			
 		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		int result = cpu.SetGPR(r, ea);
+		int result = cpu.SetGPR(r, ea); // set GPR with ea
 		
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDA " + r + ", " + ix + ", " + address + "\n");
@@ -212,14 +213,14 @@ public class SingalController extends AbstrctProcessor {
 		//Load Index Register from Memory, x = 1..3. 
 		//Xx <- c(EA)
 		
-		int ea = this.CalculateEA(0, i, address);
+		int ea = this.CalculateEA(0, i, address); // Calculate the effective address
 		if (ea == -2) {
 			this.subject.updateUserConsole("Failed to execute instruction: LDA " + ix + ", " + address + "\n");
 			return -2;
 		}
 		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		Integer memory_content = memory.GetValueWithInt(ea);		
+		Integer memory_content = memory.GetValueWithInt(ea); //fetch the content from the content of the effective address 	
 		if (memory_content == null) {
 			this.subject.updateUserConsole(
 					"Failed to execute instruction: LDX " + ix + ", " + address + "\n");
@@ -227,7 +228,7 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}	
 		
-		int result = cpu.SetIX(ix, memory_content.intValue());
+		int result = cpu.SetIX(ix, memory_content.intValue()); // set IX with M[ea]
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: LDX " + ix + ", " + address + "\n");
 		} else {
@@ -241,20 +242,20 @@ public class SingalController extends AbstrctProcessor {
 		//Store Index Register to Memory. X = 1..3
 		//Memory(EA) <- c(Xx)
 		
-		int ea = this.CalculateEA(0, i, address);
+		int ea = this.CalculateEA(0, i, address);  // Calculate the effective address
 		if (ea == -2) {
 			this.subject.updateUserConsole("Failed to execute instruction: STX " + ix + ", " + address + "\n");
 			return -2;
 		}
 		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		Integer ix_content = cpu.GetIX(ix);
+		Integer ix_content = cpu.GetIX(ix); // Get IX's content
 		if (ix_content == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: STX " + ix + ", " + address + "\n");
 			return -2;
 		}
 
-		int result = memory.Set(ea, ix_content.intValue());
+		int result = memory.Set(ea, ix_content.intValue()); //Set IX's content to location ea of the memory
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STX " + ix + ", " + address + "\n");
 		} else {
@@ -264,6 +265,13 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
+	/**
+	 * Calculate the effective address
+	 * @param ix
+	 * @param i
+	 * @param address
+	 * @return
+	 */
 	private int CalculateEA(int ix, int i, int address) {
 		Integer ix_content = cpu.GetIX(ix);
 		if (ix_content == null) {

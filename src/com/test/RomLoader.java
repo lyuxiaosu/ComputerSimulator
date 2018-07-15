@@ -59,7 +59,7 @@ public class RomLoader {
 		if (len == 0) {
 			return false;
 		}
-
+		
 		for (int i = 0; i < len; i++) {
 			cpu.SetMAR(8 + i);
 			BitSet instruction = cpu.Encode(rom_program_list.get(i));
@@ -74,8 +74,9 @@ public class RomLoader {
 				return false;
 			}
 		}
-
-		// Initialize the reserved memory
+		//Set boot end location
+		cpu.SetBootEndLocation(8+len);
+		// Initialize the reserved memory with TRAP and MFT instructions
 		String trap_instruction = "TRAP 15";
 		String fault_instruction = "MFT 6";
 		result = memory.SetReservedMemory(0, trap_instruction);

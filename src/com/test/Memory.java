@@ -18,22 +18,28 @@ public class Memory {
 		nbits = 16;
 		init();
 	}
-
+	/**
+	 * initialize each memory location to null
+	 */
 	private void init() {
 		for (int i = 0; i < 2048; i++) {
 			memory[i] = null;
 		}		
 		initContent();
 	}
-
+	/**
+	 * Fetch memory content by specifying the index
+	 * @param index
+	 * @return
+	 */
 	public BitSet Get(int index) {
-		if (index >= 2048) {
+		if (index < 0 || index >= 2048) { // beyond the memory addressing range. It should be [0-2047]
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			this.subject.updateMFR(3);;
 			return null;
 		} 
 		
-		if (memory[index] == null) {
+		if (memory[index] == null) { // Try to access an no pre-allocated memory, return null
 			this.subject.updateUserConsole("Access an unallocated memory address:" + index +  " ###\n");
 			this.subject.updateMFR(4);
 			return null;
@@ -45,13 +51,13 @@ public class Memory {
 	}
 
 	public boolean Set(int index, BitSet content) {
-		if (index >= 2048) {
+		if (index < 0 || index >= 2048) { // beyond the memory addressing range. It should be [0-2047]
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			this.subject.updateMFR(3);
 			return false;
 		}
 		
-		if (index <= 5) {
+		if (index <= 5) { // Memory location [0-5] is reserved, which cannot be written
 			this.subject.updateUserConsole("Illegal Memory Address to Reserved Locations, Error !!!!\n");
 			this.subject.updateMFR(0);
 			return false;
@@ -67,27 +73,27 @@ public class Memory {
 	}
 
 	public int Set(int index, int value) {
-		if (index >= 2048) {
+		if (index < 0 || index >= 2048) { // beyond the memory addressing range. It should be [0-2047]
 			this.subject.updateMFR(3);
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			return -2;
 		}
 		
-		if (index <= 5) {
+		if (index <= 5) { // Memory location [0-5] is reserved, which cannot be written
 			this.subject.updateUserConsole("Illegal Memory Address to Reserved Locations, Error !!!!\n");
 			this.subject.updateMFR(0);
 			return -2;
 		}
 		
 		if (memory[index] == null) {
-			BitSet bt = new BitSet(16);
+			BitSet bt = new BitSet(nbits);
 			memory[index] = bt; 
 		}
 		
 		this.subject.updateMAR(index);
 		this.subject.updateMBR(value);
 		
-		memory[index].clear();
+		memory[index].clear(); // Before reseting the BitSet object, clean the previous value
 		int ix = 0;
 		while (value != 0L) {
 			if (value % 2L != 0) {
@@ -101,8 +107,13 @@ public class Memory {
 		
 		return 0;
 	}
+	/**
+	 * return the specified memory content as the format of Integer
+	 * @param index the location to be fetched the data
+	 * @return 
+	 */
 	public Integer GetValueWithInt(int index) {
-		if (index >= 2048) {
+		if (index < 0 || index >= 2048) {// beyond the memory addressing range. It should be [0-2047]
 			this.subject.updateMFR(3);
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			return null;
@@ -115,15 +126,20 @@ public class Memory {
 		}
 		
 		BitSet bitset = memory[index];
-		this.subject.updateMAR(index);
+		this.subject.updateMAR(index);// once get the content, update MAR to this value
 		int bitInteger = 0;
-	    for(int i = 0 ; i < 16; i++)
+	    for(int i = 0 ; i < nbits; i++)
 	        if(bitset.get(i))
 	            bitInteger |= (1 << i);
 	    this.subject.updateMBR(bitInteger);
 	    return new Integer(bitInteger);
 	}
-	
+	/**
+	 * Set integer content to the reserved memory location by specifying index
+	 * @param index
+	 * @param content
+	 * @return true: success to set; false: failed to set
+	 */
 	public boolean SetReservedMemory(int index, int content) {
 		if (index < 0 || index > 5) {
 			this.subject.updateUserConsole("Try to write content to unreserved memory, error\n");
@@ -132,7 +148,7 @@ public class Memory {
 		}
 		
 		if (memory[index] == null) {
-			BitSet bt = new BitSet(16);
+			BitSet bt = new BitSet(nbits);
 			memory[index] = bt; 
 		}
 		
@@ -151,13 +167,19 @@ public class Memory {
 		return true;
 		
 	}
+	/**
+	 * Set String content to the reserved memory location by specifying index
+	 * @param index
+	 * @param Content
+	 * @return true: success to set; false: failed to set
+	 */
 	public boolean SetReservedMemory(int index, String Content) {
 		if (index < 0 || index > 5) {
 			this.subject.updateUserConsole("Try to write content to unreserved memory, error\n");
 			this.subject.updateMFR(2);
 			return false;
 		}
-		BitSet instruction = codec.Encode(Content);
+		BitSet instruction = codec.Encode(Content); //Encode the instruction to binary code first
 		if (instruction == null) {
 			this.subject.updateMFR(7);
 			this.subject.updateUserConsole("Encoding instruction error!!!\n");
@@ -170,9 +192,15 @@ public class Memory {
 		return true;
 		
 	}
+	/**
+	 * Set String content to the reserved memory location by specifying index
+	 * @param index
+	 * @param Content
+	 * @return true: success to set; false: failed to set
+	 */
 	public boolean LoadContent(int index, String Content) {
 		this.subject.updatePhase("Loading");
-		if (index >= 2048) {
+		if (index <0 || index >= 2048) {
 			this.subject.updateMFR(3);
 			this.subject.updateUserConsole("Out of memory, index " + index + ". Error !!!!\n");
 			return false;
@@ -184,7 +212,7 @@ public class Memory {
 			return false;
 		}
 		
-		BitSet instruction = codec.Encode(Content);
+		BitSet instruction = codec.Encode(Content); //Encode the instruction to binary code first
 		if (instruction == null) {
 			this.subject.updateMFR(7);
 			this.subject.updateUserConsole("Encoding instruction error. Invalid instruction!!!\n");
@@ -196,7 +224,12 @@ public class Memory {
 		this.subject.updateData(this);
 		return true;
 	}
-	
+	/**
+	 * Set integer content to the memory location by specifying index
+	 * @param index
+	 * @param data
+	 * @return true: success to set; false: failed to set
+	 */
 	public boolean LoadData(int index, int data) {
 		this.subject.updatePhase("Loading");
 		int result = this.Set(index, data);
@@ -216,7 +249,9 @@ public class Memory {
 	private void initContent() {
 		updateContent();
 	}
-	
+	/**
+	 * update all memory content 
+	 */
 	private void updateContent() {
 		for (int i = 0; i < 2048; i++) {
 			String address = Integer.toString(i);
@@ -232,7 +267,7 @@ public class Memory {
 	private String getBinaryString(BitSet bs) {
 		
 		StringBuilder s = new StringBuilder();
-        for( int i = 0; i < 16;  i++ )
+        for( int i = 0; i < nbits;  i++ )
         {
             s.append( bs.get( i ) == true ? 1: 0 );
         }

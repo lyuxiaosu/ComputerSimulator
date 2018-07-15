@@ -18,9 +18,10 @@ public class InstructionDecoder extends AbstrctProcessor {
 		if (i == -1 || i == -2 || i == -3) {
 			return -i;
 		}
+		
 		int[] instruction = decoder.Decode(i);
 		
-		
+		//Convert int[] to a ArrayList and return		
 		ArrayList<Integer> list = new ArrayList<Integer>(instruction.length);
 		for (int j = 0; j < instruction.length; j++)
 			list.add(Integer.valueOf(instruction[j]));

@@ -56,11 +56,14 @@ public class CentralProcessor {
 		pc.AddNext(mar).AddNext(mbr).AddNext(ir).AddNext(instruction_decoder).AddNext(signal_controller);
 	}
 	
-	// return -1 means sucessfully finish executing boostrap program
-	// return 0 means successfully execute one instruction
-	// return -2 means failed to executing one instruction
-	// return -3 means no instruction to execute
-
+	/**
+	 * Execute one instruction. The return values can be the followings:
+	 * -1 means sucessfully finish executing boostrap program
+	 * 0 means successfully execute one instruction
+	 * -2 means failed to executing one instruction
+	 * -3 means no instruction to execute
+	 */
+	
 	public int Execute() {
 		int result = pc.Process(new Integer(0));
 		//this.subject.updatePhase("CPU is idle");
@@ -83,6 +86,9 @@ public class CentralProcessor {
 		return GPRContent;
 	}
 	
+	/** 
+	 * Set value to the specified GPR
+	 */
 	public int SetGPR(int index, int value) {
 		if (index == 0) {
 			r0.SetValue(value);
@@ -101,7 +107,10 @@ public class CentralProcessor {
 		updateGPRContent();
 		return 0;
 	}
-
+	/**
+	 * Get value of the specified GPR
+	 * Return null means invalid GPR index
+	 */
 	public Integer GetGPR(int index) {
 		if (index == 0) {
 			return new Integer(r0.GetValueWithInt());
@@ -121,7 +130,9 @@ public class CentralProcessor {
 	private void initGPRContent() {
 		updateGPRContent();
 	}
-
+	/**
+	 * update GPRContent's content. GPRContent holds the pairs of GPR's index and its value
+	 */
 	private void updateGPRContent() {
 		// update GPRs content
 		System.out.println("gpr[2]:" + r2.GetValueWithInt());
@@ -139,7 +150,9 @@ public class CentralProcessor {
 	private void initIXContent() {
 		updateIXContent();
 	}
-
+	/**
+	 * update IXContent's content. IXContent holds the pairs of IX's index and its value
+	 */
 	private void updateIXContent() {
 		IXContent[0][0] = "1";
 		IXContent[0][1] = Integer.toString(x1.GetValueWithInt());
@@ -153,7 +166,9 @@ public class CentralProcessor {
 	public String[][] GetIXContent() {
 		return IXContent;
 	}
-	
+	/**
+	 * Get IX's value by specifying its index
+	 */
 	public Integer GetIX(int index) {
 		if (index == 0) {
 			return new Integer(0); // no indexing
@@ -169,7 +184,9 @@ public class CentralProcessor {
 			return null;
 		}
 	}
-	
+	/**
+	 * Set IX's value by specifying its index
+	 */
 	public int SetIX(int index, int value) {
 		if (index == 0) {
 			return 0;
@@ -188,36 +205,50 @@ public class CentralProcessor {
 		updateIXContent(); 
 		return 0;
 	}
-	
+	/** 
+	 * Get CCR's value with String format
+	 */
 	public String GetCCR() {
 		return ccr.GetBinaryString();
 	}
-	
+	/**
+	 * Get PC's value with String format
+	 */
 	public String GetPC() {
 		return Integer.toString(pc.GetValueWithInt());
 	}
-	
+	/**
+	 * Get IR's value with String format
+	 */
 	public String GetIR() {
 		return ir.GetBinaryString();
 	}
-	
+	/**
+	 * Get MAR's value with String format
+	 */
 	public String GetMAR() {
 		return Integer.toString(mar.GetValueWithInt());
 	}
-	
+	/**
+	 * Get MBR's value with String format
+	 */
 	public String GetMBR() {
 		return mbr.GetBinaryString();
 	}
-	
+	/**
+	 * Get MFR's value with String format
+	 */
 	public String GetMFR() {
 		return Integer.toString(mfr.GetValueWithInt());
 	}
 	
-	//codeId :0	Illegal Memory Address to Reserved Locations
-	//codeId :1	Illegal TRAP code
-	//codeId :2	Illegal Operation Code
-	//codeId :3	Illegal Memory Address beyond 2048 (memory installed)
-
+	/**
+	 * Set MFR with fault code ID. The possible fault code IDs are:
+	 * codeId :0	Illegal Memory Address to Reserved Locations
+	 * codeId :1	Illegal TRAP code
+	 * codeId :2	Illegal Operation Code
+	 * codeId :3	Illegal Memory Address beyond 2048 (memory installed)
+	 */	
 	public void SetMFR(int codeId) {
 		mfr.SetValue(codeId);
 		//When machine fault happened, save pc's content to memory address 4,
@@ -231,30 +262,52 @@ public class CentralProcessor {
 		memory.SetReservedMemory(4, pc_content);
 		pc.SetValue(1);
 	}
+	/**
+	 * Get MSR's value with String format
+	 */
 	public String GetMSR() {
 		return msr.GetBinaryString();
 	}
+	/**
+	 * Set if enable indirect addressing or not. true means enable indirect addressing mode
+	 */
 	public void SetIndirectAddress(boolean indirectAddress) {
 		this.instruction_decoder.SetIndirectAddress(indirectAddress);
 	}
-	
+	/**
+	 * Set machine status to MSR
+	 */
 	public void SetMSR(int status) {
 		msr.SetValue(status);		
 	}
-	
+	/**
+	 * Set value to MAR
+	 */
 	public void SetMAR(int value) {
 		mar.SetValue(value);
 	}
-	
+	/**
+	 * Set value to MBR
+	 */
 	public void SetMBR(int value) {
 		mbr.SetValue(value);
 	}
-	
+	/**
+	 * Set the instruction to IR
+	 */
 	public void SetIR(int value) {
 		ir.SetValue(value);
 	}
-	
+	/**
+	 * Encode a string instruction into binary code 
+	 */
 	public BitSet Encode(String instruction) {
 		return instruction_encoder.Encode(instruction);
+	}
+	/**
+	 * 
+	 */
+	boolean SetBootEndLocation(int location) {
+		return pc.SetBootEndLocation(location);
 	}
 }
