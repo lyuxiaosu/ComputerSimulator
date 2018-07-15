@@ -54,7 +54,7 @@ public class RomLoader {
 	public boolean LoadProgram() {
 		boolean result = true;
 		// int len = rom_program.length;
-		List<String> rom_program_list = this.readRomProgramToStringArrList("G:\\github\\ComputerSimulator\\ComputerSimulator\\src\\com\\test\\bootstrap.txt");
+		List<String> rom_program_list = this.readRomProgramToStringArrList("bootstrap.txt");
 		int len = rom_program_list.size();
 		if (len == 0) {
 			return false;
