@@ -197,7 +197,7 @@ public class InstructionCodec {
 		int ix = Integer.parseInt(dstr.substring(6, 8), 2); // Get next 2 bits as the ix operand
 		int r = Integer.parseInt(dstr.substring(8, 10), 2); //Get next 2 bits as the r operand
 		int opcode = Integer.parseInt(dstr.substring(10), 2); // Get last 6 bits as the opcode 
-		
+		System.out.println("Decode instruction I:" + indirectAddressing + " address:"+ address + " ix:" + ix + " r:" + r + " opcode:" + opcode); 
 		if (opcode == 30) {//this is a trap instruction, re-decode it			
 			int trapcode = Integer.parseInt(dstr.substring(0, 4), 2);
 			int[] parameters = new int[2];

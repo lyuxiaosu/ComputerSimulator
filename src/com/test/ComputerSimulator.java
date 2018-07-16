@@ -104,6 +104,13 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	private JTextField tfDataAddress;
 	private JButton btnInstructionLoad;
 	private JButton btnCleanConsole;
+	private JTextField tfLoadIR;
+	private JTextField tfLoadToMAR;
+	private JTextField tfLoadToMBR;
+	private JButton btnLoadToIR;
+	private JButton btnLoadToMAR;
+	private JButton btnLoadToMBR;
+	private JButton btnLoadData;
 
 	/**
 	 * Launch the application.
@@ -347,7 +354,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// add PC load button
 		btnLoadToPC = new JButton("PC Load");
 		btnLoadToPC.setFont(new Font("宋体", Font.BOLD, 20));
-		btnLoadToPC.setBounds(396, 72, 113, 27);
+		btnLoadToPC.setBounds(396, 72, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnLoadToPC);
 
 		// add R0 label
@@ -407,25 +414,25 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// add button for load R0
 		btnR0Load = new JButton("R0 Load");
 		btnR0Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnR0Load.setBounds(396, 295, 113, 27);
+		btnR0Load.setBounds(396, 295, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnR0Load);
 		btnR0Load.addActionListener(this);
 		// add button for load R1
 		btnR1Load = new JButton("R1 Load");
 		btnR1Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnR1Load.setBounds(396, 329, 113, 27);
+		btnR1Load.setBounds(396, 329, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnR1Load);
 		btnR1Load.addActionListener(this);
 		// add button for load R2
 		btnR2Load = new JButton("R2 Load");
 		btnR2Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnR2Load.setBounds(396, 360, 113, 27);
+		btnR2Load.setBounds(396, 360, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnR2Load);
 		btnR2Load.addActionListener(this);
 		// add button for load R3
 		btnR3Load = new JButton("R3 Load");
 		btnR3Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnR3Load.setBounds(396, 391, 113, 27);
+		btnR3Load.setBounds(396, 391, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnR3Load);
 		btnR3Load.addActionListener(this);
 
@@ -469,21 +476,21 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// add button for X1 load
 		btnX1Load = new JButton("X1 Load");
 		btnX1Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnX1Load.setBounds(396, 460, 113, 27);
+		btnX1Load.setBounds(396, 460, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnX1Load);
 		btnX1Load.addActionListener(this);
 
 		// add button for X2 load
 		btnX2Load = new JButton("X2 Load");
 		btnX2Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnX2Load.setBounds(396, 490, 113, 27);
+		btnX2Load.setBounds(396, 490, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnX2Load);
 		btnX2Load.addActionListener(this);
 
 		// add button for X3 load
 		btnX3Load = new JButton("X3 Load");
 		btnX3Load.setFont(new Font("宋体", Font.BOLD, 20));
-		btnX3Load.setBounds(396, 517, 113, 27);
+		btnX3Load.setBounds(396, 517, 123, 27);
 		frmComputerSimulator.getContentPane().add(btnX3Load);
 		btnX3Load.addActionListener(this);
 
@@ -552,12 +559,69 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfDataAddress.setBounds(993, 95, 86, 24);
 		frmComputerSimulator.getContentPane().add(tfDataAddress);
 		tfDataAddress.setColumns(10);
-
+		// add button to clear the console
 		btnCleanConsole = new JButton("Clear");
 		btnCleanConsole.setFont(new Font("宋体", Font.BOLD, 20));
 		btnCleanConsole.setBounds(498, 599, 113, 27);
 		frmComputerSimulator.getContentPane().add(btnCleanConsole);
 		btnCleanConsole.addActionListener(this);
+		// add label for loading data to IR
+		JLabel lblIR2 = new JLabel("IR");
+		lblIR2.setFont(new Font("宋体", Font.BOLD, 20));
+		lblIR2.setBounds(279, 113, 26, 18);
+		frmComputerSimulator.getContentPane().add(lblIR2);
+		// add text field for loading data to IR
+		tfLoadIR = new JTextField();
+		tfLoadIR.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfLoadIR.setBounds(304, 112, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfLoadIR);
+		tfLoadIR.setColumns(10);
+		// add button for loading data to IR
+		btnLoadToIR = new JButton("IR Load");
+		btnLoadToIR.setFont(new Font("宋体", Font.BOLD, 20));
+		btnLoadToIR.setBounds(396, 111, 123, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadToIR);
+		btnLoadToIR.addActionListener(this);
+		// add label for loading data to MAR
+		JLabel lblMAR2 = new JLabel("MAR");
+		lblMAR2.setFont(new Font("宋体", Font.BOLD, 20));
+		lblMAR2.setBounds(266, 150, 39, 18);
+		frmComputerSimulator.getContentPane().add(lblMAR2);
+		// add text field for loading data to MAR
+		tfLoadToMAR = new JTextField();
+		tfLoadToMAR.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfLoadToMAR.setBounds(304, 149, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfLoadToMAR);
+		tfLoadToMAR.setColumns(10);
+		// add button for loading data to MAR
+		btnLoadToMAR = new JButton("MAR Load");
+		btnLoadToMAR.setFont(new Font("宋体", Font.BOLD, 20));
+		btnLoadToMAR.setBounds(396, 148, 123, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadToMAR);
+		btnLoadToMAR.addActionListener(this);
+		// add label for loading data to MBR
+		JLabel lblMBR2 = new JLabel("MBR");
+		lblMBR2.setFont(new Font("宋体", Font.BOLD, 20));
+		lblMBR2.setBounds(266, 182, 39, 18);
+		frmComputerSimulator.getContentPane().add(lblMBR2);
+		// add text field for loading data to MBR
+		tfLoadToMBR = new JTextField();
+		tfLoadToMBR.setFont(new Font("宋体", Font.PLAIN, 20));
+		tfLoadToMBR.setBounds(304, 179, 79, 24);
+		frmComputerSimulator.getContentPane().add(tfLoadToMBR);
+		tfLoadToMBR.setColumns(10);
+		// add button to loading data to MBR
+		btnLoadToMBR = new JButton("MBR Load");
+		btnLoadToMBR.setFont(new Font("宋体", Font.BOLD, 20));
+		btnLoadToMBR.setBounds(396, 178, 123, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadToMBR);
+		btnLoadToMBR.addActionListener(this);
+		// add button for loading data to memory
+		btnLoadData = new JButton("Load MBR To Memory");
+		btnLoadData.setFont(new Font("宋体", Font.BOLD, 20));
+		btnLoadData.setBounds(531, 178, 242, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadData);
+		btnLoadData.addActionListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -594,7 +658,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				txtrConsole.append("Single step\n");
 				int result = cpu.Execute();
 				if (result == -1) { // complete boostrap program
-					cpu.SetPC(8);   // when finish executing boostrap program, Returning to the boot program means
+					cpu.SetPC(8); // when finish executing boostrap program, Returning to the boot program means
 									// that it prompts the user to either run the currently loaded program again or
 									// to load a new program and run it.
 					txtrConsole.append("Finish executing boot program, CPU is idle\n");
@@ -694,7 +758,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input number " + tfX3.getText() + "\n");
 			}
-		} else if (e.getSource() == btnInstructionLoad) { // Respond to clicking the Load button to load instruction into specified memory location
+		} else if (e.getSource() == btnInstructionLoad) { // Respond to clicking the Load button to load instruction
+															// into specified memory location
 			try {
 				int address = Integer.parseInt(tfInstructionAddress.getText());
 				cpu.SetMAR(address);
@@ -713,7 +778,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input address " + tfInstructionAddress.getText() + "\n");
 			}
-		} else if (e.getSource() == btnDataLoad) { // Respond to clicking the Load button to load data into specified memory location
+		} else if (e.getSource() == btnDataLoad) { // Respond to clicking the Load button to load data into specified
+													// memory location
 			try {
 				int address = Integer.parseInt(tfDataAddress.getText());
 				cpu.SetMAR(address);
@@ -730,8 +796,43 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} catch (NumberFormatException exception) {
 				txtrConsole.append("invalid input address " + tfDataAddress.getText() + "\n");
 			}
-		} else if (e.getSource() == btnCleanConsole) { // Respond to clicking Clear botton to clean all content in the console
+		} else if (e.getSource() == btnCleanConsole) { // Respond to clicking Clear botton to clean all content in the
+														// console
 			txtrConsole.setText("");
+		} else if (e.getSource() == btnLoadToIR) {
+			String IR_ori = cpu.GetIR();
+			try {
+				int IR_update = Integer.parseInt(tfLoadIR.getText());
+				this.cpu.SetIR(IR_update);
+				txtrConsole.append("update IR from " + IR_ori + " to " + this.cpu.GetIR() + "\n");
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfLoadIR.getText() + "\n");
+			}
+		} else if (e.getSource() == btnLoadToMAR) {
+			String mar_ori = cpu.GetMAR();
+			try {
+				int mar_update = Integer.parseInt(tfLoadToMAR.getText());
+				txtrConsole.append("update MAR from " + mar_ori + " to " + mar_update + "\n");
+				this.cpu.SetMAR(mar_update);
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfLoadToMAR.getText() + "\n");
+			}
+		} else if (e.getSource() == btnLoadToMBR) {
+			String mbr_ori = cpu.GetMBR();
+			try {
+				int mbr_update = Integer.parseInt(tfLoadToMBR.getText());
+				this.cpu.SetMBR(mbr_update);
+				txtrConsole.append("update MBR from " + mbr_ori + " to " + this.cpu.GetMBR() + "\n");
+			} catch (NumberFormatException exception) {
+				txtrConsole.append("invalid input number " + tfLoadToMBR.getText() + "\n");
+			}
+		} else if (e.getSource() == btnLoadData) {
+			int mar = Integer.parseInt(cpu.GetMAR());
+			int mbr = cpu.GetMBRWithInt();
+			boolean result = memory.LoadData(mar, mbr);
+			if (result == true) {
+				txtrConsole.append("Loading data " + cpu.GetMBR() + " to Memory " + mar + " sucess\n");
+			}
 		}
 	}
 
@@ -744,7 +845,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 
 			int result = cpu.Execute();
 			if (result == -1) { // complete boostrap program
-				cpu.SetPC(8);   // when finish executing boostrap program, Returning to the boot program means
+				cpu.SetPC(8); // when finish executing boostrap program, Returning to the boot program means
 								// that it prompts the user to either run the currently loaded program again or
 								// to load a new program and run it.
 				txtrConsole.append("Finish executing boot program, CPU is idle\n");
@@ -753,7 +854,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			} else if (result == -2) {
 				txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
 			} else if (result == -3) {
-				cpu.Execute();  // to let CPU execute the machine fault instruction since there is invalid
+				cpu.Execute(); // to let CPU execute the machine fault instruction since there is invalid
 								// memory access error.
 				txtrConsole.append("No instructions to execuate, CPU is idel!!!\n");
 				this.updatePhase("CPU is idel");
@@ -767,8 +868,9 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			}
 		}
 	}
+
 	/**
-	 * Restart the process thread 
+	 * Restart the process thread
 	 */
 	void resumeExecution() {
 		txtrConsole.append("Resume. Running\n");
@@ -777,24 +879,27 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			process.start();
 		}
 	}
+
 	/**
 	 * Stop the machine
 	 */
 	void StopMachine() {
 		isRunning = false;
 		status = false;
-		ResetRegisters(); //Reset all registers to 0
+		ResetRegisters(); // Reset all registers to 0
 		ResetTextFields(); // Reset all displayed text fields to empty
 		ResetMemory(); // Reset memory space to null
 		this.updatePhase("Powered off");
 		txtrConsole.setText("Computer is powered off\n");
 	}
+
 	/**
 	 * Reset memory space to null
 	 */
 	void ResetMemory() {
 		this.memory.Reset();
 	}
+
 	/**
 	 * Reset all registers to 0
 	 */
@@ -813,6 +918,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		cpu.SetMAR(0);
 		cpu.SetIR(0);
 	}
+
 	/**
 	 * Reset all text fields to empty
 	 */
@@ -831,6 +937,10 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfInstructionAddress.setText("");
 		tfDataAddress.setText("");
 		txtrConsole.setText("");
+		tfLoadPC.setText("");
+		tfLoadIR.setText("");
+		tfLoadToMAR.setText("");
+		tfLoadToMBR.setText("");
 	}
 
 	@Override
@@ -902,7 +1012,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	public void updatePhase(String message) {
 		lblPhase.setText(message);
 	}
-	
+
 	@Override
 	public void updateMBR(int buffer_content) {
 		cpu.SetMBR(buffer_content);
@@ -912,7 +1022,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	public void updateMAR(int value) {
 		cpu.SetMAR(value);
 	}
-	
+
 	void Display() {
 		// Display memory content
 		String memoryColumn[] = { "Address", "Value" };
@@ -948,7 +1058,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// Display MSR
 		tfMSR.setText(cpu.GetMSR());
 	}
-	
+
 	@Override
 	public void stop() {
 		StopMachine();

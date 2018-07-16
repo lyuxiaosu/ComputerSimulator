@@ -235,6 +235,9 @@ public class CentralProcessor {
 	public String GetMBR() {
 		return mbr.GetBinaryString();
 	}
+	public int GetMBRWithInt() {
+		return mbr.GetValueWithInt();
+	}
 	/**
 	 * Get MFR's value with String format
 	 */
