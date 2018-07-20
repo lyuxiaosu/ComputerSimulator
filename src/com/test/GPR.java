@@ -7,5 +7,5 @@ public class GPR extends AbstrctProcessor {
 		this.subject = subject;
 		this.value = 0;
 		this.nbits = 16;
-	}
+	}	
 }

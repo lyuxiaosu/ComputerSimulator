@@ -211,8 +211,185 @@ public class InstructionCodec {
 			BitSet bitset = GetBitSet(opcode, r, ix, address);
 			return bitset;
 			
+		} else if (part1.equals("JNE")) { //JNE instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 3) { // JNE has 3 operands, if there is less than 3, must be invalid instruction
+				return null;
+			} 			
+			int opcode = 9;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int ix = Integer.parseInt(parts[1].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[2].trim()); //Get operand address
+			
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, ix, address);
+			return bitset;
+		}  else if (part1.equals("JCC")) { //JCC instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 3) { // JNE has 3 operands, if there is less than 3, must be invalid instruction
+				return null;
+			} 	
+			
+			int opcode = 10;
+			int cc = Integer.parseInt(parts[0].trim()); // Get operand cc
+			int ix = Integer.parseInt(parts[1].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[2].trim()); //Get operand address
+			
+			if (cc > 3 || cc < 0) { // cc index is invalid, should be [0-3]
+				this.subject.updateUserConsole("Illegal CC value " + cc + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, cc, ix, address);
+			return bitset;
+		} else if (part1.equals("JMA")) { // JMA instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 2) { // JMA has 2 operands, if there is less than 2, must be invalid instruction
+				return null;
+			} 			
+			int opcode = 11;
+			
+			int ix = Integer.parseInt(parts[0].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[1].trim()); //Get operand address
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, 0, ix, address);
+			return bitset;
+		} else if (part1.equals("JSR")) { // JSR instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 2) { // JSR has 2 operands, if there is less than 2, must be invalid instruction
+				return null;
+			} 
+			
+			int opcode = 12;	
+			int ix = Integer.parseInt(parts[0].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[1].trim()); //Get operand address
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, 0, ix, address);
+			return bitset;
+		} else if (part1.equals("RFS")) {// RFS instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 1) { // RFS has 1 operands, if there is less than 1, must be invalid instruction
+				return null;
+			} 
+			
+			int opcode = 13;
+			int immed = Integer.parseInt(parts[0].trim()); // Get immediate parameter
+			// there are 5 bits to hold immed, so do not exceed it. For signed and unsigned integer, they have different value range
+			if (immed >= 32 || immed < -15) {
+				this.subject.updateUserConsole("Illegal Immed " + immed + ", it should be [-15-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, 0, 0, immed);
+			return bitset;
+		} else if (part1.equals("SOB")) {// SOB instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 3) { // SOB has 3 operands, if there is less than 3, must be invalid instruction
+				return null;
+			} 
+			
+			int opcode = 14;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int ix = Integer.parseInt(parts[1].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[2].trim()); //Get operand address
+			
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, ix, address);
+			return bitset;
+		} else if (part1.equals("JGE")) { //JGE instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 3) { // JGE has 3 operands, if there is less than 3, must be invalid instruction
+				return null;
+			} 
+			
+			int opcode = 15;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int ix = Integer.parseInt(parts[1].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[2].trim()); //Get operand address
+			
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, ix, address);
+			return bitset;
 		}
-		
 		return null;
 	}
 	

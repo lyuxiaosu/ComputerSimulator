@@ -91,13 +91,21 @@ public class CentralProcessor {
 	 */
 	public int SetGPR(int index, int value) {
 		if (index == 0) {
+			int old_r0 = r0.GetValueWithInt();
 			r0.SetValue(value);
+			this.subject.updateUserConsole("GPR-0 from " + old_r0 + " to " + value + "\n");
 		} else if (index == 1) {
+			int old_r1 = r1.GetValueWithInt();
 			r1.SetValue(value);
+			this.subject.updateUserConsole("GPR-1 from " + old_r1 + " to " + value + "\n");
 		} else if (index == 2) {
+			int old_r2 = r2.GetValueWithInt();
 			r2.SetValue(value);
+			this.subject.updateUserConsole("GPR-2 from " + old_r2 + " to " + value + "\n");
 		} else if (index == 3) {
+			int old_r3 = r3.GetValueWithInt();
 			r3.SetValue(value);
+			this.subject.updateUserConsole("GPR-3 from " + old_r3 + " to " + value + "\n");
 		} else {
 			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + index + ". The range of GPR is 0-3\n");
 			this.SetMFR(6);
@@ -210,6 +218,12 @@ public class CentralProcessor {
 	 */
 	public String GetCCR() {
 		return ccr.GetBinaryString();
+	}
+	/**
+	 * Get CCR's bit value
+	 */
+	public boolean GetCCRBit(int index) {
+		return ccr.Get(index);
 	}
 	/**
 	 * Get PC's value with String format

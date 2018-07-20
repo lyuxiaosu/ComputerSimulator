@@ -68,6 +68,43 @@ public class SingalController extends AbstrctProcessor {
 				int i = array.get(3).intValue();
 				int address = array.get(4).intValue();
 				return HandleJZ(r, ix, i, address);
+			} else if (opcode == 9) { //JNE
+				int r = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleJNE(r, ix, i, address);
+			} else if (opcode == 10) { //JCC
+				int cc = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleJCC(cc, ix, i, address); 
+			} else if (opcode == 11) {// JMA
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleJMA(ix, i, address);
+			} else if (opcode == 12) {// JSR
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleJSR(ix, i, address);
+			} else if (opcode == 13) {// RFS
+				int immed = array.get(4).intValue();
+				return HandleRFS(immed);
+			} else if (opcode == 14) { //SOB
+				int r = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleSOB(r, ix, i, address);
+			} else if (opcode == 15) { // JGE
+				int r = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleJGE(r, ix, i, address);
 			}
 			else {
 				this.subject.updateUserConsole("Illegal Operation Code:" + opcode + "\n");
@@ -275,7 +312,7 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleJZ(int r, int ix, int i, int address) {
 		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
 		if (ea == -2) {
-			this.subject.updateUserConsole("Failed to execute instruction: JZ " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("Failed to execute instruction: JZ " + r + ", " + ix + ", " + address + "\n");
 			return -2;
 		}
 		this.subject.updateUserConsole("EA is " + ea + "\n");
@@ -292,6 +329,129 @@ public class SingalController extends AbstrctProcessor {
 		} else { // if c(r) != 0, PC will increase 1 by itself		
 			this.subject.updateUserConsole("Execute instruction success. Instruction: JZ " + r + ", " + ix + ", " + address + "\n");		
 		}
+		return 0;
+	}
+	
+	private int HandleJNE(int r, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: JNE " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		Integer GPR_content = cpu.GetGPR(r);		
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: JNE " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		if (GPR_content.intValue() != 0) {// if c(r) != 0, set PC to ea		
+			cpu.SetPC(ea);			 
+		} else { // if c(r) == 0, PC will increase 1 by itself							
+		}
+		this.subject.updateUserConsole("Execute instruction success. Instruction: JNE " + r + ", " + ix + ", " + address + "\n");
+		return 0;
+	}
+	
+	private int HandleJCC(int cc, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: JCC " + cc + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		boolean bit = cpu.GetCCRBit(cc);
+		if (bit == true) { // if bit == true, set PC to ea
+			cpu.SetPC(ea);
+		} else { // if bit == false, PC will increase 1 by itself			
+		}
+		
+		this.subject.updateUserConsole("Execute instruction success. Instruction: JCC " + cc + ", " + ix + ", " + address + "\n");
+		return 0;
+	}
+	
+	private int HandleJMA(int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: JMA " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		
+		cpu.SetPC(ea);
+		this.subject.updateUserConsole("Execute instruction success. Instruction: JMA " + ix + ", " + address + "\n");
+		return 0;
+	}
+	
+	private int HandleJSR(int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: JMA " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		//Since the instruction flows from PC to this object, the PC's value has already increased 1 in PC object,
+		// here we don't need to increase PC's value by 1, we just need to save the current PC's value to R3
+		int pc = Integer.parseInt(cpu.GetPC());
+		cpu.SetGPR(3, pc);
+		cpu.SetPC(ea);
+		
+		this.subject.updateUserConsole("Execute instruction success. Instruction: JSR " + ix + ", " + address + "\n");
+		return 0;
+	}
+	private int HandleRFS(int immed) {
+		//set immed to GPR-0
+		cpu.SetGPR(0, immed);
+		//set GPR-3's content to PC
+		cpu.SetPC(cpu.GetGPR(3));
+		return 0;
+	}
+	
+	private int HandleSOB(int r, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: SOB " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		
+		Integer GPR_content = cpu.GetGPR(r);
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: SOB " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		cpu.SetGPR(r, GPR_content.intValue() - 1);
+		
+		if ((GPR_content.intValue() - 1) > 0) {
+			cpu.SetPC(ea);
+		} else {
+			// PC will increase 1 automatically
+		}
+		return 0;
+	}
+	
+	private int HandleJGE(int r, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: SOB " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		
+		Integer GPR_content = cpu.GetGPR(r);
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: SOB " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		if (GPR_content.intValue() >= 0) {
+			cpu.SetPC(ea);
+		} else {
+			// PC will increase 1 automatically
+		}
+		
 		return 0;
 	}
 	/**
