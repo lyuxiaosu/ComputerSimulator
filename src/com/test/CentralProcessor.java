@@ -81,7 +81,7 @@ public class CentralProcessor {
 	public void SetPC(int address) {
 		pc.SetValue(address);
 	}
-
+	
 	public String[][] GetGPRContent() {
 		return GPRContent;
 	}

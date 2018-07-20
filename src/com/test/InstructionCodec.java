@@ -8,6 +8,14 @@ import java.util.*;
   42(34)	STX x, address[,I]
   36(30)    TRAP trapCode
   77(63)    MFT faultCode
+  010(8)    JZ r,x,address[,I]
+  011(9)	JNE r,x,address[,I]
+  012(10)	JCC cc,x,address[,I]
+  013(11)	JMA x, address[,I]
+  014(12)	JSR x, address[,I]
+  015(13)	RFS Immed
+  016(14)	SOB r,x,address[,I]
+  017(15)	JGE r,x,address[,I]
  *
  */
 public class InstructionCodec {
@@ -174,7 +182,36 @@ public class InstructionCodec {
 			int opcode = 63;
 			BitSet bitset = GetBitSet(opcode, fault_code);
 			return bitset;
-		} 
+		} else if (part1.equals("JZ")) { //JZ instruction
+			String sub = instruction.substring(2);
+			String[] parts = sub.split(",");
+			if (parts.length != 3) { // JZ has 3 operands, if there is less than 3, must be invalid instruction
+				return null;
+			} 			
+			int opcode = 8;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int ix = Integer.parseInt(parts[1].trim()); // Get operand ix
+			int address = Integer.parseInt(parts[2].trim()); //Get operand address
+			
+			if (r > 3 || r < 0) { // r index is invalid, should be [0-3]
+				this.subject.updateUserConsole("Illegal GPR index " + r + "\n");
+				return null;
+			}
+			
+			if (ix > 3 || ix < 0) { // ix index is invalid, should be [1-3]
+				this.subject.updateUserConsole("Illegal IX index " + ix + "\n");
+				return null;
+			}
+			
+			if (address > 31 || address < 0) { // address is invalid, should be [0-31]
+				this.subject.updateUserConsole("Illegal address " + address + ", it should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, ix, address);
+			return bitset;
+			
+		}
 		
 		return null;
 	}

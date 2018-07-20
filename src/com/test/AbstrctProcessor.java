@@ -53,7 +53,11 @@ public class AbstrctProcessor implements IProcessor {
 	protected Object doProcess(Object data) {
 		return null;
 	}
-
+	/**
+	 * define a empty postSetValue fucntion
+	 */
+	protected void postSetValue(int old_value, int new_value) {
+	}
 	public void Set(BitSet content) {
 		bitset.clear();
 		bitset.or(content);
@@ -77,6 +81,7 @@ public class AbstrctProcessor implements IProcessor {
 
 	// set a long value to bitset
 	public void SetValue(long value) {
+		int old_value = this.value;
 		int int_value = (int)value;
 		bitset.clear();
 		int index = 0;
@@ -89,6 +94,7 @@ public class AbstrctProcessor implements IProcessor {
 		}
 		this.value = int_value;
 		this.subject.updateData(this);
+		this.postSetValue(old_value, this.value);
 	}
 
 	public int GetValueWithInt() {

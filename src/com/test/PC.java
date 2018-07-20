@@ -45,4 +45,13 @@ public class PC extends AbstrctProcessor {
 		this.bootEndLocation = location;
 		return true;
 	}
+	@Override
+	protected void postSetValue(int old_value, int new_value) {
+		if (old_value != new_value) {
+			this.subject.updateUserConsole("PC from " + old_value + " to " + new_value + "\n");
+		} else {
+			this.subject.updateUserConsole("PC from " + (old_value - 1) + " to " + new_value + "\n");
+		}
+	}
+		
 }

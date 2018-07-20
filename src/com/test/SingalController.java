@@ -62,7 +62,14 @@ public class SingalController extends AbstrctProcessor {
 				return HandleMFT(fault_code);
 			} else if (opcode == 0) {
 				return HandleHLT();
-			} else {
+			} else if (opcode == 8) {//JZ
+				int r = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleJZ(r, ix, i, address);
+			}
+			else {
 				this.subject.updateUserConsole("Illegal Operation Code:" + opcode + "\n");
 				this.subject.updateMFR(2);
 				return new Integer(-2);
@@ -265,6 +272,28 @@ public class SingalController extends AbstrctProcessor {
 		return result;
 	}
 	
+	private int HandleJZ(int r, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: JZ " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		Integer GPR_content = cpu.GetGPR(r);		
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: JZ " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		if (GPR_content.intValue() == 0) {// if c(r) == 0, set PC to ea		
+			cpu.SetPC(ea);
+			this.subject.updateUserConsole("Execute instruction success. Instruction: JZ " + r + ", " + ix + ", " + address + "\n");
+			 
+		} else { // if c(r) != 0, PC will increase 1 by itself		
+			this.subject.updateUserConsole("Execute instruction success. Instruction: JZ " + r + ", " + ix + ", " + address + "\n");		
+		}
+		return 0;
+	}
 	/**
 	 * Calculate the effective address
 	 * @param ix
