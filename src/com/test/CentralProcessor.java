@@ -226,6 +226,19 @@ public class CentralProcessor {
 		return ccr.Get(index);
 	}
 	/**
+	 * Set CCR's bit value
+	 */
+	public void SetCCRBit(int index) {
+		ccr.Set(index);
+	}
+	/**
+	 * Reset CCR's bit value to 0
+	 */
+	public void ResetCCR() {
+		ccr.SetValue(0);
+	}
+	
+	/**
 	 * Get PC's value with String format
 	 */
 	public String GetPC() {

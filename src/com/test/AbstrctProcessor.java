@@ -32,7 +32,8 @@ public class AbstrctProcessor implements IProcessor {
 		}
 
 		if (this.next != null) {
-			// If next node is not null, transfer this instruction to the next node and let it to process it
+			// If next node is not null, transfer this instruction to the next node and let
+			// it to process it
 			return this.next.Process(result);
 		}
 		return 0;
@@ -53,11 +54,13 @@ public class AbstrctProcessor implements IProcessor {
 	protected Object doProcess(Object data) {
 		return null;
 	}
+
 	/**
 	 * define a empty postSetValue fucntion
 	 */
 	protected void postSetValue(int old_value, int new_value) {
 	}
+
 	public void Set(BitSet content) {
 		bitset.clear();
 		bitset.or(content);
@@ -82,28 +85,38 @@ public class AbstrctProcessor implements IProcessor {
 	// set a long value to bitset
 	public void SetValue(long value) {
 		int old_value = this.value;
-		int int_value = (int)value;
+		int int_value = java.lang.Math.abs((int) value);
+
 		bitset.clear();
 		int index = 0;
-		while (value != 0L) {
-			if (value % 2L != 0) {
+		while (int_value != 0L) {
+			if (int_value % 2L != 0) {
 				this.bitset.set(index);
 			}
 			++index;
-			value = value >>> 1;
+			int_value = int_value >>> 1;
 		}
-		this.value = int_value;
+
+		if (value < 0) { // is negative number, set the highest bit to 1
+			this.bitset.set(nbits-1);
+		}
+		
+		this.value = (int)value;
 		this.subject.updateData(this);
 		this.postSetValue(old_value, this.value);
 	}
 
 	public int GetValueWithInt() {
 		int bitInteger = 0;
-		for (int i = 0; i < nbits; i++)
+		for (int i = 0; i < nbits -1; i++)
 			if (this.bitset.get(i))
 				bitInteger |= (1 << i);
-		value = bitInteger;
-		return bitInteger;
+		if (this.bitset.get(nbits-1) == false) {
+			value = bitInteger;
+		} else {
+			value = -bitInteger;
+		}
+		return value;
 	}
 
 	public String GetBinaryString() {

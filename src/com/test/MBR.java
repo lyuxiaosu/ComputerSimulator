@@ -22,7 +22,7 @@ public class MBR extends AbstrctProcessor {
 			return i;
 		}
 		
-		Integer content = memory.GetValueWithInt(i);
+		Integer content = memory.GetValueWithInt(i, true);
 		if (content != null) {
 			SetValue(content.intValue());
 		} else {

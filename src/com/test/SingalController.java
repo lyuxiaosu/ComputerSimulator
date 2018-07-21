@@ -105,12 +105,55 @@ public class SingalController extends AbstrctProcessor {
 				int i = array.get(3).intValue();
 				int address = array.get(4).intValue();
 				return HandleJGE(r, ix, i, address);
+			} else if (opcode == 4) { //AMR
+				int r = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleAMR(r, ix, i, address);
+			} else if (opcode == 5) { //SMR
+				int r = array.get(1).intValue();
+				int ix = array.get(2).intValue();
+				int i = array.get(3).intValue();
+				int address = array.get(4).intValue();
+				return HandleSMR(r, ix, i, address);
+			} else if (opcode == 6) { //AIR
+				int r = array.get(1).intValue();
+				int immed = array.get(4).intValue();
+				return HandleAIR(r, immed);
+			} else if (opcode == 7) { //SIR
+				int r = array.get(1).intValue();
+				int immed = array.get(4).intValue();
+				return HandleSIR(r, immed);
+			} else if (opcode == 16) { // MLT
+				int rx = array.get(1).intValue();
+				int ry = array.get(2).intValue();
+				return HandleMLT(rx, ry);
+			} else if (opcode == 17) { // DVD
+				int rx = array.get(1).intValue();
+				int ry = array.get(2).intValue();
+				return HandleDVD(rx, ry);
+			} else if (opcode == 18) { //TRR
+				int rx = array.get(1).intValue();
+				int ry = array.get(2).intValue();
+				return HandleTRR(rx, ry);
+			} else if (opcode == 19) { //AND
+				int rx = array.get(1).intValue();
+				int ry = array.get(2).intValue();
+				return HandleAND(rx, ry);
+			} else if (opcode == 20) { // ORR
+				int rx = array.get(1).intValue();
+				int ry = array.get(2).intValue();
+				return HandleORR(rx, ry);
+			} else if (opcode == 21) { //NOT
+				int rx = array.get(1).intValue(); 
+				return HandleNOT(rx);
 			}
 			else {
 				this.subject.updateUserConsole("Illegal Operation Code:" + opcode + "\n");
 				this.subject.updateMFR(2);
 				return new Integer(-2);
-			}
+			} 
 		} else {
 			this.subject.updateUserConsole("Unkown Error!!!!\n");
 			return new Integer(-2);
@@ -120,7 +163,7 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleTRAP(int trapcode) {
 		this.subject.updateUserConsole("Excute trap instruction: " + "TRAP " + trapcode +  " sucess\n");
 		//Get memory content from 2
-		Integer instruction_address = memory.GetValueWithInt(2);
+		Integer instruction_address = memory.GetValueWithInt(2, false);
 		if (instruction_address == null) { 
 			return -2;
 		}
@@ -132,7 +175,7 @@ public class SingalController extends AbstrctProcessor {
 	private int HandleMFT(int faultCode) {
 		this.subject.updateUserConsole("Excute machine fault instruction: " + "MFT " + faultCode + " sucess\n");
 		//Get memory content from 4
-		Integer instruction_address = memory.GetValueWithInt(4);
+		Integer instruction_address = memory.GetValueWithInt(4, false);
 		if (instruction_address == null) { 
 			return -2;
 		}
@@ -162,7 +205,7 @@ public class SingalController extends AbstrctProcessor {
 		
 		int value = 0;
 		if (i == 0) {// in direct addressing mode			
-			Integer memory_content = memory.GetValueWithInt(ea); // fetch the content from the effective address
+			Integer memory_content = memory.GetValueWithInt(ea, false); // fetch the content from the effective address
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -173,7 +216,7 @@ public class SingalController extends AbstrctProcessor {
 			System.out.println("address is " + ea + " memory content is " + value);
 		} else { // in indirect addressing mode
 			System.out.println("indirect address\n");
-			Integer memory_content = memory.GetValueWithInt(ea); // fetch the content from the effective address
+			Integer memory_content = memory.GetValueWithInt(ea, false); // fetch the content from the effective address
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -182,7 +225,7 @@ public class SingalController extends AbstrctProcessor {
 			}
 			
 			this.subject.updateUserConsole("c(EA) = " + memory_content.intValue() + "\n");
-			memory_content = memory.GetValueWithInt(memory_content.intValue()); // fetch the content from the content of the effective address
+			memory_content = memory.GetValueWithInt(memory_content.intValue(), false); // fetch the content from the content of the effective address
 			if (memory_content == null) {
 				this.subject.updateUserConsole(
 						"Failed to execute instruction: LDR " + r + ", " + ix + ", " + address + "\n");
@@ -221,7 +264,7 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 		
-		int result = memory.Set(ea, GPR_content); // set GPR's content to M[ea]
+		int result = memory.Set(ea, GPR_content, false); // set GPR's content to M[ea]
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STR " + r + ", " + ix + ", " + address + "\n");
 		} else {
@@ -264,7 +307,7 @@ public class SingalController extends AbstrctProcessor {
 		}
 		this.subject.updateUserConsole("EA is " + ea + "\n");
 		
-		Integer memory_content = memory.GetValueWithInt(ea); //fetch the content from the content of the effective address 	
+		Integer memory_content = memory.GetValueWithInt(ea, false); //fetch the content from the content of the effective address 	
 		if (memory_content == null) {
 			this.subject.updateUserConsole(
 					"Failed to execute instruction: LDX " + ix + ", " + address + "\n");
@@ -299,7 +342,7 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 
-		int result = memory.Set(ea, ix_content.intValue()); //Set IX's content to location ea of the memory
+		int result = memory.Set(ea, ix_content.intValue(), false); //Set IX's content to location ea of the memory
 		if (result == 0) {
 			this.subject.updateUserConsole("Excute instruction success. Instruction: STX " + ix + ", " + address + "\n");
 		} else {
@@ -454,6 +497,236 @@ public class SingalController extends AbstrctProcessor {
 		
 		return 0;
 	}
+	
+	private int HandleAMR(int r, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: AMR " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		
+		Integer GPR_content = cpu.GetGPR(r);
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: AMR " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		Integer memory_content = memory.GetValueWithInt(ea, false); //fetch the content from the content of the effective address 	
+		if (memory_content == null) {
+			this.subject.updateUserConsole(
+					"Failed to execute instruction: AMR " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateMFR(4);
+			return -2;
+		}	
+		
+		cpu.SetGPR(r, GPR_content.intValue() + memory_content.intValue());
+		return 0;
+	}
+	
+	private int HandleSMR(int r, int ix, int i, int address) {
+		int ea = this.CalculateEA(ix, i, address); // Calculate the effective address
+		if (ea == -2) {
+			this.subject.updateUserConsole("Failed to execute instruction: SMR " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		this.subject.updateUserConsole("EA is " + ea + "\n");
+		
+		Integer GPR_content = cpu.GetGPR(r);
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: SMR " + r + ", " + ix + ", " + address + "\n");
+			return -2;
+		}
+		
+		Integer memory_content = memory.GetValueWithInt(ea, false); //fetch the content from the content of the effective address 	
+		if (memory_content == null) {
+			this.subject.updateUserConsole(
+					"Failed to execute instruction: SMR " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateMFR(4);
+			return -2;
+		}	
+		
+		cpu.SetGPR(r, GPR_content.intValue() - memory_content.intValue());
+		return 0;
+	}
+	
+	private int HandleAIR(int r, int immed) {
+		Integer GPR_content = cpu.GetGPR(r);
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: AIR " + r + ", "+ immed + "\n");
+			return -2;
+		}
+		
+		if (immed > 15 || immed < -15) {
+			this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-15, 15]\n");
+			return -2;
+		}
+		
+		cpu.SetGPR(r, immed + GPR_content.intValue());
+		return 0;
+	}
+	
+	private int HandleSIR(int r, int immed) {
+		Integer GPR_content = cpu.GetGPR(r);
+		if (GPR_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: SIR " + r + ", "+ immed + "\n");
+			return -2;
+		}
+		
+		if (immed > 15 || immed < -15) {
+			this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-15, 15]\n");
+			return -2;
+		}
+		
+		cpu.SetGPR(r, GPR_content.intValue() - immed);
+		return 0;
+	}
+	
+	private int HandleMLT(int rx, int ry) {
+		Integer rx_content = cpu.GetGPR(rx);
+		if (rx_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: MLT " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		Integer ry_content = cpu.GetGPR(ry);
+		if (ry_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: MLT " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		int result = rx_content.intValue() * ry_content.intValue();
+		if (result > 32767) {
+			this.subject.updateUserConsole("OverFlow when Executing MLT " + rx + ", " + ry + ". Result=" + result + "\n");
+			//set CC overflow
+			cpu.SetCCRBit(0);
+			return -2;
+		} 
+		if (result < -32767) {
+			this.subject.updateUserConsole("OverFlow when Executing MLT " + rx + ", " + ry + ". Result=" + result + "\n");
+			//set CC underflow
+			cpu.SetCCRBit(1);
+			return -2;
+		}
+		//reset CCR
+		cpu.ResetCCR();
+		int high_bits = (result>>8)&0XFF;
+		int low_bits = result&0xFF;
+		this.cpu.SetGPR(rx, high_bits);
+		this.cpu.SetGPR(rx + 1, low_bits);
+		this.subject.updateUserConsole("Execute Instruction success: MLT " + rx + ", " + ry + ". result=" + result+ "\n");
+		return 0;
+	}
+	
+	private int HandleDVD(int rx, int ry) {
+		Integer rx_content = cpu.GetGPR(rx);
+		if (rx_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: DVD " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		Integer ry_content = cpu.GetGPR(ry);
+		if (ry_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: DVD " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		if (ry_content.intValue() == 0) {
+			this.subject.updateUserConsole("ry is 0. Failed to execute instruction: DVD " + rx + ", " + ry + "\n");
+			this.cpu.SetCCRBit(2);
+			return -2;
+		}
+		//reset CCR
+		cpu.ResetCCR();
+		int quotient = rx_content.intValue() / ry_content.intValue();
+		int remainder = rx_content.intValue() % ry_content.intValue();
+		
+		this.cpu.SetGPR(rx, quotient);
+		this.cpu.SetGPR(rx + 1, remainder);
+		this.subject.updateUserConsole("Execute Instruction success: DVD " + rx + ", " + ry + ". quotient=" + quotient + ", remainder=" + remainder+ "\n");
+		return 0;
+	}
+	
+	private int HandleTRR(int rx, int ry) {
+		Integer rx_content = cpu.GetGPR(rx);
+		if (rx_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: TRR " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		Integer ry_content = cpu.GetGPR(ry);
+		if (ry_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: TRR " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		if (ry_content.intValue() == rx_content.intValue()) {
+			this.subject.updateUserConsole("Execute Instruction success: TRR " + rx + ", " + ry + ". c(rx)=" + rx_content.intValue() + " equal to c(ry)=" + ry_content.intValue() + "\n");
+			this.cpu.SetCCRBit(3);
+		} else {
+			this.subject.updateUserConsole("Execute Instruction success: TRR " + rx + ", " + ry + ". c(rx)=" + rx_content.intValue() + " not equal to c(ry)=" + ry_content.intValue() + "\n");
+			this.cpu.ResetCCR();
+		}
+		
+		return 0;
+	}
+	
+	private int HandleAND(int rx, int ry) {
+		Integer rx_content = cpu.GetGPR(rx);
+		if (rx_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: AND " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		Integer ry_content = cpu.GetGPR(ry);
+		if (ry_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: AND " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		int and = rx_content.intValue() & ry_content.intValue();
+		cpu.SetGPR(rx, and);
+		
+		this.subject.updateUserConsole("Execute Instruction success: AND " + rx + ", "+ ry + ". and result=" + and + "\n");
+		
+		return 0;
+	}
+	
+	private int HandleORR(int rx, int ry) {
+		Integer rx_content = cpu.GetGPR(rx);
+		if (rx_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: ORR " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		Integer ry_content = cpu.GetGPR(ry);
+		if (ry_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: ORR " + rx + ", "+ ry + "\n");
+			return -2;
+		}
+		
+		int and = rx_content.intValue() | ry_content.intValue();
+		cpu.SetGPR(rx, and);
+		
+		this.subject.updateUserConsole("Execute Instruction success: ORR " + rx + ", "+ ry + ". and result=" + and + "\n");
+		
+		return 0;
+	}
+	
+	private int HandleNOT(int rx) {
+		Integer rx_content = cpu.GetGPR(rx);
+		if (rx_content == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
+			return -2;
+		}
+		
+		short content = (short)rx_content.intValue();
+		short not = (short)~(content);
+		cpu.SetGPR(rx, not);
+		this.subject.updateUserConsole("Execute Instruction success: NOT " + rx + "NOT " + content + " is " + not + "\n");
+		
+		return 0;
+	}
 	/**
 	 * Calculate the effective address
 	 * @param ix
@@ -470,7 +743,7 @@ public class SingalController extends AbstrctProcessor {
 		if (i == 0) { // no indirect addressing
 			return (address + ix_content.intValue());
 		} else { // indirect address
-			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue());
+			Integer memory_content = memory.GetValueWithInt(address + ix_content.intValue(), false);
 			if (memory_content == null) {
 				return -2;
 			} 

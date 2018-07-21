@@ -769,7 +769,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 					this.updateUserConsole("Encoding instruction error. Invalid instruction!!!\n");
 					return;
 				}
-				cpu.SetMBR(InstructionCodec.GetValueWithInt(instruction));
+				cpu.SetMBR(InstructionCodec.GetValueWithInt(instruction));//
 				boolean result = memory.Set(address, instruction);
 				if (result == true) {
 					txtrConsole.append(
@@ -994,6 +994,10 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		} else if (obj instanceof MSR) {
 			if (tfMSR != null) {
 				tfMSR.setText(cpu.GetMSR());
+			}
+		} else if (obj instanceof CCR) {
+			if (tfCCR != null) {
+				tfCCR.setText(cpu.GetCCR());
 			}
 		}
 	}
