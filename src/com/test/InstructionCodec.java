@@ -27,6 +27,11 @@ import java.util.*;
   023(19)	AND rx, ry
   024(20)	ORR rx, ry
   025(21)	NOT rx
+  031(25)	SRC r, count, L/R, A/L
+  032(26)	RRC r, count, L/R, A/L
+  061(49)	IN r, devid
+  062(50)	OUT r, devid
+  063(51)	CHK, r, devid
  *
  */
 public class InstructionCodec {
@@ -602,13 +607,73 @@ public class InstructionCodec {
 
 			int opcode = 21;
 			int rx = Integer.parseInt(parts[0].trim()); // Get operand rx
-			
-			if (rx > 3 || rx < 0 ) {
+
+			if (rx > 3 || rx < 0) {
 				this.subject.updateUserConsole("Invalid GPR index: " + rx + "\n");
 				return null;
 			}
 
 			BitSet bitset = GetBitSet(opcode, rx);
+			return bitset;
+		} else if (part1.equals("SRC")) { // SRC instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 4) { // SRC has 4 operands, if there is less than 4, must be invalid instruction
+				return null;
+			}
+
+			int opcode = 25;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int count = Integer.parseInt(parts[1].trim()); // Get operand count
+			int LR = Integer.parseInt(parts[2].trim()); // Get operand L/R
+			int AL = Integer.parseInt(parts[3].trim()); // Get operand A/L
+
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
+				return null;
+			}
+
+			if (count < 0 || count > 15) {
+				this.subject.updateUserConsole("Invalid count value: " + count + "\n");
+				return null;
+			}
+
+			if (LR < 0 || LR > 1 || AL < 0 || AL > 1) {
+				this.subject.updateUserConsole("Invalid LR:" + LR + " or invalid AL:" + AL + "\n");
+				return null;
+			}
+
+			BitSet bitset = GetBitSet(opcode, r, count, LR, AL);
+			return bitset;
+		} else if (part1.equals("RRC")) { // RRC instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 4) { // RRC has 4 operands, if there is less than 4, must be invalid instruction
+				return null;
+			}
+
+			int opcode = 26;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int count = Integer.parseInt(parts[1].trim()); // Get operand count
+			int LR = Integer.parseInt(parts[2].trim()); // Get operand L/R
+			int AL = Integer.parseInt(parts[3].trim()); // Get operand A/L
+
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
+				return null;
+			}
+
+			if (count < 0 || count > 15) {
+				this.subject.updateUserConsole("Invalid count value: " + count + "\n");
+				return null;
+			}
+
+			if (LR < 0 || LR > 1 || AL < 0 || AL > 1) {
+				this.subject.updateUserConsole("Invalid LR:" + LR + " or invalid AL:" + AL + "\n");
+				return null;
+			}
+
+			BitSet bitset = GetBitSet(opcode, r, count, LR, AL);
 			return bitset;
 		}
 
@@ -670,6 +735,20 @@ public class InstructionCodec {
 			parameters[2] = 0;
 			parameters[3] = 0;
 			parameters[4] = immed;
+			return parameters;
+		} else if (opcode == 25 || opcode == 26) { //SRC or RRC
+			int count = Integer.parseInt(dstr.substring(0, 4), 2);
+			int LR = Integer.parseInt(dstr.substring(6, 7), 2);
+			int AL = Integer.parseInt(dstr.substring(7, 8), 2);
+			r = Integer.parseInt(dstr.substring(8, 10), 2);
+			
+			int [] parameters = new int[5];
+			parameters[0] = opcode;
+			parameters[1] = r;
+			parameters[2] = AL;
+			parameters[3] = LR;
+			parameters[4] = count;
+			System.out.println("Decode instruction: r:" + r + " AL:" + AL + " LR:" + LR + " count:" + count);
 			return parameters;
 		}
 
@@ -849,6 +928,68 @@ public class InstructionCodec {
 		return bitset;
 	}
 
+	public BitSet GetBitSet(int opcode, int r, int count, int LR, int AL) { // for instruction SRC and RRC
+		BitSet bitset = new BitSet(16);
+		// Set count
+		String binary_count = Integer.toBinaryString(count);
+
+		// set count for the instruction [0-3]
+		StringBuilder sb_count = new StringBuilder();
+		// if binary string is less than 4 bit, padding 0
+		while (sb_count.length() + binary_count.length() < 4) {
+			sb_count.append('0');
+		}
+		sb_count.append(binary_count);
+		binary_count = sb_count.toString();
+		for (int i = 0; i < binary_count.length(); i++) {
+			if (binary_count.charAt(i) == '1') {
+				bitset.set(i);
+			}
+		}
+
+		// Set LR
+		if (LR == 1) {
+			bitset.set(6);
+		}
+
+		// Set AL
+		if (AL == 1) {
+			bitset.set(7);
+		}
+
+		// set GPR
+		String binary_r = Integer.toBinaryString(r);
+		StringBuilder sb_r = new StringBuilder();
+		// if binary string is less than 2 bit, padding 0
+		while (sb_r.length() + binary_r.length() < 2) {
+			sb_r.append('0');
+		}
+		sb_r.append(binary_r);
+		binary_r = sb_r.toString();
+		for (int i = 0; i < binary_r.length(); i++) {
+			if (binary_r.charAt(i) == '1') {
+				bitset.set(i + 8);
+			}
+		}
+
+		// set opcode
+		String binary_opcode = Integer.toBinaryString(opcode);
+		StringBuilder sb_opcode = new StringBuilder();
+		// if binary string is less than 6 bit, padding 0
+		while (sb_opcode.length() + binary_opcode.length() < 6) {
+			sb_opcode.append('0');
+		}
+		sb_opcode.append(binary_opcode);
+		binary_opcode = sb_opcode.toString();
+		for (int i = 0; i < binary_opcode.length(); i++) {
+			if (binary_opcode.charAt(i) == '1') {
+				bitset.set(i + 10);
+			}
+		}
+
+		return bitset;
+	}
+
 	/**
 	 * Encode a instruction with 1 operands into binary code. Return the result as
 	 * the BitSet object
@@ -859,7 +1000,7 @@ public class InstructionCodec {
 	 */
 	public BitSet GetBitSet(int opcode, int trapCode) {
 		BitSet bitset = new BitSet(16);
-		if (opcode == 30 || opcode == 63) { //TRAP and MFT
+		if (opcode == 30 || opcode == 63) { // TRAP and MFT
 			String binary_trapcode = Integer.toBinaryString(trapCode);
 			// set value for the instruction [0-3]
 			StringBuilder sb_trapcode = new StringBuilder();

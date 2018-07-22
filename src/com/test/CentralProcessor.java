@@ -92,20 +92,28 @@ public class CentralProcessor {
 	public int SetGPR(int index, int value) {
 		if (index == 0) {
 			int old_r0 = r0.GetValueWithInt();
+			String old_binary = r0.GetBinaryString();
 			r0.SetValue(value);
-			this.subject.updateUserConsole("GPR-0 from " + old_r0 + " to " + value + "\n");
+			String new_binary = r0.GetBinaryString();
+			this.subject.updateUserConsole("GPR-0 from " + old_r0 + "(" + old_binary + ") to " + value + "(" + new_binary + ")\n");
 		} else if (index == 1) {
 			int old_r1 = r1.GetValueWithInt();
+			String old_binary = r1.GetBinaryString();
 			r1.SetValue(value);
-			this.subject.updateUserConsole("GPR-1 from " + old_r1 + " to " + value + "\n");
+			String new_binary = r1.GetBinaryString();
+			this.subject.updateUserConsole("GPR-1 from " + old_r1 + "(" + old_binary + ") to " + value + "(" + new_binary + ")\n");
 		} else if (index == 2) {
 			int old_r2 = r2.GetValueWithInt();
+			String old_binary = r2.GetBinaryString();
 			r2.SetValue(value);
-			this.subject.updateUserConsole("GPR-2 from " + old_r2 + " to " + value + "\n");
+			String new_binary = r2.GetBinaryString();
+			this.subject.updateUserConsole("GPR-2 from " + old_r2 + "(" + old_binary + ") to " + value + "(" + new_binary + ")\n");
 		} else if (index == 3) {
 			int old_r3 = r3.GetValueWithInt();
+			String old_binary = r3.GetBinaryString();
 			r3.SetValue(value);
-			this.subject.updateUserConsole("GPR-3 from " + old_r3 + " to " + value + "\n");
+			String new_binary = r3.GetBinaryString();
+			this.subject.updateUserConsole("GPR-3 from " + old_r3 + "(" + old_binary + ") to " + value + "(" + new_binary + ")\n");
 		} else {
 			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + index + ". The range of GPR is 0-3\n");
 			this.SetMFR(6);
@@ -133,6 +141,59 @@ public class CentralProcessor {
 			this.SetMFR(6);
 			return null;
 		}
+	}
+	
+	public BitSet GetGPRWithBitSet(int index) {
+		if (index == 0) {
+			return r0.Get();
+		} else if (index == 1) {
+			return r1.Get();
+		} else if (index == 2) {
+			return r2.Get();
+		} else if (index == 3){
+			return r3.Get();
+		} else {
+			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + index + ". The range of GPR is 0-3\n");
+			this.SetMFR(6);
+			return null;
+		}
+	}
+	
+	public void SetGPRWithBitSet(int index, BitSet bitset) {
+		if (index == 0) {
+			int old_r0 = r0.GetValueWithInt();
+			String old_binary = r0.GetBinaryString();
+			r0.Set(bitset);
+			int new_r0 = r0.GetValueWithInt();
+			String new_binary = r0.GetBinaryString();
+			this.subject.updateUserConsole("GPR-0 from " + old_r0 + "(" + old_binary + ") to " + new_r0 + "(" + new_binary + ")\n");
+		} else if (index == 1) {
+			int old_r1 = r1.GetValueWithInt();
+			String old_binary = r1.GetBinaryString();
+			r1.Set(bitset);
+			int new_r1 = r1.GetValueWithInt();
+			String new_binary = r1.GetBinaryString();
+			this.subject.updateUserConsole("GPR-1 from " + old_r1 + "(" + old_binary + ") to " + new_r1 + "(" + new_binary + ")\n");		
+		} else if (index == 2) {
+			int old_r2 = r2.GetValueWithInt();
+			String old_binary = r2.GetBinaryString();
+			r2.Set(bitset);
+			int new_r2 = r2.GetValueWithInt();
+			String new_binary = r2.GetBinaryString();
+			this.subject.updateUserConsole("GPR-2 from " + old_r2 + "(" + old_binary + ") to " + new_r2 + "(" + new_binary + ")\n");		
+		} else if (index == 3){
+			int old_r3 = r3.GetValueWithInt();
+			String old_binary = r3.GetBinaryString();
+			r3.Set(bitset);
+			int new_r3 = r3.GetValueWithInt();
+			String new_binary = r3.GetBinaryString();
+			this.subject.updateUserConsole("GPR-3 from " + old_r3 + "(" + old_binary + ") to " + new_r3 + "(" + new_binary + ")\n");		
+		} else {
+			this.subject.updateUserConsole("Access GPR fail. Invalid GPR index:" + index + ". The range of GPR is 0-3\n");
+			this.SetMFR(6);
+		}
+		
+		updateGPRContent();
 	}
 	
 	private void initGPRContent() {
@@ -265,6 +326,7 @@ public class CentralProcessor {
 	public int GetMBRWithInt() {
 		return mbr.GetValueWithInt();
 	}
+	
 	/**
 	 * Get MFR's value with String format
 	 */

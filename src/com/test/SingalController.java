@@ -1,6 +1,7 @@
 package com.test;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 
 public class SingalController extends AbstrctProcessor {
 	private Memory memory;
@@ -148,6 +149,18 @@ public class SingalController extends AbstrctProcessor {
 			} else if (opcode == 21) { //NOT
 				int rx = array.get(1).intValue(); 
 				return HandleNOT(rx);
+			} else if (opcode == 25) {// SRC
+				int r = array.get(1).intValue(); 
+				int AL = array.get(2).intValue(); 
+				int LR = array.get(3).intValue(); 
+				int count = array.get(4).intValue(); 
+				return HandleSRC(r, AL, LR, count);
+			} else if (opcode == 26) { // RRC
+				int r = array.get(1).intValue(); 
+				int AL = array.get(2).intValue(); 
+				int LR = array.get(3).intValue(); 
+				int count = array.get(4).intValue(); 
+				return HandleRRC(r, AL, LR, count);
 			}
 			else {
 				this.subject.updateUserConsole("Illegal Operation Code:" + opcode + "\n");
@@ -725,7 +738,265 @@ public class SingalController extends AbstrctProcessor {
 		cpu.SetGPR(rx, not);
 		this.subject.updateUserConsole("Execute Instruction success: NOT " + rx + "NOT " + content + " is " + not + "\n");
 		
+		
+		
 		return 0;
+	}
+	
+	private int HandleSRC(int r, int AL, int LR, int count)
+	{
+		BitSet bitset = cpu.GetGPRWithBitSet(r);
+		if (bitset == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: SRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
+			return -2;
+		}
+		
+		//this.subject.updateUserConsole("SRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
+		if (AL == 0) { //Arithmetic shift
+			if (LR == 1) {
+				//letf shift
+				BitSet bs = ArithmeticShift(bitset, true, count);
+				cpu.SetGPRWithBitSet(r, bs);			
+			} else {
+				//right shift
+				BitSet bs = ArithmeticShift(bitset, false, count);
+				cpu.SetGPRWithBitSet(r, bs);
+			}
+		} else { //logical shift
+			if (LR == 1) { //left shift
+				BitSet bs = LogicalShift(bitset, true, count);
+				cpu.SetGPRWithBitSet(r, bs);
+			} else {
+				//right shift
+				BitSet bs = LogicalShift(bitset, false, count);
+				cpu.SetGPRWithBitSet(r, bs);
+			}
+		}
+		
+		this.subject.updateUserConsole("Execute instruction success: SRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
+		return 0;
+	}
+	
+	
+	private int HandleRRC(int r, int AL, int LR, int count)
+	{
+		BitSet bitset = cpu.GetGPRWithBitSet(r);
+		if (bitset == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: RRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
+			return -2;
+		}
+		
+
+		if (AL == 0) { //Arithmetic rotate
+			this.subject.updateUserConsole("Not support arithmetic rotate. Failed to execute instruction: RRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
+			return -2;
+		} else { //logical rotate
+			if (LR == 1) { //left rotate
+				BitSet bs = LogicalRotate(bitset, true, count);
+				cpu.SetGPRWithBitSet(r, bs);
+			} else {
+				//right rotate
+				BitSet bs = LogicalRotate(bitset, false, count);
+				cpu.SetGPRWithBitSet(r, bs);
+			}
+		}
+		
+		this.subject.updateUserConsole("Execute instruction success: SRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
+		return 0;
+	}
+	/**
+	 * Handle logic shifting
+	 * @param bitset
+	 * @param leftShifting
+	 * @param count
+	 */
+	private BitSet LogicalShift(BitSet bitset, boolean leftShifting, int count) {
+		BitSet return_bitset = new BitSet(16);
+		int[] reverse_bits = new int[16];
+		for (int i = 0; i < 16; i++) {
+			if (bitset.get(i) == true) {
+				reverse_bits[15 - i] = 1;
+			} else {
+				reverse_bits[15 - i] = 0;
+			}
+		}
+
+		for (int i = 0; i < 16; i++) {
+			if (reverse_bits[i] == 1) {
+				System.out.println("[" + i + "]=" + 1);
+			} else {
+				System.out.println("[" + i + "]=" + 0);
+			}
+		}
+
+		int[] tmp_bits = new int[16];
+		if (leftShifting == false) {
+			// compensate 0 to the left
+			for (int i = 0; i < count; i++) {
+				tmp_bits[i] = 0;
+			}
+
+			for (int i = 0; i < 16 - count; i++) {
+				tmp_bits[i + count] = reverse_bits[i];
+			}
+			
+			//set new value to return_bitset
+			for (int i = 0; i < 16; i++) {
+				if (tmp_bits[15 -i] == 1) {
+					return_bitset.set(i);
+				}
+			}
+		} else {
+			//copy position count to 16 to the tmp_bits
+			for (int i = count; i < 16; i++ ) {
+				tmp_bits[i - count] = reverse_bits[i];
+			}
+			
+			//compensate 0 to the left count bits
+			for (int i = 16 - count; i < 16; i++) {
+				tmp_bits[i] = 0;
+			}	
+			
+			//set new value to return_bitset
+			bitset.clear();
+			for (int i = 0; i < 16; i++) {
+				if (tmp_bits[15 -i] == 1) {
+					return_bitset.set(i);
+				}
+			}	
+		}
+		
+		return return_bitset;
+	}
+	
+	public BitSet ArithmeticShift(BitSet bitset, boolean leftShifting, int count) {
+		BitSet return_bitset = new BitSet(16);
+		int[] reverse_bits = new int[16];
+		for (int i = 0; i < 16; i++) {
+			if (bitset.get(i) == true) {
+				reverse_bits[15 - i] = 1;
+			} else {
+				reverse_bits[15 - i] = 0;
+			}
+		}
+
+		for (int i = 0; i < 16; i++) {
+			if (reverse_bits[i] == 1) {
+				System.out.println("[" + i + "]=" + 1);
+			} else {
+				System.out.println("[" + i + "]=" + 0);
+			}
+		}
+
+		int[] tmp_bits = new int[16];
+		if (leftShifting == false) { // right shifting
+
+			if (reverse_bits[0] == 1) {
+				// compensate 1 to the left
+				for (int i = 0; i < count; i++) {
+					tmp_bits[i] = 1;
+				}
+			} else {
+				// compensate 0 to the left
+				for (int i = 0; i < count; i++) {
+					tmp_bits[i] = 0;
+				}
+			}
+			
+			for (int i = 0; i < 16 - count; i++) {
+				tmp_bits[i + count] = reverse_bits[i];
+			}
+
+			// set new value to return_bitset
+			for (int i = 0; i < 16; i++) {
+				if (tmp_bits[15 - i] == 1) {
+					return_bitset.set(i);
+				}
+			}
+		} else { // left shifting
+			// keep the sign bit unchanged
+			tmp_bits[0] = reverse_bits[0];
+			// copy position count to 16 to the tmp_bits
+			for (int i = count + 1; i < 16; i++) {
+				tmp_bits[i - count] = reverse_bits[i];
+			}
+
+			// compensate 0 to the left count bits
+			for (int i = 16 - count; i < 16; i++) {
+				tmp_bits[i] = 0;
+			}
+
+			// set new value to return_bitset
+			for (int i = 0; i < 16; i++) {
+				if (tmp_bits[15 - i] == 1) {
+					return_bitset.set(i);
+				}
+			}
+		}
+
+		System.out.println("After shifting");
+		for (int i = 0; i < 16; i++) {
+			if (tmp_bits[i] == 1) {
+				System.out.println("[" + i + "]=" + 1);
+			} else {
+				System.out.println("[" + i + "]=" + 0);
+			}
+		}
+		return return_bitset;
+	}
+	
+	private BitSet LogicalRotate(BitSet bitset, boolean leftShifting, int count) {
+		BitSet return_bitset = new BitSet(16);
+		int[] reverse_bits = new int[16];
+		for (int i = 0; i < 16; i++) {
+			if (bitset.get(i) == true) {
+				reverse_bits[15 - i] = 1;
+			} else {
+				reverse_bits[15 - i] = 0;
+			}
+		}
+
+		for (int i = 0; i < 16; i++) {
+			if (reverse_bits[i] == 1) {
+				System.out.println("[" + i + "]=" + 1);
+			} else {
+				System.out.println("[" + i + "]=" + 0);
+			}
+		}
+
+		int[] tmp_bits = new int[16];
+		if (leftShifting == false) { // right rotate
+			for (int i = 0; i < 16; i++) {
+				tmp_bits[(i + count) % 16] = reverse_bits[i];
+			}
+			// set new value to return_bitset
+			for (int i = 0; i < 16; i++) {
+				if (tmp_bits[15 - i] == 1) {
+					return_bitset.set(i);
+				}
+			}
+		} else { // left rotate
+			for (int i = 0; i < 16; i++) {
+				tmp_bits[(i+ (16-count)) % 16] = reverse_bits[i];
+			}
+			
+			// set new value to return_bitset
+			for (int i = 0; i < 16; i++) {
+				if (tmp_bits[15 - i] == 1) {
+					return_bitset.set(i);
+				}
+			}
+		}
+
+		System.out.println("After shifting");
+		for (int i = 0; i < 16; i++) {
+			if (tmp_bits[i] == 1) {
+				System.out.println("[" + i + "]=" + 1);
+			} else {
+				System.out.println("[" + i + "]=" + 0);
+			}
+		}
+		return return_bitset;
 	}
 	/**
 	 * Calculate the effective address

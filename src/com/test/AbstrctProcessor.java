@@ -47,7 +47,6 @@ public class AbstrctProcessor implements IProcessor {
 
 	public IProcessor AddNext(IProcessor processor) {
 		this.next = processor;
-
 		return this.next;
 	}
 
@@ -62,8 +61,7 @@ public class AbstrctProcessor implements IProcessor {
 	}
 
 	public void Set(BitSet content) {
-		bitset.clear();
-		bitset.or(content);
+		bitset = content;
 		this.subject.updateData(this);
 	}
 
@@ -83,7 +81,7 @@ public class AbstrctProcessor implements IProcessor {
 	}
 
 	// set a long value to bitset
-	public void SetValue(long value) {
+	public void SetValue(int value) {
 		int old_value = this.value;
 		int int_value = java.lang.Math.abs((int) value);
 
@@ -101,7 +99,7 @@ public class AbstrctProcessor implements IProcessor {
 			this.bitset.set(nbits-1);
 		}
 		
-		this.value = (int)value;
+		this.value = value;
 		this.subject.updateData(this);
 		this.postSetValue(old_value, this.value);
 	}
@@ -124,7 +122,7 @@ public class AbstrctProcessor implements IProcessor {
 		for (int i = 0; i < nbits; i++) {
 			s.append(bitset.get(i) == true ? 1 : 0);
 		}
-
+		//this.subject.updateUserConsole(bitset.toString() + "\n");
 		return s.toString();
 	}
 }
