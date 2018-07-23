@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
@@ -33,7 +34,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JRadioButton;
 import java.awt.Component;
 
-public class ComputerSimulator implements Runnable, ActionListener, IUpdate, IStop {
+public class ComputerSimulator implements Runnable, ActionListener, IUpdate, IStop, IGetInput {
 
 	private JFrame frmComputerSimulator;
 	private JButton btnIPL;
@@ -47,7 +48,6 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	private CentralProcessor cpu;
 	private Memory memory;
 	private boolean status;
-	private Thread process;
 	private boolean isRunning;
 	private JLabel lblMemory;
 	private JScrollPane spRegister;
@@ -111,6 +111,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	private JButton btnLoadToMAR;
 	private JButton btnLoadToMBR;
 	private JButton btnLoadData;
+	private JTextField tfKeyboard;
+	private JButton btnKeyboardInput;
 
 	/**
 	 * Launch the application.
@@ -142,9 +144,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 
 		status = false;
 		isRunning = false;
-		process = null;
 		memory = new Memory(this);
-		cpu = new CentralProcessor(this, this, memory);
+		cpu = new CentralProcessor(this, this, this, memory);
 		loader = new RomLoader(this, cpu, memory);
 
 		frmComputerSimulator = new JFrame();
@@ -622,6 +623,24 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		btnLoadData.setBounds(531, 178, 242, 27);
 		frmComputerSimulator.getContentPane().add(btnLoadData);
 		btnLoadData.addActionListener(this);
+		// add text field for keyboard input
+		tfKeyboard = new JTextField();
+		tfKeyboard.setFont(new Font("ËÎÌו", Font.PLAIN, 20));
+		tfKeyboard.setBounds(375, 228, 144, 24);
+		frmComputerSimulator.getContentPane().add(tfKeyboard);
+		tfKeyboard.setColumns(10);
+		// add label for keybaord input
+		JLabel lblkeyboard = new JLabel("KeyBoard");
+		lblkeyboard.setFont(new Font("ËÎÌו", Font.BOLD, 20));
+		lblkeyboard.setBounds(266, 228, 95, 21);
+		frmComputerSimulator.getContentPane().add(lblkeyboard);
+		// add button for keyboard input
+		btnKeyboardInput = new JButton("Enter");
+		btnKeyboardInput.setFont(new Font("ËÎÌו", Font.BOLD, 20));
+		btnKeyboardInput.setBounds(531, 227, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnKeyboardInput);
+		btnKeyboardInput.addActionListener(this);
+
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -631,14 +650,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				return;
 			}
 
-			if (process == null || !process.isAlive()) {
-				isRunning = true;
-				process = new Thread(this);
-				process.start();
-				txtrConsole.append("Running\n");
-			} else {
-				resumeExecution();
-			}
+			isRunning = true;
+			this.run();
 		} else if (e.getSource() == btnIPL) { // Respond to clicking the IPL button
 			boolean result = loader.LoadProgram();
 			if (result == true) {
@@ -833,6 +846,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			if (result == true) {
 				txtrConsole.append("Loading data " + cpu.GetMBR() + " to Memory " + mar + " sucess\n");
 			}
+		} else if (e.getSource() == btnKeyboardInput) {
+			this.cpu.InputNotify(0, tfKeyboard.getText());
 		}
 	}
 
@@ -842,7 +857,6 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			// return 0 means successfully execute one instruction
 			// return -2 means failed to executing one instruction
 			// return -3 means no instruction to execute
-
 			int result = cpu.Execute();
 			if (result == -1) { // complete boostrap program
 				cpu.SetPC(8); // when finish executing boostrap program, Returning to the boot program means
@@ -866,17 +880,6 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				isRunning = true;
 				txtrConsole.append("No resturn code to be defined, abnormal\n");
 			}
-		}
-	}
-
-	/**
-	 * Restart the process thread
-	 */
-	void resumeExecution() {
-		txtrConsole.append("Resume. Running\n");
-		isRunning = true;
-		if (!process.isAlive()) {
-			process.start();
 		}
 	}
 
@@ -945,66 +948,74 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 
 	@Override
 	public void updateData(Object obj) {
-		// TODO Auto-generated method stub
-		if (obj instanceof Memory) {
-			String memoryColumn[] = { "Address", "Value" };
-			if (jtMemory != null) {
-				DefaultTableModel memoryTableModel = (DefaultTableModel) jtMemory.getModel();
-				if (memoryTableModel != null) {
-					memoryTableModel.setDataVector(memory.GetContent(), memoryColumn);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// TODO Auto-generated method stub
+				if (obj instanceof Memory) {
+					String memoryColumn[] = { "Address", "Value" };
+					if (jtMemory != null) {
+						DefaultTableModel memoryTableModel = (DefaultTableModel) jtMemory.getModel();
+						if (memoryTableModel != null) {
+							memoryTableModel.setDataVector(memory.GetContent(), memoryColumn);
+						}
+					}
+				} else if (obj instanceof PC) {
+					if (tfPC != null) {
+						tfPC.setText(cpu.GetPC());
+					}
+				} else if (obj instanceof MAR) {
+					if (tfMAR != null) {
+						tfMAR.setText(cpu.GetMAR());
+					}
+				} else if (obj instanceof MBR) {
+					if (tfMBR != null) {
+						tfMBR.setText(cpu.GetMBR());
+					}
+				} else if (obj instanceof IR) {
+					if (tfIR != null) {
+						tfIR.setText(cpu.GetIR());
+					}
+				} else if (obj instanceof GPR) {
+					System.out.println("update GPR");
+					String GPRColumn[] = { "Register", "Value" };
+					if (jtRegister != null) {
+						DefaultTableModel registerTableModel = (DefaultTableModel) jtRegister.getModel();
+						if (registerTableModel != null) {
+							registerTableModel.setDataVector(cpu.GetGPRContent(), GPRColumn);
+						}
+					}
+				} else if (obj instanceof IndexRegister) {
+					if (jtIndexRegister != null) {
+						String Column[] = { "Register", "Value" };
+						DefaultTableModel IXTableModel = (DefaultTableModel) jtIndexRegister.getModel();
+						if (IXTableModel != null) {
+							IXTableModel.setDataVector(cpu.GetIXContent(), Column);
+						}
+					}
+				} else if (obj instanceof MFR) {
+					if (tfMFR != null) {
+						tfMFR.setText(cpu.GetMFR());
+					}
+				} else if (obj instanceof MSR) {
+					if (tfMSR != null) {
+						tfMSR.setText(cpu.GetMSR());
+					}
+				} else if (obj instanceof CCR) {
+					if (tfCCR != null) {
+						tfCCR.setText(cpu.GetCCR());
+					}
 				}
 			}
-		} else if (obj instanceof PC) {
-			if (tfPC != null) {
-				tfPC.setText(cpu.GetPC());
-			}
-		} else if (obj instanceof MAR) {
-			if (tfMAR != null) {
-				tfMAR.setText(cpu.GetMAR());
-			}
-		} else if (obj instanceof MBR) {
-			if (tfMBR != null) {
-				tfMBR.setText(cpu.GetMBR());
-			}
-		} else if (obj instanceof IR) {
-			if (tfIR != null) {
-				tfIR.setText(cpu.GetIR());
-			}
-		} else if (obj instanceof GPR) {
-			System.out.println("update GPR");
-			String GPRColumn[] = { "Register", "Value" };
-			if (jtRegister != null) {
-				DefaultTableModel registerTableModel = (DefaultTableModel) jtRegister.getModel();
-				if (registerTableModel != null) {
-					registerTableModel.setDataVector(cpu.GetGPRContent(), GPRColumn);
-				}
-			}
-		} else if (obj instanceof IndexRegister) {
-			if (jtIndexRegister != null) {
-				String Column[] = { "Register", "Value" };
-				DefaultTableModel IXTableModel = (DefaultTableModel) jtIndexRegister.getModel();
-				if (IXTableModel != null) {
-					IXTableModel.setDataVector(cpu.GetIXContent(), Column);
-				}
-			}
-		} else if (obj instanceof MFR) {
-			if (tfMFR != null) {
-				tfMFR.setText(cpu.GetMFR());
-			}
-		} else if (obj instanceof MSR) {
-			if (tfMSR != null) {
-				tfMSR.setText(cpu.GetMSR());
-			}
-		} else if (obj instanceof CCR) {
-			if (tfCCR != null) {
-				tfCCR.setText(cpu.GetCCR());
-			}
-		}
+		});
 	}
 
 	@Override
 	public void updateUserConsole(String message) {
-		txtrConsole.append(message);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				txtrConsole.append(message);
+			}
+		});
 	}
 
 	@Override
@@ -1066,5 +1077,11 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	@Override
 	public void stop() {
 		StopMachine();
+	}
+
+	@Override
+	public String GetKeyboardInput() {
+		String keyboardInput = tfKeyboard.getText();
+		return keyboardInput;
 	}
 }

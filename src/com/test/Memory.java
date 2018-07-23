@@ -126,7 +126,7 @@ public class Memory {
 				value = value >>> 1;
 			}
 		}
-		
+
 		updateContent();
 		this.subject.updateData(this);
 
@@ -181,7 +181,7 @@ public class Memory {
 	 * @param content
 	 * @return true: success to set; false: failed to set
 	 */
-	public boolean SetReservedMemory(int index, int content) {
+	public boolean SetReservedMemory(int index, int value) {
 		if (index < 0 || index > 5) {
 			this.subject.updateUserConsole("Try to write content to unreserved memory, error\n");
 			this.subject.updateMFR(2);
@@ -196,12 +196,12 @@ public class Memory {
 		memory[index].clear();
 		int ix = 0;
 
-		while (content != 0L) {
-			if (content % 2L != 0) {
+		while (value != 0L) {
+			if (value % 2L != 0) {
 				memory[index].set(ix);
 			}
 			++ix;
-			content = content >>> 1;
+			value = value >>> 1;
 		}
 
 		updateContent();

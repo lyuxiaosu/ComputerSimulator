@@ -627,7 +627,12 @@ public class InstructionCodec {
 			int count = Integer.parseInt(parts[1].trim()); // Get operand count
 			int LR = Integer.parseInt(parts[2].trim()); // Get operand L/R
 			int AL = Integer.parseInt(parts[3].trim()); // Get operand A/L
-
+			
+			if (count > 15 || count < -15) {
+				this.subject.updateUserConsole("Invalid count value: " + count + ". The range should be [-15-15]\n");
+				return null;
+			}
+			
 			if (r > 3 || r < 0) {
 				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
 				return null;
@@ -658,13 +663,12 @@ public class InstructionCodec {
 			int LR = Integer.parseInt(parts[2].trim()); // Get operand L/R
 			int AL = Integer.parseInt(parts[3].trim()); // Get operand A/L
 
-			if (r > 3 || r < 0) {
-				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
+			if (count > 15 || count < -15) {
+				this.subject.updateUserConsole("Invalid count value: " + count + ". The range should be [-15-15]\n");
 				return null;
 			}
-
-			if (count < 0 || count > 15) {
-				this.subject.updateUserConsole("Invalid count value: " + count + "\n");
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
 				return null;
 			}
 
@@ -674,6 +678,75 @@ public class InstructionCodec {
 			}
 
 			BitSet bitset = GetBitSet(opcode, r, count, LR, AL);
+			return bitset;
+		} else if (part1.equals("IN")) { //IN instruction
+			String sub = instruction.substring(2);
+			String[] parts = sub.split(",");
+			if (parts.length != 2) { // IN has 2 operands, if there is less than 4, must be invalid instruction
+				return null;
+			}
+
+			int opcode = 49;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int devid = Integer.parseInt(parts[1].trim()); // Get operand devid
+			
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
+				return null;
+			}
+
+			if (devid > 31 || devid < 0) {
+				this.subject.updateUserConsole("Invalid Device id: " + devid + ". It should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, devid);
+			return bitset;
+		} else if (part1.equals("OUT")) { //OUT instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 2) { // OUT has 2 operands, if there is less than 4, must be invalid instruction
+				return null;
+			}
+
+			int opcode = 50;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int devid = Integer.parseInt(parts[1].trim()); // Get operand devid
+			
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
+				return null;
+			}
+
+			if (devid > 31 || devid < 0) {
+				this.subject.updateUserConsole("Invalid Device id: " + devid + ". It should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, devid);
+			return bitset;
+		} else if (part1.equals("CHK")) { //CHK instruction
+			String sub = instruction.substring(3);
+			String[] parts = sub.split(",");
+			if (parts.length != 2) { // CHK has 2 operands, if there is less than 4, must be invalid instruction
+				return null;
+			}
+
+			int opcode = 51;
+			int r = Integer.parseInt(parts[0].trim()); // Get operand r
+			int devid = Integer.parseInt(parts[1].trim()); // Get operand devid
+			
+			if (r > 3 || r < 0) {
+				this.subject.updateUserConsole("Invalid GPR index: " + r + "\n");
+				return null;
+			}
+
+			if (devid > 31 || devid < 0) {
+				this.subject.updateUserConsole("Invalid Device id: " + devid + ". It should be [0-31]\n");
+				return null;
+			}
+			
+			BitSet bitset = GetBitSet(opcode, r, devid);
 			return bitset;
 		}
 
@@ -830,6 +903,36 @@ public class InstructionCodec {
 					bitset.set(i + 8);
 				}
 			}
+		} else if (opcode == 49 || opcode == 50 || opcode == 51) { //IN and OUT
+			String binary_devid = Integer.toBinaryString(immed);
+			StringBuilder sb_devid = new StringBuilder();
+			// if binary string is less than 5 bit, padding 0
+			while (sb_devid.length() + binary_devid.length() < 5) {
+				sb_devid.append('0');
+			}
+			
+			sb_devid.append(binary_devid);
+			binary_devid = sb_devid.toString();
+			for (int i = 0; i < binary_devid.length(); i++) {
+				if (binary_devid.charAt(i) == '1') {
+					bitset.set(i);
+				}
+			}
+			
+			String binary_r = Integer.toBinaryString(r);
+			StringBuilder sb_r = new StringBuilder();
+			// if binary string is less than 2 bit, padding 0
+			while (sb_r.length() + binary_r.length() < 2) {
+				sb_r.append('0');
+			}
+			sb_r.append(binary_r);
+			binary_r = sb_r.toString();
+			for (int i = 0; i < binary_r.length(); i++) {
+				if (binary_r.charAt(i) == '1') {
+					bitset.set(i + 8);
+				}
+			}
+
 		}
 		// set opcode
 		String binary_opcode = Integer.toBinaryString(opcode);

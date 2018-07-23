@@ -20,11 +20,13 @@ public class CentralProcessor {
 	private String[][] IXContent; // pairs of index register and its value
 	private IUpdate subject;
 	private IStop simulator;
+	private IGetInput input;
 
-	public CentralProcessor(IUpdate subject, IStop simulator, Memory memory) {
+	public CentralProcessor(IUpdate subject, IStop simulator, IGetInput input, Memory memory) {
 		this.subject = subject;
 		this.memory = memory;
 		this.simulator = simulator;
+		this.input = input;
 		init();
 	}
 
@@ -41,7 +43,7 @@ public class CentralProcessor {
 		x3 = new IndexRegister(subject);
 		instruction_decoder = new InstructionDecoder(subject);
 		instruction_encoder = new InstructionEncoder(subject);
-		signal_controller = new SingalController(this, memory, subject, simulator);
+		signal_controller = new SingalController(this, memory, subject, simulator, input);
 		r0 = new GPR(subject);
 		r1 = new GPR(subject);
 		r2 = new GPR(subject);
@@ -400,7 +402,11 @@ public class CentralProcessor {
 	/**
 	 * 
 	 */
-	boolean SetBootEndLocation(int location) {
+	public boolean SetBootEndLocation(int location) {
 		return pc.SetBootEndLocation(location);
+	}
+	
+	public void InputNotify(int devid, String number) {
+		this.signal_controller.InputNotify(devid, number);
 	}
 }
