@@ -114,7 +114,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	private JTextField tfKeyboard;
 	private JButton btnKeyboardInput;
 	private JButton btnLoadTest1;
-	private JButton btnExecuteTest1;
+	private JButton btnLoadTest2;
 
 	/**
 	 * Launch the application.
@@ -651,11 +651,11 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		btnLoadTest1.addActionListener(this);
 		
 		//button of executing test1
-		btnExecuteTest1 = new JButton("Execute Test1");
-		btnExecuteTest1.setFont(new Font("ËÎÌו", Font.BOLD, 20));
-		btnExecuteTest1.setBounds(584, 327, 190, 27);
-		frmComputerSimulator.getContentPane().add(btnExecuteTest1);
-		btnExecuteTest1.addActionListener(this);
+		btnLoadTest2 = new JButton("Load Test2");
+		btnLoadTest2.setFont(new Font("ËÎÌו", Font.BOLD, 20));
+		btnLoadTest2.setBounds(584, 327, 190, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadTest2);
+		btnLoadTest2.addActionListener(this);
 
 	}
 
