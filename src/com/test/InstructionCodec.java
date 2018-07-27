@@ -1196,10 +1196,44 @@ public class InstructionCodec {
 	 * @return
 	 */
 	public static int GetValueWithInt(BitSet bitset) {
-		int bitInteger = 0;
-		for (int i = 0; i < 16; i++)
+		int bitInteger = 0;		
+		for (int i = 0; i < 15; i++)
 			if (bitset.get(i))
 				bitInteger |= (1 << i);
+
+		if (bitset.get(15) == true) {
+			bitInteger = -bitInteger;
+		}
+		
 		return bitInteger;
+	}
+	
+	public static String GetBinaryString(BitSet bs) {
+
+		StringBuilder s = new StringBuilder();
+		for (int i = 0; i < 16; i++) {
+			s.append(bs.get(i) == true ? 1 : 0);
+		}
+		return s.toString();
+	}
+	
+	public static String GetBinaryString(int value) {
+		int int_value = java.lang.Math.abs((int) value);
+		BitSet bitset = new BitSet(16);
+		
+		int index = 0;
+		while (int_value != 0L) {
+			if (int_value % 2L != 0) {
+				bitset.set(index);
+			}
+			++index;
+			int_value = int_value >>> 1;
+		}
+
+		if (value < 0) { // is negative number, set the highest bit to 1
+			bitset.set(15);
+		}
+		
+		return GetBinaryString(bitset);
 	}
 }

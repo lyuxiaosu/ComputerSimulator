@@ -322,7 +322,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfMSR.setColumns(10);
 
 		spConsole = new JScrollPane();
-		spConsole.setBounds(14, 630, 600, 310);
+		spConsole.setBounds(14, 630, 770, 310);
 		frmComputerSimulator.getContentPane().add(spConsole);
 
 		// add txt area showing a simple console
@@ -864,6 +864,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			}
 		} else if (e.getSource() == btnKeyboardInput) {
 			this.cpu.InputNotify(0, tfKeyboard.getText());
+			this.txtrConsole.append(tfKeyboard.getText() + "\n");
 		} else if (e.getSource() == btnLoadTest1) {
 			boolean result = loader.LoadProgram(18, "Test1.txt", false);
 			if (result == true) {

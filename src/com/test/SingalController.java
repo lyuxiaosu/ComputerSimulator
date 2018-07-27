@@ -600,6 +600,7 @@ public class SingalController extends AbstrctProcessor {
 		}
 
 		cpu.SetGPR(r, GPR_content.intValue() + memory_content.intValue());
+		this.subject.updateUserConsole("Execute instruction success: AMR " +  r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
 
@@ -704,7 +705,7 @@ public class SingalController extends AbstrctProcessor {
 		this.cpu.SetGPR(rx, high_bits);
 		this.cpu.SetGPR(rx + 1, low_bits);
 		this.subject
-				.updateUserConsole("Execute Instruction success: MLT " + rx + ", " + ry + ". result=" + result + "\n");
+				.updateUserConsole("Execute Instruction success: MLT " + rx + ", " + ry + ". result=" + result + "(" +InstructionCodec.GetBinaryString(result) + ")\n");
 		return 0;
 	}
 
@@ -765,62 +766,82 @@ public class SingalController extends AbstrctProcessor {
 	}
 
 	private int HandleAND(int rx, int ry) {
-		Integer rx_content = cpu.GetGPR(rx);
-		if (rx_content == null) {
-			this.subject.updateUserConsole("Failed to execute instruction: AND " + rx + ", " + ry + "\n");
+		BitSet rx_bitset = cpu.GetGPRWithBitSet(rx);		
+		if (rx_bitset == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-
-		Integer ry_content = cpu.GetGPR(ry);
-		if (ry_content == null) {
-			this.subject.updateUserConsole("Failed to execute instruction: AND " + rx + ", " + ry + "\n");
+		
+		
+		BitSet ry_bitset = cpu.GetGPRWithBitSet(ry);		
+		if (ry_bitset == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-
-		int and = rx_content.intValue() & ry_content.intValue();
-		cpu.SetGPR(rx, and);
-
-		this.subject
-				.updateUserConsole("Execute Instruction success: AND " + rx + ", " + ry + ". and result=" + and + "\n");
+		
+		BitSet new_bitset = new BitSet(16);
+		for (int i = 0; i < 16; i++) {
+			if (rx_bitset.get(i) && ry_bitset.get(i)) {
+				new_bitset.set(i);
+			}
+		}
+		cpu.SetGPRWithBitSet(rx, new_bitset);
+		this.subject.updateUserConsole("Execute Instruction success: AND " + rx + ", " + ry + "\n");
+		this.subject.updateUserConsole("rx(" + InstructionCodec.GetBinaryString(rx_bitset) + ") AND ry(" + 
+						InstructionCodec.GetBinaryString(ry_bitset) + ")=" + InstructionCodec.GetBinaryString(new_bitset) + "\n");
 
 		return 0;
 	}
 
 	private int HandleORR(int rx, int ry) {
-		Integer rx_content = cpu.GetGPR(rx);
-		if (rx_content == null) {
-			this.subject.updateUserConsole("Failed to execute instruction: ORR " + rx + ", " + ry + "\n");
+		BitSet rx_bitset = cpu.GetGPRWithBitSet(rx);		
+		if (rx_bitset == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-
-		Integer ry_content = cpu.GetGPR(ry);
-		if (ry_content == null) {
-			this.subject.updateUserConsole("Failed to execute instruction: ORR " + rx + ", " + ry + "\n");
+		
+		
+		BitSet ry_bitset = cpu.GetGPRWithBitSet(ry);		
+		if (ry_bitset == null) {
+			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-
-		int and = rx_content.intValue() | ry_content.intValue();
-		cpu.SetGPR(rx, and);
-
-		this.subject
-				.updateUserConsole("Execute Instruction success: ORR " + rx + ", " + ry + ". and result=" + and + "\n");
+		
+		BitSet new_bitset = new BitSet(16);
+		for (int i = 0; i < 16; i++) {
+			if (rx_bitset.get(i) || ry_bitset.get(i)) {
+				new_bitset.set(i);
+			}
+		}
+		cpu.SetGPRWithBitSet(rx, new_bitset);
+		this.subject.updateUserConsole("Execute Instruction success: ORR " + rx + ", " + ry + "\n");
+		this.subject.updateUserConsole("rx(" + InstructionCodec.GetBinaryString(rx_bitset) + ") ORR ry(" + 
+						InstructionCodec.GetBinaryString(ry_bitset) + ")=" + InstructionCodec.GetBinaryString(new_bitset) + "\n");
 
 		return 0;
 	}
 
 	private int HandleNOT(int rx) {
-		Integer rx_content = cpu.GetGPR(rx);
-		if (rx_content == null) {
+		BitSet bitset = cpu.GetGPRWithBitSet(rx);		
+		if (bitset == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-
-		short content = (short) rx_content.intValue();
-		short not = (short) ~(content);
-		cpu.SetGPR(rx, not);
-		this.subject
-				.updateUserConsole("Execute Instruction success: NOT " + rx + "NOT " + content + " is " + not + "\n");
-
+		
+		BitSet new_bitset = (BitSet)bitset.clone();
+		
+		for (int i = 0; i < 16; i++) {
+			if (new_bitset.get(i)) {
+				new_bitset.set(i, false);
+			} else {
+				new_bitset.set(i, true);
+			}
+		}
+		
+		
+		this.subject.updateUserConsole("Execute instruction success. NOT " + rx + "\n");	
+		cpu.SetGPRWithBitSet(rx, new_bitset);;
+		
 		return 0;
 	}
 
@@ -898,6 +919,7 @@ public class SingalController extends AbstrctProcessor {
 	private BitSet LogicalShift(BitSet bitset, boolean leftShifting, int count) {
 		BitSet return_bitset = new BitSet(16);
 		int[] reverse_bits = new int[16];
+		int value = InstructionCodec.GetValueWithInt(bitset);
 		for (int i = 0; i < 16; i++) {
 			if (bitset.get(i) == true) {
 				reverse_bits[15 - i] = 1;
@@ -930,7 +952,8 @@ public class SingalController extends AbstrctProcessor {
 				if (tmp_bits[15 - i] == 1) {
 					return_bitset.set(i);
 				}
-			}
+			}			
+					
 		} else {
 			// copy position count to 16 to the tmp_bits
 			for (int i = count; i < 16; i++) {
@@ -943,11 +966,21 @@ public class SingalController extends AbstrctProcessor {
 			}
 
 			// set new value to return_bitset
-			bitset.clear();
 			for (int i = 0; i < 16; i++) {
 				if (tmp_bits[15 - i] == 1) {
 					return_bitset.set(i);
 				}
+			}
+						
+			value = value * (int)Math.pow(2, count);
+			if (value > 32767) {
+				cpu.GetCCRBit(0);
+				this.subject.updateUserConsole("Overflow\n");
+			}
+			
+			if (value < -32767) {
+				cpu.GetCCRBit(1);
+				this.subject.updateUserConsole("Underflow\n");
 			}
 		}
 
@@ -957,6 +990,8 @@ public class SingalController extends AbstrctProcessor {
 	public BitSet ArithmeticShift(BitSet bitset, boolean leftShifting, int count) {
 		BitSet return_bitset = new BitSet(16);
 		int[] reverse_bits = new int[16];
+		int value = InstructionCodec.GetValueWithInt(bitset);
+		
 		for (int i = 0; i < 16; i++) {
 			if (bitset.get(i) == true) {
 				reverse_bits[15 - i] = 1;
@@ -998,6 +1033,7 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
+			
 		} else { // left shifting
 			// keep the sign bit unchanged
 			tmp_bits[0] = reverse_bits[0];
@@ -1016,6 +1052,17 @@ public class SingalController extends AbstrctProcessor {
 				if (tmp_bits[15 - i] == 1) {
 					return_bitset.set(i);
 				}
+			}
+			
+			value = value * (int)Math.pow(2, count);
+			if (value > 32767) {
+				cpu.GetCCRBit(0);
+				this.subject.updateUserConsole("Overflow\n");
+			}
+			
+			if (value < -32767) {
+				cpu.GetCCRBit(1);
+				this.subject.updateUserConsole("Underflow\n");
 			}
 		}
 
@@ -1060,6 +1107,7 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
+			
 		} else { // left rotate
 			for (int i = 0; i < 16; i++) {
 				tmp_bits[(i + (16 - count)) % 16] = reverse_bits[i];
@@ -1071,6 +1119,7 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
+			
 		}
 
 		System.out.println("After shifting");
