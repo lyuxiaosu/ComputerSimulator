@@ -478,8 +478,9 @@ public class InstructionCodec {
 			int r = Integer.parseInt(parts[0].trim()); // Get operand r
 			int immed = Integer.parseInt(parts[1].trim()); // Get operand immed
 
-			if (immed > 15 || immed < -15) {
-				this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-15, 15]\n");
+			// 8 bits for immed, one bit for sign bit
+			if (immed > 127 || immed < -127) {
+				this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-127, 127]\n");
 				return null;
 			}
 
@@ -496,8 +497,8 @@ public class InstructionCodec {
 			int r = Integer.parseInt(parts[0].trim()); // Get operand r
 			int immed = Integer.parseInt(parts[1].trim()); // Get operand immed
 
-			if (immed > 15 || immed < -15) {
-				this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-15, 15]\n");
+			if (immed > 127 || immed < -127) {
+				this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-127, 127]\n");
 				return null;
 			}
 
@@ -647,8 +648,9 @@ public class InstructionCodec {
 				this.subject.updateUserConsole("Invalid LR:" + LR + " or invalid AL:" + AL + "\n");
 				return null;
 			}
-
-			BitSet bitset = GetBitSet(opcode, r, count, LR, AL);
+			
+			//this.subject.updateUserConsole("SRC " + r + ", " + count + ", " + LR + ", " + AL);
+			BitSet bitset = GetBitSet(opcode, r, count, LR, AL); 
 			return bitset;
 		} else if (part1.equals("RRC")) { // RRC instruction
 			String sub = instruction.substring(3);
@@ -793,7 +795,7 @@ public class InstructionCodec {
 			return parameters;
 		} else if (opcode == 7 || opcode == 6) { // AIR or SIR
 			int signed = Integer.parseInt(dstr.substring(0, 1), 2);
-			int immed = Integer.parseInt(dstr.substring(1, 5), 2);
+			int immed = Integer.parseInt(dstr.substring(1, 8), 2);
 			if (signed == 1) {
 				immed = -immed;
 			}
@@ -841,7 +843,7 @@ public class InstructionCodec {
 			// set address for the instruction [0-4]
 			StringBuilder sb_immed = new StringBuilder();
 			// if binary string is less than 5 bit, padding 0
-			while (sb_immed.length() + binary_immed.length() < 4) {
+			while (sb_immed.length() + binary_immed.length() < 7) {
 				sb_immed.append('0');
 			}
 			if (immed < 0) { // if immed is negative

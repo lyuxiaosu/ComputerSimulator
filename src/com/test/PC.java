@@ -15,7 +15,7 @@ public class PC extends AbstrctProcessor {
 	protected Object doProcess(Object data) {
 		this.subject.updatePhase("Fetching Instruction");
 	
-		if (value == bootEndLocation) { // Because boot program only in address 8 and 9. If the PC at 10, it means the boot program finished.
+		if (value == bootEndLocation) { // boot program finished.
 			value = 8;
 			SetValue(8);
 			return new Integer(-1);

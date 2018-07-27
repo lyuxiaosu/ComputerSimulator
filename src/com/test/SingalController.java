@@ -570,6 +570,7 @@ public class SingalController extends AbstrctProcessor {
 			// PC will increase 1 automatically
 		}
 
+		this.subject.updateUserConsole("Execute instruction success: JGE " + r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
 
@@ -628,6 +629,7 @@ public class SingalController extends AbstrctProcessor {
 		}
 
 		cpu.SetGPR(r, GPR_content.intValue() - memory_content.intValue());
+		this.subject.updateUserConsole("Execute instruction success: SMR " +  r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
 
@@ -638,12 +640,14 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 
-		if (immed > 15 || immed < -15) {
-			this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-15, 15]\n");
+		if (immed > 127 || immed < -127) {
+			this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-127, 127]\n");
 			return -2;
 		}
 
 		cpu.SetGPR(r, immed + GPR_content.intValue());
+		
+		this.subject.updateUserConsole("Execute instruction success. Instruction: AIR " + r + ", " + immed + "\n");
 		return 0;
 	}
 
@@ -654,12 +658,14 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 
-		if (immed > 15 || immed < -15) {
-			this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-15, 15]\n");
+		if (immed > 127 || immed < -127) {
+			this.subject.updateUserConsole("Invalid immed: " + immed + ", range should be [-127, 127]\n");
 			return -2;
 		}
 
 		cpu.SetGPR(r, GPR_content.intValue() - immed);
+		
+		this.subject.updateUserConsole("Execute instruction success. Instruction: SIR " + r + ", " + immed + "\n");
 		return 0;
 	}
 
@@ -1082,7 +1088,7 @@ public class SingalController extends AbstrctProcessor {
 		current_state.pc = Integer.parseInt(cpu.GetPC());
 		InputThread input_thread = new InputThread(r, devid);
 		input_thread.start();
-		return 0;
+		return -4;
 	}
 
 	private int HandleOUT(int r, int devid) {
@@ -1094,7 +1100,7 @@ public class SingalController extends AbstrctProcessor {
 				return -2;
 			}
 			
-			this.subject.updateUserConsole("Output character " + r_content.intValue() + " to console printer from GPR-" + r + "\n");
+			this.subject.updateUserConsole("Output " + r_content.intValue() + " to console printer from GPR-" + r + "\n");
 			return 0;
 		} else {
 			this.subject.updateUserConsole("The output device is " + devid + ". We haven't simulated this device\n");

@@ -113,6 +113,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	private JButton btnLoadData;
 	private JTextField tfKeyboard;
 	private JButton btnKeyboardInput;
+	private JButton btnLoadTest1;
+	private JButton btnExecuteTest1;
 
 	/**
 	 * Launch the application.
@@ -181,8 +183,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		jtMemory.setFont(new Font("ËÎÌו", Font.PLAIN, 18));
 		jtMemory.setBounds(900, 45, 72, 18);
 		spMemory = new JScrollPane(jtMemory);
-		spMemory.setSize(381, 759);
-		spMemory.setLocation(787, 181);
+		spMemory.setSize(352, 759);
+		spMemory.setLocation(816, 181);
 		frmComputerSimulator.getContentPane().add(spMemory);
 
 		lblMemory = new JLabel("Memory");
@@ -640,6 +642,20 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		btnKeyboardInput.setBounds(531, 227, 113, 27);
 		frmComputerSimulator.getContentPane().add(btnKeyboardInput);
 		btnKeyboardInput.addActionListener(this);
+		
+		//button of loading test1 
+		btnLoadTest1 = new JButton("Load Test1");
+		btnLoadTest1.setFont(new Font("ËÎÌו", Font.BOLD, 20));
+		btnLoadTest1.setBounds(584, 282, 189, 27);
+		frmComputerSimulator.getContentPane().add(btnLoadTest1);
+		btnLoadTest1.addActionListener(this);
+		
+		//button of executing test1
+		btnExecuteTest1 = new JButton("Execute Test1");
+		btnExecuteTest1.setFont(new Font("ËÎÌו", Font.BOLD, 20));
+		btnExecuteTest1.setBounds(584, 327, 190, 27);
+		frmComputerSimulator.getContentPane().add(btnExecuteTest1);
+		btnExecuteTest1.addActionListener(this);
 
 	}
 
@@ -653,7 +669,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			isRunning = true;
 			this.run();
 		} else if (e.getSource() == btnIPL) { // Respond to clicking the IPL button
-			boolean result = loader.LoadProgram();
+			boolean result = loader.LoadBootStrap();
 			if (result == true) {
 				txtrConsole.append("Success to load the boostrap program to memory !!!\n");
 				updatePhase("bootstrap Loaded");
@@ -848,6 +864,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			}
 		} else if (e.getSource() == btnKeyboardInput) {
 			this.cpu.InputNotify(0, tfKeyboard.getText());
+		} else if (e.getSource() == btnLoadTest1) {
+			boolean result = loader.LoadProgram(18, "Test1.txt", false);
+			if (result == true) {
+				txtrConsole.append("Success to load the Test1 program to memory !!!\n");
+				updatePhase("Test1 Loaded");
+			}
 		}
 	}
 
@@ -857,11 +879,13 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			// return 0 means successfully execute one instruction
 			// return -2 means failed to executing one instruction
 			// return -3 means no instruction to execute
+			// return -4 means waiting for input
 			int result = cpu.Execute();
 			if (result == -1) { // complete boostrap program
 				cpu.SetPC(8); // when finish executing boostrap program, Returning to the boot program means
 								// that it prompts the user to either run the currently loaded program again or
 								// to load a new program and run it.
+				txtrConsole.append("Finish executing boot program, CPU is idle\n");
 				txtrConsole.append("Finish executing boot program, CPU is idle\n");
 				this.updatePhase("CPU is idel");
 				isRunning = false;
@@ -875,10 +899,12 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 				isRunning = false;
 			} else if (result == 0) {
 				isRunning = true;
-				txtrConsole.append("Sucessfully execuate instructions\n");
+				txtrConsole.append("Successfully execuate instructions\n");
+			} else if (result == -4) { // -4 means waiting for input, stop here
+				isRunning = false;	
 			} else {
 				isRunning = true;
-				txtrConsole.append("No resturn code to be defined, abnormal\n");
+				txtrConsole.append("No return code to be defined, abnormal\n");
 			}
 		}
 	}

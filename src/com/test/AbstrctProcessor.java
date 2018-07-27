@@ -23,7 +23,7 @@ public class AbstrctProcessor implements IProcessor {
 			// The result should be the instruction data that the processor returns, but
 			// some particular negative value will be returned if
 			// error happens or no instruction to execute
-			if (i == -1 || i == -2 || i == -3) {
+			if (i == -1 || i == -2 || i == -3 || i == -4) {
 				return i;
 			}
 		} else if (result == null) {

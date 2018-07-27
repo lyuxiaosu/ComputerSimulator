@@ -51,17 +51,16 @@ public class RomLoader {
 		return list;
 	}
 
-	public boolean LoadProgram() {
+	public boolean LoadProgram(int startAddress, String programPath, boolean isBootStrap) {
 		boolean result = true;
-		// int len = rom_program.length;
-		List<String> rom_program_list = this.readRomProgramToStringArrList("bootstrap.txt");
+		List<String> rom_program_list = this.readRomProgramToStringArrList(programPath);
 		int len = rom_program_list.size();
 		if (len == 0) {
 			return false;
 		}
 		
 		for (int i = 0; i < len; i++) {
-			cpu.SetMAR(8 + i);
+			cpu.SetMAR(startAddress + i);
 			BitSet instruction = cpu.Encode(rom_program_list.get(i));
 			if (instruction == null) {
 				this.subject.updateMFR(7);
@@ -69,25 +68,43 @@ public class RomLoader {
 				return false;
 			}
 			cpu.SetMBR(InstructionCodec.GetValueWithInt(instruction));
-			result = memory.Set(8 + i, instruction);
+			result = memory.Set(startAddress + i, instruction);
 			if (result == false) {
 				return false;
 			}
 		}
-		//Set boot end location
-		cpu.SetBootEndLocation(8+len);
-		// Initialize the reserved memory with TRAP and MFT instructions
-		String trap_instruction = "TRAP 15";
-		String fault_instruction = "MFT 6";
-		result = memory.SetReservedMemory(0, trap_instruction);
-		if (result == false) {
-			return false;
+		
+		if (isBootStrap) {
+			//Set boot end location
+			cpu.SetBootEndLocation(startAddress+len);
+			
+			// Initialize the reserved memory with TRAP and MFT instructions
+			String trap_instruction = "TRAP 15";
+			String fault_instruction = "MFT 6";
+			result = memory.SetReservedMemory(0, trap_instruction);
+			if (result == false) {
+				return false;
+			}
+			result = memory.SetReservedMemory(1, fault_instruction);
+			if (result == false) {
+				return false;
+			}
+			
+			//load 0 to 6
+			result = memory.LoadData(6, 0);
+			//load 32767 to 7
+			result = memory.LoadData(7, 32767);
+			if (result == false) {
+				return false;
+			}
 		}
-		result = memory.SetReservedMemory(1, fault_instruction);
-		if (result == false) {
-			return false;
-		}
-		cpu.SetPC(8);
+		
+		cpu.SetPC(startAddress);
+		return true;
+	}
+	
+	public boolean LoadBootStrap() {
+		boolean result = LoadProgram(8, "bootstrap.txt", true);		
 		return result;
 	}
 
