@@ -599,7 +599,23 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 
-		cpu.SetGPR(r, GPR_content.intValue() + memory_content.intValue());
+		int result = GPR_content.intValue() - memory_content.intValue();
+		if (result > 32767) {
+			this.subject
+					.updateUserConsole("OverFlow when Executing AMR " + r + ", " + ix + ", " + address + "\n");
+			// set CC overflow
+			cpu.SetCCRBit(0);
+			return -2;
+		}
+		if (result < -32767) {
+			this.subject
+					.updateUserConsole("OverFlow when Executing AMR " + r + ", " + ix + ", " +  address +  "\n");
+			// set CC underflow
+			cpu.SetCCRBit(1);
+			return -2;
+		}
+		
+		cpu.SetGPR(r, result);
 		this.subject.updateUserConsole("Execute instruction success: AMR " +  r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
@@ -629,7 +645,22 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 
-		cpu.SetGPR(r, GPR_content.intValue() - memory_content.intValue());
+		int result = GPR_content.intValue() - memory_content.intValue();
+		if (result > 32767) {
+			this.subject
+					.updateUserConsole("OverFlow when Executing SMR " + r + ", " + ix + ", " + address + "\n");
+			// set CC overflow
+			cpu.SetCCRBit(0);
+			return -2;
+		}
+		if (result < -32767) {
+			this.subject
+					.updateUserConsole("OverFlow when Executing SMR " + r + ", " + ix + ", " +  address +  "\n");
+			// set CC underflow
+			cpu.SetCCRBit(1);
+			return -2;
+		}
+		cpu.SetGPR(r, result);
 		this.subject.updateUserConsole("Execute instruction success: SMR " +  r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
@@ -1240,8 +1271,8 @@ public class SingalController extends AbstrctProcessor {
 					isWaitingKeyboard = false;
 					try {
 						int input_number = Integer.parseInt(number);
-						if (input_number > 32768 || input_number < -32768) {
-							SingalController.this.subject.updateUserConsole("Invalid input number:" + number + ". The input number range should be [-32767-32768]\n");
+						if (input_number > 32767 || input_number < -32767) {
+							SingalController.this.subject.updateUserConsole("Invalid input number:" + number + ". The input number range should be [-32767-32767]\n");
 							return;
 						}
 						SingalController.this.subject.updateUserConsole("Input number is " + number + "\n");
@@ -1254,7 +1285,7 @@ public class SingalController extends AbstrctProcessor {
 						}
 					} catch (NumberFormatException e) {
 						SingalController.this.subject.updateUserConsole("Invalid input number:" + number
-								+ ". The input number range should be [-32767-32768]\n");
+								+ ". The input number range should be [-32767-32767]\n");
 					}
 				}
 			} else {

@@ -68,7 +68,6 @@ public class CentralProcessor {
 	
 	public int Execute() {
 		int result = pc.Process(new Integer(0));
-		//this.subject.updatePhase("CPU is idle");
 		return result;
 	}
 

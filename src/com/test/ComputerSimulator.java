@@ -887,11 +887,11 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 								// that it prompts the user to either run the currently loaded program again or
 								// to load a new program and run it.
 				txtrConsole.append("Finish executing boot program, CPU is idle\n");
-				txtrConsole.append("Finish executing boot program, CPU is idle\n");
 				this.updatePhase("CPU is idel");
 				isRunning = false;
 			} else if (result == -2) {
 				txtrConsole.append("Failed to execute instructions, something is wrong!!!\n");
+				isRunning = false;
 			} else if (result == -3) {
 				cpu.Execute(); // to let CPU execute the machine fault instruction since there is invalid
 								// memory access error.
@@ -1038,11 +1038,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 
 	@Override
 	public void updateUserConsole(String message) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				txtrConsole.append(message);
-			}
-		});
+		txtrConsole.append(message);
 	}
 
 	@Override
