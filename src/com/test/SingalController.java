@@ -599,7 +599,7 @@ public class SingalController extends AbstrctProcessor {
 			return -2;
 		}
 
-		int result = GPR_content.intValue() - memory_content.intValue();
+		int result = GPR_content.intValue() + memory_content.intValue();
 		if (result > 32767) {
 			this.subject
 					.updateUserConsole("OverFlow when Executing AMR " + r + ", " + ix + ", " + address + "\n");
@@ -609,12 +609,13 @@ public class SingalController extends AbstrctProcessor {
 		}
 		if (result < -32767) {
 			this.subject
-					.updateUserConsole("OverFlow when Executing AMR " + r + ", " + ix + ", " +  address +  "\n");
+					.updateUserConsole("UnderFlow when Executing AMR " + r + ", " + ix + ", " +  address +  "\n");
 			// set CC underflow
 			cpu.SetCCRBit(1);
 			return -2;
 		}
 		
+		cpu.ResetCCR();
 		cpu.SetGPR(r, result);
 		this.subject.updateUserConsole("Execute instruction success: AMR " +  r + ", " + ix + ", " + address + "\n");
 		return 0;
@@ -655,11 +656,12 @@ public class SingalController extends AbstrctProcessor {
 		}
 		if (result < -32767) {
 			this.subject
-					.updateUserConsole("OverFlow when Executing SMR " + r + ", " + ix + ", " +  address +  "\n");
+					.updateUserConsole("UnderFlow when Executing SMR " + r + ", " + ix + ", " +  address +  "\n");
 			// set CC underflow
 			cpu.SetCCRBit(1);
 			return -2;
 		}
+		cpu.ResetCCR();
 		cpu.SetGPR(r, result);
 		this.subject.updateUserConsole("Execute instruction success: SMR " +  r + ", " + ix + ", " + address + "\n");
 		return 0;
@@ -724,7 +726,7 @@ public class SingalController extends AbstrctProcessor {
 		}
 		if (result < -32767) {
 			this.subject
-					.updateUserConsole("OverFlow when Executing MLT " + rx + ", " + ry + ". Result=" + result + "\n");
+					.updateUserConsole("UnderFlow when Executing MLT " + rx + ", " + ry + ". Result=" + result + "\n");
 			// set CC underflow
 			cpu.SetCCRBit(1);
 			return -2;
@@ -756,8 +758,11 @@ public class SingalController extends AbstrctProcessor {
 		if (ry_content.intValue() == 0) {
 			this.subject.updateUserConsole("ry is 0. Failed to execute instruction: DVD " + rx + ", " + ry + "\n");
 			this.cpu.SetCCRBit(2);
+			//Let PC to 0 where is the TRAP instruction
+			this.cpu.SetPC(0);
 			return -2;
 		}
+		
 		// reset CCR
 		cpu.ResetCCR();
 		int quotient = rx_content.intValue() / ry_content.intValue();
@@ -878,6 +883,7 @@ public class SingalController extends AbstrctProcessor {
 
 	private int HandleSRC(int r, int AL, int LR, int count) {
 		BitSet bitset = cpu.GetGPRWithBitSet(r);
+		cpu.ResetCCR();
 		if (bitset == null) {
 			this.subject.updateUserConsole(
 					"Failed to execute instruction: SRC " + r + ", " + count + ", " + LR + ", " + AL + "\n");
@@ -913,6 +919,7 @@ public class SingalController extends AbstrctProcessor {
 	}
 
 	private int HandleRRC(int r, int AL, int LR, int count) {
+		cpu.ResetCCR();
 		BitSet bitset = cpu.GetGPRWithBitSet(r);
 		if (bitset == null) {
 			this.subject.updateUserConsole(
@@ -1005,12 +1012,12 @@ public class SingalController extends AbstrctProcessor {
 						
 			value = value * (int)Math.pow(2, count);
 			if (value > 32767) {
-				cpu.GetCCRBit(0);
+				cpu.SetCCRBit(0);
 				this.subject.updateUserConsole("Overflow\n");
 			}
 			
 			if (value < -32767) {
-				cpu.GetCCRBit(1);
+				cpu.SetCCRBit(1);
 				this.subject.updateUserConsole("Underflow\n");
 			}
 		}
@@ -1087,12 +1094,12 @@ public class SingalController extends AbstrctProcessor {
 			
 			value = value * (int)Math.pow(2, count);
 			if (value > 32767) {
-				cpu.GetCCRBit(0);
+				cpu.SetCCRBit(0);
 				this.subject.updateUserConsole("Overflow\n");
 			}
 			
 			if (value < -32767) {
-				cpu.GetCCRBit(1);
+				cpu.SetCCRBit(1);
 				this.subject.updateUserConsole("Underflow\n");
 			}
 		}
