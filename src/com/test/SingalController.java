@@ -16,6 +16,7 @@ public class SingalController extends AbstrctProcessor {
 	private IStop simulator;
 	private boolean isWaitingKeyboard = false;
 	private final List<String> current_keyboard_value = new LinkedList<String>();
+	private boolean keyboardReadNumber = false;
 
 	private CurrentState current_state = new CurrentState();
 
@@ -177,20 +178,19 @@ public class SingalController extends AbstrctProcessor {
 				int r = array.get(1).intValue();
 				int devid = array.get(4).intValue();
 				return HandleIN(r, devid);
-			} else if (opcode == 50) { //OUT
+			} else if (opcode == 50) { // OUT
 				int r = array.get(1).intValue();
 				int devid = array.get(4).intValue();
 				return HandleOUT(r, devid);
-			} else if (opcode == 51) { //CHK
+			} else if (opcode == 51) { // CHK
 				int r = array.get(1).intValue();
 				int devid = array.get(4).intValue();
 				return HandleCHK(r, devid);
-			}
-			else {
+			} else {
 				this.subject.updateUserConsole("Illegal Operation Code:" + opcode + "\n");
 				this.subject.updateMFR(2);
 				return new Integer(-2);
-			} 
+			}
 		} else {
 			this.subject.updateUserConsole("Unkown Error!!!!\n");
 			return new Integer(-2);
@@ -601,23 +601,21 @@ public class SingalController extends AbstrctProcessor {
 
 		int result = GPR_content.intValue() + memory_content.intValue();
 		if (result > 32767) {
-			this.subject
-					.updateUserConsole("OverFlow when Executing AMR " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("OverFlow when Executing AMR " + r + ", " + ix + ", " + address + "\n");
 			// set CC overflow
 			cpu.SetCCRBit(0);
 			return -2;
 		}
 		if (result < -32767) {
-			this.subject
-					.updateUserConsole("UnderFlow when Executing AMR " + r + ", " + ix + ", " +  address +  "\n");
+			this.subject.updateUserConsole("UnderFlow when Executing AMR " + r + ", " + ix + ", " + address + "\n");
 			// set CC underflow
 			cpu.SetCCRBit(1);
 			return -2;
 		}
-		
+
 		cpu.ResetCCR();
 		cpu.SetGPR(r, result);
-		this.subject.updateUserConsole("Execute instruction success: AMR " +  r + ", " + ix + ", " + address + "\n");
+		this.subject.updateUserConsole("Execute instruction success: AMR " + r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
 
@@ -648,22 +646,20 @@ public class SingalController extends AbstrctProcessor {
 
 		int result = GPR_content.intValue() - memory_content.intValue();
 		if (result > 32767) {
-			this.subject
-					.updateUserConsole("OverFlow when Executing SMR " + r + ", " + ix + ", " + address + "\n");
+			this.subject.updateUserConsole("OverFlow when Executing SMR " + r + ", " + ix + ", " + address + "\n");
 			// set CC overflow
 			cpu.SetCCRBit(0);
 			return -2;
 		}
 		if (result < -32767) {
-			this.subject
-					.updateUserConsole("UnderFlow when Executing SMR " + r + ", " + ix + ", " +  address +  "\n");
+			this.subject.updateUserConsole("UnderFlow when Executing SMR " + r + ", " + ix + ", " + address + "\n");
 			// set CC underflow
 			cpu.SetCCRBit(1);
 			return -2;
 		}
 		cpu.ResetCCR();
 		cpu.SetGPR(r, result);
-		this.subject.updateUserConsole("Execute instruction success: SMR " +  r + ", " + ix + ", " + address + "\n");
+		this.subject.updateUserConsole("Execute instruction success: SMR " + r + ", " + ix + ", " + address + "\n");
 		return 0;
 	}
 
@@ -680,7 +676,7 @@ public class SingalController extends AbstrctProcessor {
 		}
 
 		cpu.SetGPR(r, immed + GPR_content.intValue());
-		
+
 		this.subject.updateUserConsole("Execute instruction success. Instruction: AIR " + r + ", " + immed + "\n");
 		return 0;
 	}
@@ -698,7 +694,7 @@ public class SingalController extends AbstrctProcessor {
 		}
 
 		cpu.SetGPR(r, GPR_content.intValue() - immed);
-		
+
 		this.subject.updateUserConsole("Execute instruction success. Instruction: SIR " + r + ", " + immed + "\n");
 		return 0;
 	}
@@ -737,8 +733,8 @@ public class SingalController extends AbstrctProcessor {
 		int low_bits = result & 0xFF;
 		this.cpu.SetGPR(rx, high_bits);
 		this.cpu.SetGPR(rx + 1, low_bits);
-		this.subject
-				.updateUserConsole("Execute Instruction success: MLT " + rx + ", " + ry + ". result=" + result + "(" +InstructionCodec.GetBinaryString(result) + ")\n");
+		this.subject.updateUserConsole("Execute Instruction success: MLT " + rx + ", " + ry + ". result=" + result + "("
+				+ InstructionCodec.GetBinaryString(result) + ")\n");
 		return 0;
 	}
 
@@ -758,11 +754,11 @@ public class SingalController extends AbstrctProcessor {
 		if (ry_content.intValue() == 0) {
 			this.subject.updateUserConsole("ry is 0. Failed to execute instruction: DVD " + rx + ", " + ry + "\n");
 			this.cpu.SetCCRBit(2);
-			//Let PC to 0 where is the TRAP instruction
+			// Let PC to 0 where is the TRAP instruction
 			this.cpu.SetPC(0);
 			return -2;
 		}
-		
+
 		// reset CCR
 		cpu.ResetCCR();
 		int quotient = rx_content.intValue() / ry_content.intValue();
@@ -802,19 +798,18 @@ public class SingalController extends AbstrctProcessor {
 	}
 
 	private int HandleAND(int rx, int ry) {
-		BitSet rx_bitset = cpu.GetGPRWithBitSet(rx);		
+		BitSet rx_bitset = cpu.GetGPRWithBitSet(rx);
 		if (rx_bitset == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-		
-		
-		BitSet ry_bitset = cpu.GetGPRWithBitSet(ry);		
+
+		BitSet ry_bitset = cpu.GetGPRWithBitSet(ry);
 		if (ry_bitset == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-		
+
 		BitSet new_bitset = new BitSet(16);
 		for (int i = 0; i < 16; i++) {
 			if (rx_bitset.get(i) && ry_bitset.get(i)) {
@@ -823,26 +818,26 @@ public class SingalController extends AbstrctProcessor {
 		}
 		cpu.SetGPRWithBitSet(rx, new_bitset);
 		this.subject.updateUserConsole("Execute Instruction success: AND " + rx + ", " + ry + "\n");
-		this.subject.updateUserConsole("rx(" + InstructionCodec.GetBinaryString(rx_bitset) + ") AND ry(" + 
-						InstructionCodec.GetBinaryString(ry_bitset) + ")=" + InstructionCodec.GetBinaryString(new_bitset) + "\n");
+		this.subject.updateUserConsole("rx(" + InstructionCodec.GetBinaryString(rx_bitset) + ") AND ry("
+				+ InstructionCodec.GetBinaryString(ry_bitset) + ")=" + InstructionCodec.GetBinaryString(new_bitset)
+				+ "\n");
 
 		return 0;
 	}
 
 	private int HandleORR(int rx, int ry) {
-		BitSet rx_bitset = cpu.GetGPRWithBitSet(rx);		
+		BitSet rx_bitset = cpu.GetGPRWithBitSet(rx);
 		if (rx_bitset == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-		
-		
-		BitSet ry_bitset = cpu.GetGPRWithBitSet(ry);		
+
+		BitSet ry_bitset = cpu.GetGPRWithBitSet(ry);
 		if (ry_bitset == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-		
+
 		BitSet new_bitset = new BitSet(16);
 		for (int i = 0; i < 16; i++) {
 			if (rx_bitset.get(i) || ry_bitset.get(i)) {
@@ -851,21 +846,22 @@ public class SingalController extends AbstrctProcessor {
 		}
 		cpu.SetGPRWithBitSet(rx, new_bitset);
 		this.subject.updateUserConsole("Execute Instruction success: ORR " + rx + ", " + ry + "\n");
-		this.subject.updateUserConsole("rx(" + InstructionCodec.GetBinaryString(rx_bitset) + ") ORR ry(" + 
-						InstructionCodec.GetBinaryString(ry_bitset) + ")=" + InstructionCodec.GetBinaryString(new_bitset) + "\n");
+		this.subject.updateUserConsole("rx(" + InstructionCodec.GetBinaryString(rx_bitset) + ") ORR ry("
+				+ InstructionCodec.GetBinaryString(ry_bitset) + ")=" + InstructionCodec.GetBinaryString(new_bitset)
+				+ "\n");
 
 		return 0;
 	}
 
 	private int HandleNOT(int rx) {
-		BitSet bitset = cpu.GetGPRWithBitSet(rx);		
+		BitSet bitset = cpu.GetGPRWithBitSet(rx);
 		if (bitset == null) {
 			this.subject.updateUserConsole("Failed to execute instruction: NOT " + rx + "\n");
 			return -2;
 		}
-		
-		BitSet new_bitset = (BitSet)bitset.clone();
-		
+
+		BitSet new_bitset = (BitSet) bitset.clone();
+
 		for (int i = 0; i < 16; i++) {
 			if (new_bitset.get(i)) {
 				new_bitset.set(i, false);
@@ -873,11 +869,11 @@ public class SingalController extends AbstrctProcessor {
 				new_bitset.set(i, true);
 			}
 		}
-		
-		
-		this.subject.updateUserConsole("Execute instruction success. NOT " + rx + "\n");	
-		cpu.SetGPRWithBitSet(rx, new_bitset);;
-		
+
+		this.subject.updateUserConsole("Execute instruction success. NOT " + rx + "\n");
+		cpu.SetGPRWithBitSet(rx, new_bitset);
+		;
+
 		return 0;
 	}
 
@@ -990,8 +986,8 @@ public class SingalController extends AbstrctProcessor {
 				if (tmp_bits[15 - i] == 1) {
 					return_bitset.set(i);
 				}
-			}			
-					
+			}
+
 		} else {
 			// copy position count to 16 to the tmp_bits
 			for (int i = count; i < 16; i++) {
@@ -1009,13 +1005,13 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
-						
-			value = value * (int)Math.pow(2, count);
+
+			value = value * (int) Math.pow(2, count);
 			if (value > 32767) {
 				cpu.SetCCRBit(0);
 				this.subject.updateUserConsole("Overflow\n");
 			}
-			
+
 			if (value < -32767) {
 				cpu.SetCCRBit(1);
 				this.subject.updateUserConsole("Underflow\n");
@@ -1029,7 +1025,7 @@ public class SingalController extends AbstrctProcessor {
 		BitSet return_bitset = new BitSet(16);
 		int[] reverse_bits = new int[16];
 		int value = InstructionCodec.GetValueWithInt(bitset);
-		
+
 		for (int i = 0; i < 16; i++) {
 			if (bitset.get(i) == true) {
 				reverse_bits[15 - i] = 1;
@@ -1071,7 +1067,7 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
-			
+
 		} else { // left shifting
 			// keep the sign bit unchanged
 			tmp_bits[0] = reverse_bits[0];
@@ -1091,13 +1087,13 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
-			
-			value = value * (int)Math.pow(2, count);
+
+			value = value * (int) Math.pow(2, count);
 			if (value > 32767) {
 				cpu.SetCCRBit(0);
 				this.subject.updateUserConsole("Overflow\n");
 			}
-			
+
 			if (value < -32767) {
 				cpu.SetCCRBit(1);
 				this.subject.updateUserConsole("Underflow\n");
@@ -1145,7 +1141,7 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
-			
+
 		} else { // left rotate
 			for (int i = 0; i < 16; i++) {
 				tmp_bits[(i + (16 - count)) % 16] = reverse_bits[i];
@@ -1157,7 +1153,7 @@ public class SingalController extends AbstrctProcessor {
 					return_bitset.set(i);
 				}
 			}
-			
+
 		}
 
 		System.out.println("After shifting");
@@ -1186,33 +1182,37 @@ public class SingalController extends AbstrctProcessor {
 				this.subject.updateUserConsole("Failed to execute instruction: OUT " + r + ", " + devid + "\n");
 				return -2;
 			}
-			
-			this.subject.updateUserConsole("Output " + r_content.intValue() + " to console printer from GPR-" + r + "\n");
+
+			this.subject
+					.updateUserConsole("Output " + r_content.intValue() + " to console printer from GPR-" + r + "\n");
+			this.subject.updateUserConsole2("Output R" + r + " content " + r_content.intValue() + " to console\n");
 			return 0;
 		} else {
-			this.subject.updateUserConsole("The output device is " + devid + ". We haven't simulated this device\n");
+			this.subject.updateUserConsole("The output device is " + devid + ". We haven't simulated this device\n"); 
 			return 0;
 		}
 	}
-	
+
 	private int HandleCHK(int r, int devid) {
 		this.subject.updateUserConsole("r is " + r + " The checking device is " + devid + "\n");
-		
-		
-			if (r > 3 || r < 0) {
-				this.subject.updateUserConsole("Invalid GPR index: " + r + ". Failed to execute instruction: CHK " + r + ", " + devid + "\n");
-				return -2;
-			}
-			
-			if (devid > 31 || devid < 0) {
-				this.subject.updateUserConsole("Invalid device id: " + devid + ". Range should be [0-31]. Failed to execute instruction: CHK " + r + ", " + devid + "\n");
-				return -2;
-			}
-			cpu.SetGPR(r, 0);
-			this.subject.updateUserConsole("Excute instruction success: CHK " + r + ", " + devid + "\n");
-			return 0;
-		
+
+		if (r > 3 || r < 0) {
+			this.subject.updateUserConsole(
+					"Invalid GPR index: " + r + ". Failed to execute instruction: CHK " + r + ", " + devid + "\n");
+			return -2;
+		}
+
+		if (devid > 31 || devid < 0) {
+			this.subject.updateUserConsole("Invalid device id: " + devid
+					+ ". Range should be [0-31]. Failed to execute instruction: CHK " + r + ", " + devid + "\n");
+			return -2;
+		}
+		cpu.SetGPR(r, 0);
+		this.subject.updateUserConsole("Excute instruction success: CHK " + r + ", " + devid + "\n");
+		return 0;
+
 	}
+
 	/**
 	 * Calculate the effective address
 	 * 
@@ -1254,7 +1254,7 @@ public class SingalController extends AbstrctProcessor {
 	private class InputThread extends Thread {
 		private int devid;
 		private int r;
-		
+
 		public InputThread(int r, int devid) {
 			this.devid = devid;
 			this.r = r;
@@ -1264,6 +1264,7 @@ public class SingalController extends AbstrctProcessor {
 		public void run() {
 			if (devid == 0) {
 				subject.updateUserConsole("Waiting input...\n");
+				subject.updateUserConsole2("Waiting input...\n");
 				isWaitingKeyboard = true;
 				synchronized (current_keyboard_value) {
 					while (current_keyboard_value.isEmpty()) {
@@ -1274,24 +1275,44 @@ public class SingalController extends AbstrctProcessor {
 							e.printStackTrace();
 						}
 					}
-					String number = current_keyboard_value.remove(0);
+					String input = current_keyboard_value.remove(0);
 					isWaitingKeyboard = false;
 					try {
-						int input_number = Integer.parseInt(number);
-						if (input_number > 32767 || input_number < -32767) {
-							SingalController.this.subject.updateUserConsole("Invalid input number:" + number + ". The input number range should be [-32767-32767]\n");
-							return;
-						}
-						SingalController.this.subject.updateUserConsole("Input number is " + number + "\n");
-						int result = cpu.SetGPR(r, input_number);
-						if (result == 0) {
-							subject.updateUserConsole(
-									"Excute instruction success. Instruction: IN " + r + ", " + devid + "\n");
+						if (keyboardReadNumber == true) {
+							int input_number = Integer.parseInt(input);
+							if (input_number > 32767 || input_number < -32767) {
+								SingalController.this.subject.updateUserConsole("Invalid input number:" + input
+										+ ". The input number range should be [-32767-32767]\n");
+								return;
+							}
+							SingalController.this.subject.updateUserConsole("Input number is " + input + "\n");
+							int result = cpu.SetGPR(r, input_number);
+							if (result == 0) {
+								subject.updateUserConsole(
+										"Excute instruction success. Instruction: IN " + r + ", " + devid + "\n");
+							} else {
+								subject.updateUserConsole(
+										"Failed to execute instruction: IN " + r + ", " + devid + "\n");
+							}
 						} else {
-							subject.updateUserConsole("Failed to execute instruction: IN " + r + ", " + devid + "\n");
+							boolean result = true;
+							char[] charArray = input.toCharArray();
+							for (int i = 0; i < charArray.length; i++) {
+								result = memory.LoadData(2004 + i, (int)charArray[i]);
+								if (result == false) {
+									subject.updateUserConsole("Failed to store searched word to memory\n");
+									return;
+								}
+							}
+							//Set 257 to the end of the string
+							result = memory.LoadData(2004 + charArray.length, 257);
+							//Set M[2000] to the length of the searched word
+							memory.LoadData(2000, charArray.length);
+							subject.updateUserConsole("input word is " + input + "\n");
+							subject.updateUserConsole2("input word is " + input + "\n");
 						}
 					} catch (NumberFormatException e) {
-						SingalController.this.subject.updateUserConsole("Invalid input number:" + number
+						SingalController.this.subject.updateUserConsole("Invalid input number:" + input
 								+ ". The input number range should be [-32767-32767]\n");
 					}
 				}
@@ -1303,6 +1324,10 @@ public class SingalController extends AbstrctProcessor {
 
 	private class CurrentState {
 		public int pc;
+	}
+
+	public void SetKeyboardReadNumber(boolean flag) {
+		this.keyboardReadNumber = flag;
 	}
 
 }

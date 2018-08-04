@@ -1,0 +1,145 @@
+IN 0, 0
+LDX 3, 18
+LDR 3, 0, 6
+LDR 2, 0, 19
+LDR 1, 0, 18
+AIR 1, 3
+AIR 2, 1
+AIR 1, 1
+STR 2,0,14
+LDX 1,14
+LDR 0, 1, 0 
+SIR 0, 10
+LDX 2,16
+JZ 0, 2, 18
+LDR 0, 1, 0
+SIR 0, 32
+LDX 2, 17
+JZ 0, 2, 0
+LDR 0, 1, 0
+SMR 0, 0, 13
+LDX 2, 17
+JZ 0, 2, 30
+STR 1, 0, 14
+LDX 1, 14
+LDR 0, 1, 0
+SMR 0, 0, 13
+LDX 2, 17
+JZ 0, 2, 25
+LDR 0, 1, 0
+STR 2, 0, 14
+LDX 1,14    
+SMR 0, 1, 0
+LDX 2, 17
+JZ 0, 2, 22
+LDR 3, 0, 6
+LDR 1, 0, 18
+AIR 1, 4
+AIR 2,1
+STR 2, 0, 14
+LDX 1,14
+LDR 0, 1, 0
+SIR 0, 10
+LDX 2, 16
+JZ 0, 2, 0
+LDR 0, 1, 0
+SIR 0, 32
+LDX 2, 16
+JZ 0, 2, 9
+LDR 0, 1, 0
+SMR 0, 0, 13
+LDX 2, 17 
+JZ 0, 2, 30
+LDX 2, 15
+JMA 2, 31
+LDR 1, 0, 18
+AIR 1, 4
+LDR 3, 0, 6
+LDR 0, 3, 1
+AIR 0, 1
+STR 0, 3, 1
+LDR 0, 0, 6
+STR 0, 3, 2
+AIR 2, 1
+LDX 2, 15
+JMA 2, 2
+LDR 3, 0, 6
+LDR 1, 0, 18
+AIR 1, 4
+LDR 0, 3, 2
+AIR 0, 1
+STR 0, 3, 2
+AIR 2, 1
+LDX 2, 15
+JMA 2, 2 
+STR 3, 0, 14
+LDR 0, 0, 14
+SMR 0,3,0  
+LDX 2, 16
+JNE 0, 2, 31
+LDR 0, 0, 6
+STR 0, 3, 3
+LDR 0,3,1
+AIR 0, 1
+OUT 0, 1
+LDR 3,3,2
+AIR 3, 1
+OUT 3, 1
+LDR 0, 3, 1
+AIR 0, 1
+STR 0, 3, 1
+LDR 0, 0, 6
+STR 0, 3, 2
+LDR 3, 0, 6
+LDR 1, 0, 18
+AIR 1, 4 
+AIR 2, 1
+LDX 2, 15
+JMA 2, 2 
+STR 3, 0, 14
+LDR 0, 0, 14
+SMR 0,3,0
+LDX 2, 17
+JNE 3, 2, 13
+LDR 0, 0, 6
+STR 0, 3, 3
+LDR 0,3,1  
+AIR 0, 1
+OUT 0, 1
+LDR 3,3,2
+AIR 3, 1
+OUT 3, 1
+LDR 0, 3, 2
+AIR 0, 1
+STR 0, 3, 2
+LDR 3, 0, 6
+LDR 1, 0, 18
+AIR 1, 4
+AIR 2, 1
+LDX 2, 15
+JMA 2, 2
+AIR 3, 1
+LDX 2, 15
+JMA 2, 0
+LDR 1, 0, 18
+AIR 1, 4 
+LDR 3, 0, 6
+LDX 2, 15
+JMA 2, 31
+STR 3, 0, 14
+LDR 0, 0, 14
+SMR 0,3,0  
+LDX 2, 20 
+JNE 0, 2, 0
+LDR 0, 3, 1
+AIR 0, 1
+OUT 0, 1
+LDR 3, 3, 2
+AIR 3, 1
+OUT 3, 1
+JMA 2, 5
+LDR 0, 3, 3
+JZ 0, 2,  5
+LDR 0, 0, 6
+AIR 0, -1
+OUT 0, 1

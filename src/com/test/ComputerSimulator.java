@@ -115,6 +115,10 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 	private JButton btnKeyboardInput;
 	private JButton btnLoadTest1;
 	private JButton btnLoadTest2;
+	private JScrollPane scrollPane;
+	private JButton btnCleanConsole2;
+	private JTextArea txtrConsole2;
+	
 
 	/**
 	 * Launch the application.
@@ -164,10 +168,10 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		frmComputerSimulator.getContentPane().add(btnIPL);
 		btnIPL.addActionListener(this);
 
-		lblConsoleLable = new JLabel("Console");
+		lblConsoleLable = new JLabel("Debug Console");
 		lblConsoleLable.setFont(new Font("宋体", Font.BOLD, 20));
 		lblConsoleLable.setForeground(Color.BLACK);
-		lblConsoleLable.setBounds(14, 590, 113, 41);
+		lblConsoleLable.setBounds(14, 590, 171, 41);
 		frmComputerSimulator.getContentPane().add(lblConsoleLable);
 
 		// add button "Run"
@@ -322,7 +326,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfMSR.setColumns(10);
 
 		spConsole = new JScrollPane();
-		spConsole.setBounds(14, 630, 770, 310);
+		spConsole.setBounds(14, 630, 370, 310);
 		frmComputerSimulator.getContentPane().add(spConsole);
 
 		// add txt area showing a simple console
@@ -335,7 +339,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		lblPhase = new JLabel("Powered On");
 		lblPhase.setFont(new Font("宋体", Font.PLAIN, 20));
 		lblPhase.setForeground(Color.BLUE);
-		lblPhase.setBounds(145, 601, 314, 18);
+		lblPhase.setBounds(237, 578, 314, 18);
 		frmComputerSimulator.getContentPane().add(lblPhase);
 
 		// add indirect address radio
@@ -565,7 +569,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		// add button to clear the console
 		btnCleanConsole = new JButton("Clear");
 		btnCleanConsole.setFont(new Font("宋体", Font.BOLD, 20));
-		btnCleanConsole.setBounds(498, 599, 113, 27);
+		btnCleanConsole.setBounds(271, 597, 113, 27);
 		frmComputerSimulator.getContentPane().add(btnCleanConsole);
 		btnCleanConsole.addActionListener(this);
 		// add label for loading data to IR
@@ -656,7 +660,30 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		btnLoadTest2.setBounds(584, 327, 190, 27);
 		frmComputerSimulator.getContentPane().add(btnLoadTest2);
 		btnLoadTest2.addActionListener(this);
-
+		
+		//add scrollPane for user console 
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(398, 630, 395, 310);
+		frmComputerSimulator.getContentPane().add(scrollPane);
+		
+		//add text area for user console
+		txtrConsole2 = new JTextArea();
+		txtrConsole2.setFont(new Font("Monospaced", Font.PLAIN, 18));
+		scrollPane.setViewportView(txtrConsole2);
+		
+		//add label for user console
+		JLabel lblUserConsole = new JLabel("User Console");
+		lblUserConsole.setFont(new Font("宋体", Font.BOLD, 20));
+		lblUserConsole.setBounds(396, 603, 171, 18);
+		frmComputerSimulator.getContentPane().add(lblUserConsole);
+		
+		//add clear button for user console
+		btnCleanConsole2 = new JButton("Clear");
+		btnCleanConsole2.setFont(new Font("宋体", Font.BOLD, 20));
+		btnCleanConsole2.setBounds(680, 599, 113, 27);
+		frmComputerSimulator.getContentPane().add(btnCleanConsole2);
+		btnCleanConsole2.addActionListener(this);
+		
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -828,6 +855,8 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		} else if (e.getSource() == btnCleanConsole) { // Respond to clicking Clear botton to clean all content in the
 														// console
 			txtrConsole.setText("");
+		} else if (e.getSource() == btnCleanConsole2) {
+			txtrConsole2.setText("");
 		} else if (e.getSource() == btnLoadToIR) {
 			String IR_ori = cpu.GetIR();
 			try {
@@ -869,7 +898,25 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 			boolean result = loader.LoadProgram(18, "Test1.txt", false);
 			if (result == true) {
 				txtrConsole.append("Success to load the Test1 program to memory !!!\n");
+				this.cpu.SetKeyboardReadNumber(true);
 				updatePhase("Test1 Loaded");
+			} else {
+				txtrConsole.append("Failed to load the Test1 program to memory !!!\n");
+			}
+		} else if (e.getSource() == btnLoadTest2) {
+			boolean result = loader.LoadTextFile(1024, "sentences.txt");
+			if (result == true) {
+				txtrConsole.append("Loading text file to Memory sucess\n");		
+				result = loader.LoadProgram(85, "Test2.txt", false);
+				if (result == true) {
+					txtrConsole.append("Success to load the Test2 program to memory !!!\n");
+					this.cpu.SetKeyboardReadNumber(false);
+					updatePhase("Test2 Loaded");
+				} else {
+					txtrConsole.append("Failed to load the Test2 program to memory !!!\n");
+				}
+			} else {
+				txtrConsole.append("Failed to load text file to memory !!!\n");
 			}
 		}
 	}
@@ -967,6 +1014,7 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		tfInstructionAddress.setText("");
 		tfDataAddress.setText("");
 		txtrConsole.setText("");
+		txtrConsole2.setText("");
 		tfLoadPC.setText("");
 		tfLoadIR.setText("");
 		tfLoadToMAR.setText("");
@@ -1041,6 +1089,10 @@ public class ComputerSimulator implements Runnable, ActionListener, IUpdate, ISt
 		txtrConsole.append(message);
 	}
 
+	@Override
+	public void updateUserConsole2(String message) {
+		this.txtrConsole2.append(message);
+	}
 	@Override
 	public void updateMFR(int value) {
 		cpu.SetMFR(value);

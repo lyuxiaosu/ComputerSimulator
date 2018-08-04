@@ -794,8 +794,8 @@ public class InstructionCodec {
 			parameters[0] = opcode;
 			return parameters;
 		} else if (opcode == 7 || opcode == 6) { // AIR or SIR
-			int signed = Integer.parseInt(dstr.substring(0, 1), 2);
-			int immed = Integer.parseInt(dstr.substring(1, 8), 2);
+			int immed = Integer.parseInt(dstr.substring(0, 7), 2);
+			int signed = Integer.parseInt(dstr.substring(7, 8), 2);			
 			if (signed == 1) {
 				immed = -immed;
 			}
@@ -846,12 +846,13 @@ public class InstructionCodec {
 			while (sb_immed.length() + binary_immed.length() < 7) {
 				sb_immed.append('0');
 			}
+			
+			sb_immed.append(binary_immed);
 			if (immed < 0) { // if immed is negative
 				sb_immed.append('1');
 			} else { // if immed is positive
 				sb_immed.append('0');
 			}
-			sb_immed.append(binary_immed);
 			binary_immed = sb_immed.toString();
 
 			for (int i = 0; i < binary_immed.length(); i++) {

@@ -408,4 +408,8 @@ public class CentralProcessor {
 	public void InputNotify(int devid, String number) {
 		this.signal_controller.InputNotify(devid, number);
 	}
+	
+	public void SetKeyboardReadNumber(boolean flag) {
+		signal_controller.SetKeyboardReadNumber(flag);
+	}
 }

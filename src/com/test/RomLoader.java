@@ -3,6 +3,7 @@ package com.test;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -103,6 +104,58 @@ public class RomLoader {
 		return true;
 	}
 	
+	public boolean LoadTextFile(int startAddress, String filePath) {
+		boolean result = true;
+		//Set M[2001] and M[2002] to 1. M[2001] save the line index, M[2002] save the word index
+		memory.LoadData(2001, 0);
+		memory.LoadData(2002, 0);
+		//Set M[2003] to 1, this is the flag to mark if find the word or not. 1 means not find, 0 means find
+		memory.LoadData(2003, 1);
+		//Set M[15] to 99, using calculating index address
+		memory.LoadData(15, 91);
+		//Set M[16] to 135, using calculating index address
+		memory.LoadData(16, 141);
+		//Set M[17] to 168, using calculating index address
+		memory.LoadData(17, 183);
+		//Set M[20] to 213, using calculating index address
+		memory.LoadData(20, 225);
+		//Set M[13] to 257, using flag of the string ending
+		memory.LoadData(13, 257);
+		//Set M[18] to 2000, using address index
+		memory.LoadData(18, 2000);
+		//Set M[19] to 1023, using address index
+		memory.LoadData(19, 1023);
+		
+		File file = new File(filePath);
+		String theString = "";
+		Scanner scanner;
+		try {
+			scanner = new Scanner(file);
+			theString = scanner.nextLine();
+			while (scanner.hasNextLine()) {
+			       theString = theString + "\n" + scanner.nextLine();
+			}
+			scanner.close();
+			//replace 2 or more white spaces with single space 
+			theString = theString.trim().replaceAll(" +", " ");
+			char[] charArray = theString.toCharArray();
+			System.out.println("result is " + theString + " " + charArray.length);			
+			for (int i = 0; i < charArray.length; i++) {
+				result = memory.LoadData(startAddress + i, (int)charArray[i]);
+				if (result == false) {
+					return result;
+				}
+			}
+			//set the next memory slot to 257 which means the end of the file
+			result = memory.LoadData(startAddress +  charArray.length, 257);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Catch exception when scan the text file\n");
+			e.printStackTrace();		
+		}
+
+		return result;
+	}
 	public boolean LoadBootStrap() {
 		boolean result = LoadProgram(8, "bootstrap.txt", true);		
 		return result;
