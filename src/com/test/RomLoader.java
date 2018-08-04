@@ -136,6 +136,7 @@ public class RomLoader {
 			       theString = theString + "\n" + scanner.nextLine();
 			}
 			scanner.close();
+			this.subject.updateUserConsole2("Sentences:\n" + theString + "\n");
 			//replace 2 or more white spaces with single space 
 			theString = theString.trim().replaceAll(" +", " ");
 			char[] charArray = theString.toCharArray();
