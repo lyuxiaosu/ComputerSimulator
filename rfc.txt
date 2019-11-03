@@ -1,0 +1,841 @@
+ 
+
+
+
+Independent Submission                                            X. Lyu
+Request for Comments:8890                                            GWU
+Category: Experimental                                      October 2019
+ISSN: 2070-1721                                                         
+
+
+       An Application-Level Protocol for Multi-Person Chat Room  
+
+
+Abstract
+
+   This memo describes the Multi-Person Chat Room Protocol (MPCRP), an
+   application-level protocol designed to transmit text messages among
+   multiple persons in a virtual network chatting room over a reliable
+   transport protocol, such as Transmission Control
+   Protocol(TCP[RFC0793]).
+
+
+Status of this Memo
+
+   This document is not an Internet Standards Track specification; it is
+   published for examination, experimental implementation, and
+   evaluation.
+
+   This document defines an Experimental Protocol for the Internet
+   community. This is a contribution to the RFC Series, independently of
+   any other RFC stream. The RFC Editor has chosen to publish this
+   document at its discretion and makes no statement about its value for
+   implementation or deployment. Documents approved for publication by
+   the RFC Editor are not a candidate for any level of Internet
+   Standard; see Section 2 of RFC 5741.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at http://www.rfc-
+   editor.org/info/rfc8890.
+
+Copyright and License Notice
+
+   Copyright (c) 2019 IETF Trust and the persons identified as the
+   document authors. All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document. Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document. Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+ 
+
+
+Lyu                           Experimental                      [Page 1]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+Table of Contents
+
+   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
+   2.  Terminology  . . . . . . . . . . . . . . . . . . . . . . . . .  3
+   3.  Multi-Person Chat Room Communication . . . . . . . . . . . . .  3
+     3.1.  MPCRP Model  . . . . . . . . . . . . . . . . . . . . . . .  3
+     3.2.  MPCRP Messages . . . . . . . . . . . . . . . . . . . . . .  4
+       3.2.1.  MPCRP Message Format . . . . . . . . . . . . . . . . .  4
+       3.2.2.  Types of Messages  . . . . . . . . . . . . . . . . . .  4
+         3.2.2.1.  Command Messages . . . . . . . . . . . . . . . . .  5
+           3.2.2.1.1.  SetUserName  . . . . . . . . . . . . . . . . .  5
+           3.2.2.1.2.  SetUserName Response . . . . . . . . . . . . .  5
+           3.2.2.1.3.  CreateRoom . . . . . . . . . . . . . . . . . .  5
+           3.2.2.1.4.  CreateRoom Response  . . . . . . . . . . . . .  6
+           3.2.2.1.5.  JoinRoom . . . . . . . . . . . . . . . . . . .  6
+           3.2.2.1.6.  JoinRoom Response  . . . . . . . . . . . . . .  7
+           3.2.2.1.7.  GetUserList  . . . . . . . . . . . . . . . . .  7
+           3.2.2.1.8.  GetUserList Response . . . . . . . . . . . . .  7
+           3.2.2.1.9.  DestroyRoom  . . . . . . . . . . . . . . . . .  8
+           3.2.2.1.10.  DestroyRoom Response  . . . . . . . . . . . .  8
+           3.2.2.1.11.  QuitRoom  . . . . . . . . . . . . . . . . . .  9
+           3.2.2.1.12.  QuitRoom Response . . . . . . . . . . . . . .  9
+         3.2.2.2.  Data Messages  . . . . . . . . . . . . . . . . . .  9
+     3.3.  Message Exchange Example . . . . . . . . . . . . . . . . . 11
+       3.3.1.  Create and Destroy a Chatting Room . . . . . . . . . . 11
+       3.3.2.  Join and Quit from a Chatting Room . . . . . . . . . . 12
+   4.  Test Cases . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+     4.1.  A Chatting User Sets an Existent Username  . . . . . . . . 13
+     4.2.  A Chatting User Sets a Nonexistent Username  . . . . . . . 13
+     4.3.  Three Chatting Users Communicate In a Chatting Room  . . . 13
+     4.4.  A Chatting User Creates a Chatting Room With an Existent
+           Room ID  . . . . . . . . . . . . . . . . . . . . . . . . . 13
+     4.5.  A Chatting User Creates a Chatting Room With an 
+           Nonexistent Room ID  . . . . . . . . . . . . . . . . . . . 14
+     4.6.  A Chatting User Destroys a Chatting Room Created by 
+           Another Chatting User  . . . . . . . . . . . . . . . . . . 14
+     4.7.  A Chatting User Destroys a Chatting Room Created by 
+           Itself . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+     4.8.  A Chatting User Joins Two Existent Chatting Rooms  . . . . 14
+   5.  Security Considerations  . . . . . . . . . . . . . . . . . . . 14
+   6.  References . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+     6.1.  Normative References . . . . . . . . . . . . . . . . . . . 14
+     6.2.  Informative References . . . . . . . . . . . . . . . . . . 14
+ 
+
+
+Lyu                           Experimental                      [Page 2]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 15
+
+
+1.  Introduction
+
+   Multi-Person Chat Room Protocol (MPCRP) [RFC8890] is a general-
+   purpose transport protocol for multiple persons sharing text messages
+   in a virtual network room. It provides a bidirectional message
+   transmission over a reliable stream transport, such as TCP[RFC0793],
+   intended to carry text messages in real-time from one communicating
+   peer to the other communicating peers in the same virtual network
+   room. MPCRP is suited to client-server communication.
+
+   Since MPCRP is an application layer protocol based on a reliable
+   stream transport, MPCRP does not provide any mechanism to ensure
+   timely delivery or provide other quality-of-service guarantees, but
+   relies on transport layer services to do so. 
+
+   MPCRP is a protocol primarily designed to share messages in multi-
+   person chatting rooms, it is not limited to the implementation
+   languages. Any advanced programming languages, such as Java and C++,
+   can be used to implement this protocol. Also, there is no minimal
+   operating condition for this protocol. Most of the mainstream
+   operating systems, such as Windows, IOS, and Linux, can be used to
+   implement this protocol.
+
+   This document defines the format and type of messages of MPCRP, as
+   well as the communication rules between the client side and the
+   server side.
+
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+
+
+3.  Multi-Person Chat Room Communication
+
+   The Multi-Person Chat Room uses MPCRP messages, based on TCP for
+   communication. This section describes the model of MPCRP, the format
+   of MPCRP messages, and how do clients and servers communicate using
+   MPCRP.
+
+3.1.  MPCRP Model
+
+   MPCRP is a client-server model. One client sends a message to the
+ 
+
+
+Lyu                           Experimental                      [Page 3]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   server with a room ID. The server broadcasts the message to other
+   clients who are in the same room. One client cannot communicate with
+   another client directly but relies on the intermediate server. One
+   client can join in more than one chatting room, and one chatting room
+   can have more than two clients.
+
+   The MPCRP design can be pictured as:
+
+   +--------+      MPCRP       +-------+       MPCRP       +--------+
+   |        |Commands/Responses|       | Commands/Responses|        |
+   | MPCRP  |<---------------->|MPCRP  |<----------------->|MPCRP   |
+   | Client1|     and Data     | Server|      and Data     | Client2|
+   |        |                  |       |                   |        |
+   +--------+                  +-------+                   +--------+
+   MPCRP Client               MPCRP Server                MPCRP Client
+
+3.2.  MPCRP Messages
+
+   An MPCRP message comprises a virtual header and a payload. A virtual
+   header comprises a Message Type ID and a Payload Length. The format
+   of the Payload depends on the type of messages. This section
+   describes the message format and the types of messages.
+
+3.2.1.  MPCRP Message Format
+
+   The MPCRP message has two parts, a header and its payload. The header
+   contains 1 byte of Message Type and 3 bytes of Payload Length. 
+
+    0                   1                   2                     3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Message Type |                  Payload Length               |
+   |    (1 byte)   |                     (3 bytes)                 |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                            Message Header
+
+   The payload is the actual data contained in the message. For example,
+   it could be the string of the text message or the response content of
+   a command message. Its format depends on the type of messages, which
+   will be described in Section 2.1.2.
+
+3.2.2.  Types of Messages
+
+   MPCRP has two types of messages, one is the Data Type Message, and
+   the other is the Command Type Message. Data Type Message is used to
+   transmit text messages, and its payload is the content of the text
+   message. Command Message is used to transmit user-defined operations,
+   such as SetUserName, JoinRoom, or QuitRoom. These command messages
+ 
+
+
+Lyu                           Experimental                      [Page 4]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   will be described in Section 2.1.2.1.
+
+3.2.2.1.  Command Messages
+
+   Currently, MPCRP [8890] supports twelve types of Command Messages and
+   can be extended in the updated version. These twelve types of Command
+   Messages are SetUserName, SetUserName Response, CreateRoom,
+   CreateRoom Response, JoinRoom, JoinRoom Response, GetUserList,
+   GetUserList Response, DestoryRoom, DestoryRoom Response, QuitRoom and
+   QuitRoom Response. These commands will be described in detail in the
+   following Sections.
+
+3.2.2.1.1.  SetUserName
+
+   SetUserName command is sent from the client to the server, being used
+   to set the username of a chatting user. SetUserName is specified as
+   Message Type ID 1 in the header. The Payload Length is the length of
+   the username, and the Payload is the string of the username. The
+   username MUST be globally unique. It could be a string or a number,
+   or a combination of a string and a number. The maximum length of the
+   username is 20.
+
+   SetUserName MUST be the first message sent from the client to the
+   server after a connection has been established. This message could be
+   sent multiple times during the following communication.
+
+3.2.2.1.2.  SetUserName Response
+
+   SetUserName Response is sent from the server to the client to tell
+   the client if the operation of setting a username is successful or
+   not. It is specified as Message Type ID 2 in the header. The Payload
+   Length is 1, and the Payload is a number to indicate the result of
+   the operation. "0" indicates success, "1" indicates failure. The
+   server MUST check if this username already exists or not. If the
+   username already exists, the server SHOULD reply a failure response;
+   if the username does not exist, the server SHOULD add this username
+   to a global database to store this username. Meanwhile, the server
+   needs to bind this username to the client connection and reply a
+   success response to the client.
+
+   This message MUST be sent from the server to the client after the
+   server receives a SetUserName request from the client. The client
+   SHOULD discard this message if it has already received this message
+   and not sent another SetUserName request to the server.
+
+3.2.2.1.3.  CreateRoom
+
+   CreateRoom command is sent from the client to the server to notify
+ 
+
+
+Lyu                           Experimental                      [Page 5]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   the server it wants to create a chatting room. It is specified as
+   Message Type ID 3 in the header. The Payload Length is the length of
+   the room ID, and the Payload is the room ID. room ID MUST be globally
+   unique. It could be a string or a number, or a combination of a
+   string and a number. The maximum length of the room ID is 20.
+
+   CreateRoom MUST be sent by the client to the server after the first
+   SetUserName command has been successfully processed. A user who
+   creates a chatting room will automatically join this chatting room
+   after this command is successfully processed. This message could be
+   sent multiple times during the following communication to indicate
+   the user wants to create multiple chatting rooms.
+
+3.2.2.1.4.  CreateRoom Response 
+
+   CreateRoom Response is sent from the server to the client to tell the
+   client if the operation of creating a chatting room is successful or
+   not. It is specified as Message Type ID 4 in the header. The Payload
+   consists of room ID and the result of the operation. The room ID is
+   the request room ID in the CreateRoom Request message. The result of
+   the operation uses "0" to indicate success, "1" to indicate failure.
+   The room ID and the result are separated by a colon. For example, if
+   the room ID is "happyroom001", and the result of creation is a
+   success, then the payload of the CreateRoom Response should be
+   "happyroom001:0". The server MUST check if this room ID exists or
+   not. If the room ID already exists, the server SHOULD reply a failure
+   response; if the room ID does not exist, the server SHOULD add this
+   room ID to a global database to store this room ID. Meanwhile, the
+   server SHOULD add this user to the chatting room and reply a success
+   response to the client.
+
+   This message MUST be sent from the server to the client after the
+   server receives a CreateRoom request from the client. For some
+   security reasons or implementation bugs, the server side also might
+   send a duplicate response to the client. The client SHOULD discard
+   the duplicate CreateRoom Response message if it has already received
+   and not sent another CreateRoom request with the same room ID to the
+   server. The duplicate message is determined by room ID.
+
+3.2.2.1.5.  JoinRoom
+
+   JoinRoom command is sent from the client to the server to notify the
+   server which chatting room the user wants to join in. It is specified
+   as Message Type ID 5 in the header. The Payload Length is the length
+   of the room ID, and the Payload is the room ID. 
+
+   JoinRoom MUST be sent by the client to the server after the first
+   SetUserName command has been successfully processed. A user cannot
+ 
+
+
+Lyu                           Experimental                      [Page 6]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   send or receive any messages from a chatting room unless it is in
+   that chatting room. This message could be sent multiple times during
+   the following communication to indicate the user wants to join
+   multiple chatting rooms.
+
+3.2.2.1.6.  JoinRoom Response
+
+   JoinRoom Response is sent from the server to the client to tell the
+   client if the operation of joining a chatting room is successful or
+   not. It is specified as Message Type ID 6 in the header. The Payload
+   consists of room ID and the result of the operation. The room ID is
+   the request room ID in the JoinRoom Request message. The result of
+   the operation uses "0" to indicate success, "1" to indicate failure.
+   The room ID and the result are separated by a colon. For example, if
+   the room ID is "happyroom001", and the result of joining is a
+   success, then the payload of the JoinRoom Response should be
+   "happyroom001:0". The server SHOULD check if this room ID already
+   exists or not. If the room ID already exists, the server SHOULD add
+   this user to that chatting room and reply a success response to the
+   client. If the room ID does not exist, the server SHOULD reply a
+   failure response to the client.
+
+   This message MUST be sent from the server to the client after the
+   server receives a CreateRoom request from the client. For some
+   security reasons or implementation bugs, the server side also might
+   send a duplicate response to the client. The client SHOULD discard
+   the duplicate JoinRoom Response message if it has already received
+   and not sent another JoinRoom request with the same room ID to the
+   server. The duplicate message is determined by room ID.
+
+
+3.2.2.1.7.  GetUserList
+
+   GetUserList command is sent from the client to the server to request
+   the user list of a chatting room. It is specified as Message Type ID
+   7 in the header. The Payload Length is the length of the room ID, and
+   the Payload is the room ID.
+
+   GetUserList command can be sent by the client to the server after it
+   has already joined a chatting room. This message could be sent
+   multiple times during the following communication to indicate the
+   user wants to update the user list. 
+
+3.2.2.1.8.  GetUserList Response
+
+   GetUserList Response is sent from the server to the client containing
+   a user list. It is specified as Message Type ID 8 in the header. The
+   payload consists of the room ID followed a string of a JSON array.
+ 
+
+
+Lyu                           Experimental                      [Page 7]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   The room ID and the JSON string are separated by a colon.
+
+   If the room ID exists, the server SHOULD get all usernames from that
+   chatting room and check if the requesting client is also in the user
+   list. If the requesting client is in the user list, the server SHOULD
+   reply a JSON array of all usernames to the client. If the room ID
+   does not exist or the requesting client is not in the user list, the
+   server SHOULD reply a JSON string of "room ID does not exist" or "You
+   have no right to view the user list because you are not in the
+   chatting room"
+
+   This message MUST be sent from the server to the client after the
+   server receives a GetUserList request from the client. For some
+   security reasons or implementation bugs, the server side also might
+   send a duplicate response to the client. The client will discard this
+   message if it has already received this message and not sent another
+   GetUserList request to the server.
+
+
+3.2.2.1.9.  DestroyRoom 
+
+   DestroyRoom is sent from the client to the server to request
+   destroying a chatting room. DestroyRoom is specified as Message Type
+   ID 9 in the header. The Payload Length is the length of the room ID,
+   and the payload is the room ID.
+
+   This message MUST be sent by the user who created the chatting room.
+   Only the user who creates the chatting room has the authority to
+   destroy it. The server SHOULD ignore this message which is sent by
+   other users who did not create the chatting room.
+
+3.2.2.1.10.  DestroyRoom Response
+
+   DestroyRoom Response is sent from the server to the client to notify
+   the client if the operation of destroying a chatting room is
+   successful or not. It is specified as Message Type ID 10 in the
+   header. The Payload consists of room ID and the result of the
+   operation. The room ID is the request room ID in the DestroyRoom
+   Request message. The result of the operation uses "0" to indicate
+   success, "1" to indicate failure. The room ID and the result are
+   separated by a colon. For example, if the room ID is "happyroom001",
+   and the result of destroying is a success, then the payload of the
+   DestroyRoom Response should be "happyroom001:0".
+
+   The server SHOULD first check if this room ID already exists, and
+   then check if the chatting room was created by the requesting client.
+   If the chatting room exits and it was created by the requesting
+   client, the server SHOULD delete the room ID from the global database
+ 
+
+
+Lyu                           Experimental                      [Page 8]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   and remove all users in that chatting room. Finally, the server
+   SHOULD reply a success response to the client. If the room ID does
+   not exist, or the requesting client is not the user who created the
+   chatting room, a failure response SHOULD be sent to the client.
+
+
+3.2.2.1.11.  QuitRoom 
+
+   QuitRoom command is sent from the client to the server to notify the
+   server that it wants to quit from a chatting room. It is specified as
+   Message Type ID 11 in the header, the Payload Length is the length of
+   the room ID, and the Payload is the room ID.
+
+   QuitRoom command SHOULD be sent by the client to the server after it
+   has already joined a chatting room. This message is the last message
+   sent by a user in a chatting room, so this message SHOULD NOT be sent
+   multiple times for one chatting room. The client cannot quit from a
+   chatting room until receiving a successful quitRoom Response message
+   from the server.
+
+3.2.2.1.12.  QuitRoom Response
+
+   QuitRoom Response is sent from the server to the client to notify the
+   client if the operation of quitting a chatting room is successful or
+   not. It is specified as Message Type ID 12 in the header. The Payload
+   consists of room ID and the result of the operation. The room ID is
+   the request room ID in the QuitRoom Request message. The result of
+   the operation uses "0" to indicate success, "1" to indicate failure.
+   The room ID and the result are separated by a colon. For example, if
+   the room ID is "happyroom001", and the result of quiting is a
+   success, then the payload of the QuitRoom Response should be
+   "happyroom001:0".
+
+   The server must remove this user from the chatting room if it exists
+   in the chatting room, and reply a success response to the client. If
+   the room ID does not exist, the server SHOULD reply a failure
+   response to the client. 
+
+   This message MUST be sent from the server to the client after the
+   server receives a QuitRoom request from the client. The client will
+   quit from a chatting room if it receives this message.
+
+3.2.2.2.  Data Messages
+
+   Data Messages containing the actual text messages can be sent from
+   the client to the server or the server to the client. It is specified
+   as Message Type ID 13. The Payload Length is the length of the
+   subsequence payload. The subsequence payload has three parts. The
+ 
+
+
+Lyu                           Experimental                      [Page 9]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   first 1 byte is the length of the room ID, the second part is the
+   room ID, and the third part is the string of the text message. The
+   format of the subsequence payload is the following:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   0                   1                   2                     3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+-----------------------------------------------+
+   |The Length of  |          Room ID                              |
+   |Room ID(1 byte)|                                               |
+   +---------------------------------------------------------------+
+   |                                                               |
+   |                                                               |
+   +                          Room ID                              +
+                                ...                              
+                             (N bytes)                                    
+   +                                                               +
+   |                                                               |
+   |                                                               |
+   +---------------------------------------------------------------+
+   |                                                               |
+   |                                                               |
+   +                        Text String                            +
+                               ...                                         
+                             (N bytes)                                       
+   +                                                               +
+   |                                                               |
+   |                                                               |
+   +---------------------------------------------------------------+ 
+                    The Format of The Payload 
+
+ 
+
+
+Lyu                           Experimental                     [Page 10]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+3.3.  Message Exchange Example
+
+   This section describes two examples to explain message exchange using
+   MPCRP.
+
+3.3.1.  Create and Destroy a Chatting Room
+
+   This example illustrates how a chatting user can create and destroy a
+   chatting room. After a chatting room is created, other chatting users
+   can join this chatting room. If the chatting room is destroyed by the
+   creator, all users in that chatting room will be removed.
+
+
+
+
+
+
+
+
+
+
+
+
+        +---------------+                        +----------------+
+        |Chatting Client|                        | Chatting Server|
+        +-------+-------+                        +--------+-------+
+                |                                         |
+                |                                         |
+                |                                         |
+                +-----------TCP Connection done-----------+
+                |                                         |
+                |                                         |
+                |                                         |
+   ------------ +------Command Message(SetUserName)------->
+   Set User|    |                                         |
+   User    |    |                                         |
+   ------------ <--Command Message(SetUserName Response)--+
+                |             0:success                   |
+                |                                         |
+   ------------ +--------Command Message(CreateRoom)------>
+   Create  |    |                                         |
+   Chatting|    |                                         |
+   Room    |    |                                         |
+   ------------ <---Command Message(CreateRoom Response)--+
+                |               0:success                 |
+                |                                         |
+                |                                         |
+   ------------ +---------Data Message(Text String)------->
+ 
+
+
+Lyu                           Experimental                     [Page 11]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+           |    |           send text messages            |
+           |    |                                         |
+           |    <---------Data Message(Text String)-------+
+   Chatting|    |           receive text messages         |
+           |    |                   |                     |
+           |    |                   |                     |
+           |    |                   |                     |
+   ------------ |                   |                     |
+                |                                         |
+   ------------ +--------Command Message(DestroyRoom)-----+
+   Destroy |    |                                         |
+   Chatting|    |                                         |
+   Room    |    |                                         |
+   ------------ <--Command Message(DestroyRoom Response)--|
+                |               0:success                 |
+
+   	Message Flow of Creating and Destroying Chatting Room
+
+
+3.3.2.  Join and Quit from a Chatting Room
+
+   This example illustrates how a chatting user can join and quit from a
+   chatting room.
+
+
+        +---------------+                        +----------------+
+        |Chatting Client|                        | Chatting Server|
+        +-------+-------+                        +--------+-------+
+                |                                         |
+                |                                         |
+                |                                         |
+                +-----------TCP Connection done-----------+
+                |                                         |
+                |                                         |
+                |                                         |
+   ------------ +------Command Message(SetUserName)------->
+   Set User|    |                                         |
+   User    |    |                                         |
+   ------------ <--Command Message(SetUserName Response)--+
+                |             0:success                   |
+                |                                         |
+   ------------ +--------Command Message(JoinRoom)-------->
+   Join    |    |                                         |
+   Chatting|    |                                         |
+   Room    |    |                                         |
+   ------------ <---Command Message(JoinRoom Response)----+
+                |               0:success                 |
+                |                                         |
+ 
+
+
+Lyu                           Experimental                     [Page 12]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+                |                                         |
+   ------------ +---------Data Message(Text String)------->
+           |    |           send text messages            |
+           |    |                                         |
+           |    <---------Data Message(Text String)-------+
+   Chatting|    |           receive text messages         |
+           |    |                   |                     |
+           |    |                   |                     |
+           |    |                   |                     |
+   ------------ |                   |                     |
+                |                                         |
+   ------------ +--------Command Message(QuitRoom)--------+
+   Quit From |  |                                         |
+   Chatting  |  |                                         |
+   Room      |  |                                         |
+   ------------ <----Command Message(QuitRoom Response)---|
+                |               0:success                 |
+
+
+           Message Flow of Joining and Quitting From Chatting Room
+
+
+4.  Test Cases
+
+   This section contains some test cases to verify the correctness of
+   the service.
+
+4.1.  A Chatting User Sets an Existent Username
+
+   A chatting user will receive a failure response from the server when
+   it tries to set an existent username.  
+
+4.2.  A Chatting User Sets a Nonexistent Username
+
+   A chatting user will receive a success response from the server when
+   it tries to set a nonexistent username.
+
+4.3.  Three Chatting Users Communicate In a Chatting Room
+
+   One chatting user creates a chatting room, and the two chatting users
+   join. One of them sends a message to the chatting room, and the other
+   two receive the message.
+
+4.4.  A Chatting User Creates a Chatting Room With an Existent Room ID
+
+   A chatting user will receive a failure response from the server when
+   it tries to create an existent room ID.
+
+ 
+
+
+Lyu                           Experimental                     [Page 13]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+4.5.  A Chatting User Creates a Chatting Room With an Nonexistent Room
+   ID
+
+   A chatting user will receive a success response from the server when
+   it tries to create a nonexistent room ID. 
+
+4.6.  A Chatting User Destroys a Chatting Room Created by Another
+   Chatting User
+
+   A chatting user will receive a failure response from the server when
+   it tries to destroy a chatting room created by another chatting user
+
+4.7.  A Chatting User Destroys a Chatting Room Created by Itself
+
+   A chatting user will receive a success response from the server when
+   it tries to destroy a chatting room created by itself.
+
+4.8.  A Chatting User Joins Two Existent Chatting Rooms
+
+   A chatting user joins two existent chatting rooms. Receiving/sending
+   messages from one chatting room do not affect the other chatting
+   room.
+
+5.  Security Considerations
+
+   This profile does not define or use a Public Key Infrastructure
+   (PKI). Server and Client can create an SSL 6101 or TLS 8446 channel
+   to secure the communication. The secure channel will not require any
+   change of the protocol.
+
+6.  References
+
+6.1.  Normative References
+
+
+   [RFC739]  Postel, Jon, "Transmission Control Protocol - DARPA
+   Internet Program Protocol Specification", RFC 793, DARPA, September
+   1981.
+
+6.2.  Informative References
+
+
+   [RFC3967]  Bush R., "Clarifying when Standards Track Documents may
+   Refer Normatively to Documents at a Lower Level", BCP 97, RFC 3967,
+   December 2004.
+
+   [RFC5741]  Daigle L.,Ed., "RFC Streams, Headers, and Boilerplates",
+   RFC 5471, December 2009. 
+ 
+
+
+Lyu                           Experimental                     [Page 14]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
+   [RFC6101]  Freier, A., Karlton, P., and P. Kocher, "The Secure
+   Sockets Layer (SSL) Protocol Version 3.0", RFC 6101, August 2011.
+
+   [RFC3553]  Mealling, M., Masinter, L., Hardie, T., and G. Klyne, "An
+   IETF URN Sub-namespace for Registered Protocol Parameters", BCP 73,
+   RFC 3553, June 2003. 
+
+   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+   Version 1.3", RFC 8446, August 2018.
+
+   [RFC7425]  Thornburgh M., "Adobe's RTMFP Profile for Flash
+   Communication", BCP 97, RFC 7425, December 2014.
+
+Authors' Addresses
+
+
+   Lyu Xiaosu
+
+   EMail: lyuxiaosu@gwu.edu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lyu                           Experimental                     [Page 15]
+
