@@ -86,23 +86,23 @@ Table of Contents
            3.2.2.1.11.  QuitRoom  . . . . . . . . . . . . . . . . . .  9
            3.2.2.1.12.  QuitRoom Response . . . . . . . . . . . . . .  9
          3.2.2.2.  Data Messages  . . . . . . . . . . . . . . . . . .  9
-     3.3.  Message Exchange Example . . . . . . . . . . . . . . . . . 11
-       3.3.1.  Create and Destroy a Chatting Room . . . . . . . . . . 11
-       3.3.2.  Join and Quit from a Chatting Room . . . . . . . . . . 12
-   4.  Test Cases . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+     3.3.  Message Exchange Example . . . . . . . . . . . . . . . . . 10
+       3.3.1.  Create and Destroy a Chatting Room . . . . . . . . . . 10
+       3.3.2.  Join and Quit from a Chatting Room . . . . . . . . . . 11
+   4.  Test Cases . . . . . . . . . . . . . . . . . . . . . . . . . . 12
      4.1.  A Chatting User Sets an Existent Username  . . . . . . . . 13
      4.2.  A Chatting User Sets a Nonexistent Username  . . . . . . . 13
      4.3.  Three Chatting Users Communicate In a Chatting Room  . . . 13
      4.4.  A Chatting User Creates a Chatting Room With an Existent
            Room ID  . . . . . . . . . . . . . . . . . . . . . . . . . 13
      4.5.  A Chatting User Creates a Chatting Room With an 
-           Nonexistent Room ID  . . . . . . . . . . . . . . . . . . . 14
+           Nonexistent Room ID  . . . . . . . . . . . . . . . . . . . 13
      4.6.  A Chatting User Destroys a Chatting Room Created by 
-           Another Chatting User  . . . . . . . . . . . . . . . . . . 14
+           Another Chatting User  . . . . . . . . . . . . . . . . . . 13
      4.7.  A Chatting User Destroys a Chatting Room Created by 
-           Itself . . . . . . . . . . . . . . . . . . . . . . . . . . 14
-     4.8.  A Chatting User Joins Two Existent Chatting Rooms  . . . . 14
-   5.  Security Considerations  . . . . . . . . . . . . . . . . . . . 14
+           Itself . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+     4.8.  A Chatting User Joins Two Existent Chatting Rooms  . . . . 13
+   5.  Security Considerations  . . . . . . . . . . . . . . . . . . . 13
    6.  References . . . . . . . . . . . . . . . . . . . . . . . . . . 14
      6.1.  Normative References . . . . . . . . . . . . . . . . . . . 14
      6.2.  Informative References . . . . . . . . . . . . . . . . . . 14
@@ -114,7 +114,7 @@ Lyu                           Experimental                      [Page 2]
 RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
 
-   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 15
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . 14
 
 
 1.  Introduction
@@ -511,23 +511,6 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
    format of the subsequence payload is the following:
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    0                   1                   2                     3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +---------------+-----------------------------------------------+
@@ -554,14 +537,6 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
    +---------------------------------------------------------------+ 
                     The Format of The Payload 
 
- 
-
-
-Lyu                           Experimental                     [Page 10]
-
-RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
-
-
 3.3.  Message Exchange Example
 
    This section describes two examples to explain message exchange using
@@ -579,10 +554,12 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
 
 
+ 
 
 
-
-
+Lyu                           Experimental                     [Page 10]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
 
         +---------------+                        +----------------+
@@ -610,14 +587,6 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
                 |                                         |
                 |                                         |
    ------------ +---------Data Message(Text String)------->
- 
-
-
-Lyu                           Experimental                     [Page 11]
-
-RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
-
-
            |    |           send text messages            |
            |    |                                         |
            |    <---------Data Message(Text String)-------+
@@ -641,6 +610,12 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
    This example illustrates how a chatting user can join and quit from a
    chatting room.
+ 
+
+
+Lyu                           Experimental                     [Page 11]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
 
         +---------------+                        +----------------+
@@ -666,14 +641,6 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
    ------------ <---Command Message(JoinRoom Response)----+
                 |               0:success                 |
                 |                                         |
- 
-
-
-Lyu                           Experimental                     [Page 12]
-
-RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
-
-
                 |                                         |
    ------------ +---------Data Message(Text String)------->
            |    |           send text messages            |
@@ -699,6 +666,14 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 4.  Test Cases
 
    This section contains some test cases to verify the correctness of
+ 
+
+
+Lyu                           Experimental                     [Page 12]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
    the service.
 
 4.1.  A Chatting User Sets an Existent Username
@@ -721,14 +696,6 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
    A chatting user will receive a failure response from the server when
    it tries to create an existent room ID.
-
- 
-
-
-Lyu                           Experimental                     [Page 13]
-
-RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
-
 
 4.5.  A Chatting User Creates a Chatting Room With an Nonexistent Room
    ID
@@ -755,6 +722,14 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
 5.  Security Considerations
 
+ 
+
+
+Lyu                           Experimental                     [Page 13]
+
+RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
+
+
    This profile does not define or use a Public Key Infrastructure
    (PKI). Server and Client can create an SSL 6101 or TLS 8446 channel
    to secure the communication. The secure channel will not require any
@@ -778,13 +753,6 @@ RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
 
    [RFC5741]  Daigle L.,Ed., "RFC Streams, Headers, and Boilerplates",
    RFC 5471, December 2009. 
- 
-
-
-Lyu                           Experimental                     [Page 14]
-
-RFC 8890         A Protocol for Multi-Person Chat Room      October 2019
-
 
    [RFC6101]  Freier, A., Karlton, P., and P. Kocher, "The Secure
    Sockets Layer (SSL) Protocol Version 3.0", RFC 6101, August 2011.
@@ -813,29 +781,5 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Lyu                           Experimental                     [Page 15]
+Lyu                           Experimental                     [Page 14]
 
